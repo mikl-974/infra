@@ -8,7 +8,19 @@ Regle de separation :
 - `foundation` — shells generiques et partages (outillage serveur, CI, scripts infra)
 - `workstation` — shells de productivite developpeur, specifiques au poste utilisateur
 
-Un shell qui depend d'un IDE, de Docker Desktop, ou de tooling personnel n'a pas sa place dans `foundation`.
+Un shell doit contenir des outils CLI et des runtimes.
+Les editeurs et IDE sont des applications desktop — ils ne vivent pas dans un shell.
+
+## Separation editors / shell
+
+| Couche | Ce qu'elle contient | Localisation |
+|---|---|---|
+| devShell `.NET` | SDK, Docker CLI, outils CLI | `devshells/dotnet.nix` |
+| Applications dev | VS Code, Rider, WebStorm | `modules/apps/editors.nix` |
+
+Les editeurs sont des applications desktop. Ils sont installes via le profil `dev`
+et disponibles a tout moment sur le poste. Le shell fournit l'environnement dans
+lequel ces editeurs travaillent (SDK, runtimes, outils CLI).
 
 ## Shell .NET — `devShells.dotnet`
 
@@ -34,22 +46,22 @@ Ce shell est **local a `workstation`**. Il n'est pas consomme depuis `foundation
 | `pkg-config` | Resolution de dependances natives |
 | `docker-client` | Docker CLI (daemon gere par le systeme hote) |
 | `playwright` | Automatisation navigateur / tests E2E |
-| `vscode` | Editeur de code |
 
-### Rider et WebStorm
+## Pourquoi les IDEs ne sont plus dans le shell
 
-Rider et WebStorm sont prepares dans `devshells/dotnet.nix` sous forme de lignes commentees :
+VS Code, Rider et WebStorm sont des applications graphiques desktop.
+Les mettre dans un devShell signifiait les telecharger a chaque `nix develop`,
+les rendre indisponibles hors du shell, et melanger deux niveaux differents.
 
-```nix
-# jetbrains.rider
-# jetbrains.webstorm
-```
-
-Pour les activer, decommenter dans `devshells/dotnet.nix`. Les deux packages sont disponibles dans nixpkgs.
+Ils vivent desormais dans `modules/apps/editors.nix` et sont installes en tant
+que paquets systeme via `profiles/dev.nix`. Ils sont toujours disponibles,
+independamment de l'entree dans un shell de dev.
 
 ## Pourquoi ce shell est local a `workstation`
 
-Ce shell contient des outils de productivite personnelle (IDE, Docker, browser testing) qui n'ont aucune valeur dans un contexte serveur ou CI generique. Ils appartiennent au poste de travail, pas au socle partage.
+Ce shell contient des outils de productivite personnelle (Docker, browser testing)
+qui n'ont aucune valeur dans un contexte serveur ou CI generique.
+Ils appartiennent au poste de travail, pas au socle partage.
 
 `foundation` ne doit pas connaitre les besoins d'un poste de dev personnel.
 
@@ -61,10 +73,19 @@ Exemples d'extensions :
 
 ```nix
 nodejs
-nodePackages.npm
 caddy
 mkcert
 httpie
+```
+
+## Ajouter un nouvel editeur / IDE
+
+Ajouter le package dans `modules/apps/editors.nix`, section `environment.systemPackages`.
+
+Exemple :
+
+```nix
+jetbrains.goland
 ```
 
 ## Ajouter un nouveau devShell

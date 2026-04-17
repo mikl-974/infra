@@ -25,11 +25,24 @@ Briques actuellement consommees depuis `foundation` :
 
 Briques conservees dans `workstation` :
 
-- devShell `.NET` : environnement de dev personnel (Docker, IDE, playwright) — pas une brique generique
+- devShell `.NET` : environnement CLI de dev personnel (Docker, playwright) — pas une brique generique
 - Hyprland et la base desktop : specifique machines utilisateur
 - Cloudflare WARP : client VPN desktop, pas une primitive infra
 - Noctalia : theme et identite visuelle du poste
+- Editeurs / IDE (VS Code, Rider, WebStorm) : applications desktop dev
 - theming, dotfiles, profils desktop, configuration utilisateur
+
+## Separation desktop / dev / shell
+
+| Couche | Localisation | Ce qu'elle contient |
+|---|---|---|
+| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia |
+| Dev utilisateur | `profiles/dev.nix` | IDE (VS Code, Rider, WebStorm), outils CLI dev systeme |
+| Shell dev | `devshells/dotnet.nix` | SDK .NET, Docker CLI, playwright, outils CLI |
+
+Les editeurs / IDE sont des applications desktop installes en tant que paquets systeme.
+Ils ne vivent pas dans un devShell.
+Le devShell fournit les runtimes et outils CLI avec lesquels les editeurs travaillent.
 
 ## Modele de composition
 
@@ -37,7 +50,7 @@ Briques conservees dans `workstation` :
 2. chaque host importe un ou plusieurs `profiles/`
 3. les profils assemblent des `modules/` cibles et des briques `foundation`
 4. les dotfiles restent decouples dans `dotfiles/`
-5. les environnements de dev sont definis localement dans `devshells/` (specifiques au poste de travail)
+5. les environnements de dev CLI sont definis localement dans `devshells/`
 6. la configuration utilisateur est geree par Home Manager (`home/default.nix`)
 
 ## Inputs flake
@@ -60,17 +73,19 @@ hosts/                machines concretes
   laptop/
   gaming/
 profiles/             assemblages de modules reutilisables
-  desktop-hyprland.nix
-  dev.nix
-  networking.nix
-  gaming.nix
+  desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP)
+  dev.nix               outils dev utilisateur (IDE, CLI systeme)
+  networking.nix        reseau (Tailscale)
+  gaming.nix            profil gaming
 modules/              logique Nix isolee par domaine
   desktop/            Hyprland, audio, portals, fonts, WARP
   theming/            Noctalia et theming systeme
-  apps/               applications desktop generiques
+  apps/
+    default.nix       apps desktop generiques
+    editors.nix       IDE (VS Code, Rider, WebStorm)
   shell/              configuration shell systeme
-devshells/            environnements de dev locaux
-  dotnet.nix          shell .NET workstation
+devshells/            environnements de dev CLI locaux
+  dotnet.nix          shell .NET (SDK, Docker CLI, playwright)
 home/                 configuration Home Manager (utilisateur)
   default.nix         dotfiles, xdg, paquets utilisateur
 dotfiles/             configurations applicatives brutes

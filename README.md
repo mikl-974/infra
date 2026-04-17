@@ -16,18 +16,31 @@ Briques conservees dans `workstation` :
 
 | Brique | Raison |
 |---|---|
-| devShell `.NET` | environnement de dev personnel (Docker, IDE, playwright) — pas une brique generique |
+| devShell `.NET` | environnement CLI de dev personnel (SDK, Docker, playwright) — pas une brique generique |
 | Noctalia | theme et identite visuelle du poste — strictement personnel |
 | Hyprland + base desktop | specifique machines utilisateur |
 | Cloudflare WARP | client VPN desktop, pas une primitive infra generique |
+| Editeurs / IDE | VS Code, Rider, WebStorm — applications desktop dev |
 | theming / dotfiles | strictement desktop / utilisateur |
+
+## Separation desktop / dev / shell
+
+| Couche | Ce qu'elle contient | Localisation |
+|---|---|---|
+| Base desktop | Hyprland, terminal, audio, Noctalia, WARP | `profiles/desktop-hyprland.nix` |
+| Dev utilisateur | VS Code, Rider, WebStorm, CLI outils systeme | `profiles/dev.nix` |
+| Shell `.NET` | SDK .NET, Docker CLI, playwright | `devshells/dotnet.nix` |
+
+Les IDEs sont des applications desktop. Ils sont installes en tant que paquets systeme
+via `profiles/dev.nix` → `modules/apps/editors.nix`.
+Le shell `.NET` fournit les runtimes et outils CLI avec lesquels ces editeurs travaillent.
 
 ## Structure
 
 - `hosts/` : definition des machines concretes (`main`, `laptop`, `gaming`)
 - `profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `networking`)
 - `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `shell/`)
-- `devshells/` : environnements de developpement locaux (specifiques au poste)
+- `devshells/` : environnements de developpement CLI locaux (specifiques au poste)
 - `home/` : configuration Home Manager utilisateur (dotfiles, programmes)
 - `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `noctalia/`, `editors/`)
 - `docs/` : documentation d'architecture et d'usage
@@ -40,7 +53,7 @@ Briques conservees dans `workstation` :
 - **module** : logique Nix isolee et reutilisable
 - **home** : configuration utilisateur (Home Manager)
 - **dotfiles** : configuration applicative brute (configs INI, CSS, conf)
-- **devShell** : outillage dev local, specifique au poste de travail
+- **devShell** : outillage CLI/runtime dev local, specifique au poste de travail
 
 ## Theming : Noctalia
 
@@ -59,8 +72,9 @@ Entrer dans le shell :
 nix develop .#dotnet
 ```
 
-Contenu : `dotnet-sdk`, `git`, `curl`, `jq`, `openssl`, `pkg-config`, `docker-client`, `playwright`, `vscode`.
-Rider et WebStorm sont prepares (commentes) dans `devshells/dotnet.nix`.
+Contenu : `dotnet-sdk`, `git`, `curl`, `jq`, `openssl`, `pkg-config`, `docker-client`, `playwright`.
+
+Les IDEs (VS Code, Rider, WebStorm) sont installes comme paquets systeme, pas dans le shell.
 
 Voir `docs/devshells.md`.
 
