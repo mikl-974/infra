@@ -38,10 +38,13 @@
         };
       };
 
-      # .NET devShell is consumed from foundation — no local duplication.
-      # To add workstation-specific packages on top, extend it here.
-      devShells = lib.genAttrs systems (system: {
-        dotnet = foundation.devShells.${system}.dotnet;
-      });
+      # .NET devShell is defined locally — this is a workstation-specific dev
+      # environment, not a generic shared primitive. See devshells/dotnet.nix.
+      devShells = lib.genAttrs systems (system:
+        let pkgs = import nixpkgs { inherit system; };
+        in {
+          dotnet = import ./devshells/dotnet.nix { inherit pkgs; };
+        }
+      );
     };
 }

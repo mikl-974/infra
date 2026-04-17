@@ -1,10 +1,16 @@
 # DevShells
 
-## Pourquoi ici
+## Philosophie
 
-Les devShells sont exposés dans `workstation` pour garantir un accès cohérent sur toutes les machines utilisateur. Les shells génériques sont fournis par `foundation` — `workstation` les consomme sans les dupliquer.
+Les devShells de `workstation` sont locaux et orientés poste de travail personnel.
 
-## Shell .NET
+Règle de séparation :
+- `foundation` — shells génériques et partagés (outillage serveur, CI, scripts infra)
+- `workstation` — shells de productivité développeur, spécifiques au poste utilisateur
+
+Un shell qui dépend d'un IDE, de Docker Desktop, ou de tooling personnel n'a pas sa place dans `foundation`.
+
+## Shell .NET — `devShells.dotnet`
 
 Commande :
 
@@ -12,11 +18,11 @@ Commande :
 nix develop .#dotnet
 ```
 
-Source : `foundation.devShells.<system>.dotnet`.
+Définition : `devshells/dotnet.nix`.
 
-Aucune définition locale — si `foundation` met à jour le shell, `workstation` hérite automatiquement de la mise à jour lors du prochain `nix flake update`.
+Ce shell est **local à `workstation`**. Il n'est pas consommé depuis `foundation` et ne doit pas y migrer.
 
-Contenu (défini dans `foundation/nix/devshells/dotnet.nix`) :
+Contenu actuel :
 
 - `dotnet-sdk`
 - `git`
@@ -24,37 +30,33 @@ Contenu (défini dans `foundation/nix/devshells/dotnet.nix`) :
 - `jq`
 - `openssl`
 - `pkg-config`
+- `docker-client`
 
-## Étendre le shell .NET localement
+Vocation : environnement de développement principal du poste. À terme, ce shell accueillera Rider, WebStorm, et les outils de dev web/local si nécessaire.
 
-Si `workstation` a besoin d'outils supplémentaires spécifiques au poste, ne pas modifier `foundation`.
+## Étendre le shell .NET
 
-Dans `flake.nix`, composer localement :
+Ajouter des outils dans `devshells/dotnet.nix` directement, dans la liste `packages`.
+
+Exemples d'extensions futures :
 
 ```nix
-devShells = lib.genAttrs systems (system: {
-  dotnet = pkgs.mkShell {
-    inputsFrom = [ foundation.devShells.${system}.dotnet ];
-    packages = with (import nixpkgs { inherit system; }); [
-      # outil workstation-specifique
-    ];
-  };
-});
+jetbrains.rider
+jetbrains.webstorm
+nodejs
 ```
 
-## Ajouter un nouveau devShell workstation-spécifique
+## Ajouter un nouveau devShell
 
-1. Si le shell est générique → l'ajouter dans `foundation`
-2. Si le shell est spécifique au poste de travail → l'exposer directement dans `flake.nix`
+1. Créer `devshells/<nom>.nix`
+2. L'exposer dans `flake.nix` via `devShells.<system>.<nom>`
 3. Documenter son usage dans ce fichier
 
-## Consommer un autre devShell depuis `foundation`
+## Quand passer un shell dans `foundation`
 
-Si `foundation` expose un nouveau shell (ex: `rust`, `python`), l'ajouter dans `flake.nix` :
+Uniquement si le shell est :
+- générique (pas de tooling utilisateur ou IDE)
+- utile sur des machines serveur ou CI
+- stable et clairement délimité
 
-```nix
-devShells = lib.genAttrs systems (system: {
-  dotnet = foundation.devShells.${system}.dotnet;
-  rust   = foundation.devShells.${system}.rust;  # si disponible
-});
-```
+Un shell de productivité personnelle reste dans `workstation`.

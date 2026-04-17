@@ -11,12 +11,12 @@ Briques consommées depuis `foundation` :
 | Brique | Source | Raison |
 |---|---|---|
 | Tailscale | `foundation.nixosModules.networkingTailscale` | réseau générique, partagé entre machines |
-| devShell `.NET` | `foundation.devShells.<system>.dotnet` | outillage générique, sans spécificité desktop |
 
 Briques conservées dans `workstation` :
 
 | Brique | Raison |
 |---|---|
+| devShell `.NET` | environnement de dev personnel (Docker, IDE) — pas une brique générique |
 | Hyprland + base desktop | spécifique machines utilisateur |
 | Cloudflare WARP | client VPN desktop, pas une primitive infra générique |
 | theming / dotfiles | strictement desktop / utilisateur |
@@ -26,6 +26,7 @@ Briques conservées dans `workstation` :
 - `hosts/` : définition des machines concrètes (`main`, `laptop`, `gaming`)
 - `profiles/` : assemblages réutilisables (`desktop-hyprland`, `dev`, `gaming`, `networking`)
 - `modules/` : modules Nix ciblés par domaine (`desktop/`, `apps/`, `shell/`, `theming/`)
+- `devshells/` : environnements de développement locaux (spécifiques au poste)
 - `home/` : base Home Manager
 - `dotfiles/` : configurations applicatives versionnées
 - `docs/` : documentation d'architecture et d'usage
@@ -37,7 +38,7 @@ Briques conservées dans `workstation` :
 - **profile** : composition de briques fonctionnelles
 - **module** : logique Nix isolée et réutilisable
 - **dotfiles** : configuration applicative versionnée
-- **devShell** : outillage dev reproductible
+- **devShell** : outillage dev local, spécifique au poste de travail
 
 ## Base Hyprland minimale
 
@@ -60,7 +61,7 @@ Tailscale est activé via `profiles/networking.nix` en consommant le module `fou
 
 Ce profil est importé par tous les hosts (`main`, `laptop`, `gaming`).
 
-## DevShell .NET
+## DevShell .NET (local)
 
 Entrer dans le shell :
 
@@ -68,10 +69,11 @@ Entrer dans le shell :
 nix develop .#dotnet
 ```
 
-Le shell `.NET` est fourni par `foundation` — pas de duplication locale.
-Si un besoin spécifique workstation apparaît plus tard, il s'étend localement dans `flake.nix` sans toucher `foundation`.
+Le shell `.NET` est défini localement dans `devshells/dotnet.nix`.
+Il représente l'environnement de développement personnel du poste.
+Il n'est pas consommé depuis `foundation` — ce n'est pas une brique générique.
 
-Le shell inclut (via `foundation`) : `dotnet-sdk`, `git`, `curl`, `jq`, `openssl`, `pkg-config`.
+Contenu : `dotnet-sdk`, `git`, `curl`, `jq`, `openssl`, `pkg-config`, `docker-client`.
 
 ## Hosts
 
