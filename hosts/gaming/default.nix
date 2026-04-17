@@ -3,6 +3,7 @@
   imports = [
     ../../profiles/desktop-hyprland.nix
     ../../profiles/gaming.nix
+    ../../profiles/networking.nix
   ];
 
   networking.hostName = "gaming";

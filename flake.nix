@@ -3,34 +3,45 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+
+    foundation = {
+      url = "github:mikl-974/foundation";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, ... }:
+  outputs = { nixpkgs, foundation, ... }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" ];
-      forAllSystems = f: lib.genAttrs systems (system: f (import nixpkgs { inherit system; }));
+
+      # Foundation NixOS modules consumed by all workstation hosts.
+      sharedModules = [
+        foundation.nixosModules.networkingTailscale
+      ];
     in
     {
       nixosConfigurations = {
         main = lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [ ./hosts/main/default.nix ];
+          modules = sharedModules ++ [ ./hosts/main/default.nix ];
         };
 
         laptop = lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [ ./hosts/laptop/default.nix ];
+          modules = sharedModules ++ [ ./hosts/laptop/default.nix ];
         };
 
         gaming = lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [ ./hosts/gaming/default.nix ];
+          modules = sharedModules ++ [ ./hosts/gaming/default.nix ];
         };
       };
 
-      devShells = forAllSystems (pkgs: {
-        dotnet = import ./devshells/dotnet.nix { inherit pkgs; };
+      # .NET devShell is consumed from foundation — no local duplication.
+      # To add workstation-specific packages on top, extend it here.
+      devShells = lib.genAttrs systems (system: {
+        dotnet = foundation.devShells.${system}.dotnet;
       });
     };
 }

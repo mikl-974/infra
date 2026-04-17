@@ -5,6 +5,7 @@
     ./audio.nix
     ./portals.nix
     ./fonts.nix
+    ./warp.nix
   ];
 
   hardware.graphics.enable = true;
