@@ -38,8 +38,9 @@
           # useGlobalPkgs avoids a second nixpkgs eval per user.
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          # Replace "user" with the actual username before nixos-rebuild.
-          home-manager.users.user = import ./home/default.nix;
+          # TODO: replace "CHANGEME_USERNAME" with the actual system username
+          # before running nixos-rebuild or nixos-anywhere.
+          home-manager.users.CHANGEME_USERNAME = import ./home/default.nix;
         }
       ];
     in

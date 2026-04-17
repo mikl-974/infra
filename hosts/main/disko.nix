@@ -1,7 +1,10 @@
 # Disk layout for the main workstation — used by NixOS Anywhere.
 #
+# BEFORE INSTALLING: replace "/dev/CHANGEME" below with the actual disk device.
+# Run `lsblk` on the target machine to identify the correct device.
+# Examples: /dev/nvme0n1, /dev/sda, /dev/vda
+#
 # Layout: GPT + EFI + btrfs with subvolumes
-#   /dev/sda (or replace with actual disk path before installing)
 #     ├─ sda1  EFI  512 MiB
 #     └─ sda2  btrfs
 #           ├─ @           → /
@@ -17,8 +20,10 @@
     disk = {
       main = {
         type = "disk";
-        # IMPORTANT: replace with the actual target disk (e.g. /dev/nvme0n1)
-        device = "/dev/sda";
+        # IMPORTANT: replace with the actual target disk before running NixOS Anywhere.
+        # Use `lsblk` on the target machine to identify the correct device.
+        # Examples: /dev/nvme0n1, /dev/sda, /dev/vda
+        device = "/dev/CHANGEME";
         content = {
           type = "gpt";
           partitions = {
