@@ -148,7 +148,7 @@ if [[ -f "$VARS_FILE" ]]; then
   if [[ "$HAS_DISKO" == true ]]; then
     if [[ -z "$DISK" ]]; then
       fail "vars.nix : champ 'disk' absent — requis pour disko.nix"
-    elif echo "$DISK" | grep -qE 'DEFINE_DISK|/dev/DEFINE'; then
+    elif echo "$DISK" | grep -qE 'DEFINE_DISK|/dev/DEFINE_DISK'; then
       fail "vars.nix : disk non défini ('$DISK') — lancer 'lsblk' sur la cible et définir le disque réel"
     else
       ok "disk : $DISK"

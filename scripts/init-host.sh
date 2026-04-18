@@ -132,7 +132,7 @@ echo -e "${BLD}── Génération de hosts/$HOST/vars.nix${RST}"
 echo ""
 
 if [[ -n "$DISK_VAL" ]]; then
-  DISK_LINE="  disk     = \"$DISK_VAL\"; # target disk"
+  DISK_LINE="  disk     = \"$DISK_VAL\"; # target disk — run \`lsblk\` on target (e.g. /dev/nvme0n1)"
 else
   DISK_LINE=""
 fi
@@ -151,7 +151,7 @@ cat > "$VARS_FILE" << EOF
 EOF
 
 if [[ -n "$DISK_LINE" ]]; then
-  echo "  $DISK_LINE" >> "$VARS_FILE"
+  echo "$DISK_LINE" >> "$VARS_FILE"
 fi
 
 cat >> "$VARS_FILE" << EOF
