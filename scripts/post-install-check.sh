@@ -134,7 +134,6 @@ check_dotfile() {
 
 check_dotfile ".config/hypr/hyprland.conf"  "Config Hyprland"
 check_dotfile ".config/foot/foot.ini"        "Config foot (terminal)"
-check_dotfile ".config/wofi/config"          "Config wofi (launcher)"
 
 # ---------------------------------------------------------------------------
 # 5. Hyprland / session desktop

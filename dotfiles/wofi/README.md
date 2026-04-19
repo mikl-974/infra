@@ -1,8 +1,8 @@
 # wofi launcher configuration
 #
-# Files in this directory are managed by Home Manager (home/default.nix).
-# They are symlinked to ~/.config/wofi/ on the active machine.
+# Placeholder directory for wofi configuration files.
+# Currently, the Noctalia Shell launcher is used instead of wofi.
+# wofi remains installed as a fallback.
 #
-# Typical contents:
-#   config               — wofi launch options
-#   style.css            — GTK CSS styling (colors sourced from Noctalia)
+# If wofi config files are added here, register them in home/default.nix
+# via home.file to have Home Manager symlink them.

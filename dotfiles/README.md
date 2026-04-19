@@ -48,11 +48,10 @@ home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
 
 ## Integration
 
-Les dotfiles sont appliques lors de l'activation Home Manager :
+Les dotfiles sont appliques lors de `nixos-rebuild switch` (Home Manager est integre au systeme NixOS) :
 
 ```bash
-home-manager switch --flake .#main
-# ou via nixos-rebuild switch si home-manager est integre au systeme
+sudo nixos-rebuild switch --flake .#main
 ```
 
 Voir `docs/bootstrap.md` pour le workflow complet d'installation.

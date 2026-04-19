@@ -9,8 +9,8 @@
   ];
 
   hardware.graphics.enable = true;
-  # Charger les modules DRM au démarrage (Intel, AMD, virtio-gpu)
-  # — ignorés silencieusement si le matériel est absent
+  # Load DRM modules at boot (Intel, AMD, virtio-gpu)
+  # — silently ignored if the hardware is absent
   boot.initrd.kernelModules = [ "drm" ];
   boot.kernelModules        = [ "i915" "amdgpu" "virtio-gpu" ];
   networking.networkmanager.enable = true;

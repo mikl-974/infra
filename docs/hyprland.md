@@ -27,8 +27,8 @@ La base inclut :
 - Cloudflare WARP
 - Noctalia (theme systeme)
 - terminal (`foot`)
-- launcher (`wofi`)
-- outils Wayland minimaux (`waybar`, `wl-clipboard`, `grim`, `slurp`)
+- launcher (Noctalia Shell — remplace wofi)
+- outils Wayland minimaux (`wl-clipboard`, `grim`, `slurp`)
 
 Tailscale est active via `profiles/networking.nix` (module `foundation`), pas depuis le profil desktop.
 
@@ -46,7 +46,7 @@ workstation.theming.noctalia.enable = true;
 ```
 
 Le module systeme (`modules/theming/noctalia.nix`) installe les packages GTK/curseur et definit les variables d'environnement.
-La personnalisation visuelle (couleurs, CSS, wallpapers) vit dans `dotfiles/noctalia/`.
+La configuration per-user (barre, couleurs, widgets) est dans `home/noctalia.nix` via le module Home Manager officiel.
 
 Voir `docs/theming.md` pour les details.
 

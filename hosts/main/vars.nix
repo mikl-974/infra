@@ -14,6 +14,6 @@
   hostname        = "main";             # hostname — matches nixosConfigurations key in flake.nix
   disk            = "/dev/nvme0n1";     # target disk (whole device, not a partition) — run `lsblk` on the target
   timezone        = "Asia/Bangkok";     # see: timedatectl list-timezones
-  locale          = "fr_FR.UTF-8";     # system locale
-  initialPassword = "dswkq5V2";        # temporary password — change after first login with `passwd`
+  locale          = "en_US.UTF-8";     # system locale
+  initialPassword = "nixos";        # temporary password — change after first login with `passwd`
 }

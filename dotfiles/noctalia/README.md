@@ -1,19 +1,11 @@
-# Noctalia theme assets
+# Noctalia — placeholder directory
 #
-# This directory contains the raw color scheme and theme assets for Noctalia.
-# It is the single source of truth for all visual theming on this workstation.
+# Noctalia Shell is now configured entirely via the Home Manager module
+# in home/noctalia.nix (imports inputs.noctalia.homeModules.default).
 #
-# Structure:
-#   colors.conf          — base Noctalia palette (hex values, named variables)
-#   wallpaper/           — wallpapers and hyprpaper assets
-#   gtk/                 — GTK CSS overrides
-#   waybar/              — waybar style.css (sources colors from colors.conf)
-#   foot/                — foot color scheme snippet (included from dotfiles/foot/foot.ini)
+# This directory is reserved for future Noctalia-related assets
+# (wallpapers, custom CSS, etc.) that are not managed by the HM module.
 #
-# How colors flow:
-#   colors.conf defines the palette → each app config sources or copies the values.
-#   Centralizing here avoids maintaining colors in 5 different places.
-#
-# The NixOS module for Noctalia lives in modules/theming/noctalia.nix.
-# System-level theming (GTK env vars, installed packages) is handled there.
-# Visual configuration (actual colors, CSS) lives here and is applied via home-manager.
+# System-level Noctalia integration: modules/theming/noctalia.nix
+# Per-user configuration: home/noctalia.nix
+# Documentation: docs/theming.md

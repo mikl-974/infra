@@ -9,9 +9,10 @@
 # To generate this file interactively:
 #   nix run .#init-host -- gaming
 {
-  system   = "x86_64-linux";    # target architecture
-  username = "DEFINE_USERNAME"; # system username — must be a valid Unix username
-  hostname = "gaming";          # hostname — matches nixosConfigurations key in flake.nix
-  timezone = "Europe/Paris";    # see: timedatectl list-timezones
-  locale   = "fr_FR.UTF-8";    # system locale
+  system          = "x86_64-linux";    # target architecture
+  username        = "DEFINE_USERNAME"; # system username — must be a valid Unix username
+  hostname        = "gaming";          # hostname — matches nixosConfigurations key in flake.nix
+  timezone        = "Europe/Paris";    # see: timedatectl list-timezones
+  locale          = "fr_FR.UTF-8";    # system locale
+  initialPassword = "DEFINE_PASSWORD"; # temporary password — change after first login with `passwd`
 }

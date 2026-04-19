@@ -77,10 +77,13 @@ Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs
 
 ## Theming : Noctalia
 
-Noctalia est le schema de couleurs et l'identite visuelle de cette workstation.
+Noctalia Shell est le shell desktop de cette workstation (barre, launcher, control center).
 
-Le module systeme est dans `modules/theming/noctalia.nix`.
-Les assets visuels (palette, CSS, wallpapers) vivent dans `dotfiles/noctalia/`.
+- Module système : `modules/theming/noctalia.nix` (packages GTK, curseurs, env vars)
+- Module Home Manager : `home/noctalia.nix` (configuration via le module HM officiel)
+- Flake input : `github:noctalia-dev/noctalia-shell` (suit `nixpkgs-unstable`)
+
+La configuration est entièrement déclarative — pas de dotfiles manuels pour Noctalia.
 
 Voir `docs/theming.md`.
 
