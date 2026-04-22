@@ -152,7 +152,7 @@ else
   fail "Hyprland introuvable dans PATH — le profil desktop-hyprland n'est peut-être pas activé"
 fi
 
-check_command() {
+check_binary() {
   local cmd="$1"
   local label="$2"
   if command -v "$cmd" &>/dev/null; then
@@ -162,12 +162,12 @@ check_command() {
   fi
 }
 
-check_command "foot"     "Terminal foot"
-check_command "wofi"     "Launcher wofi"
-check_command "mako"     "Notifications mako"
-check_command "cliphist" "Clipboard history"
-check_command "firefox"  "Navigateur web"
-check_command "thunar"   "Gestionnaire de fichiers"
+check_binary "foot"     "Terminal foot"
+check_binary "wofi"     "Launcher wofi"
+check_binary "mako"     "Notifications mako"
+check_binary "cliphist" "Clipboard history"
+check_binary "firefox"  "Navigateur web"
+check_binary "thunar"   "Gestionnaire de fichiers"
 
 # Vérifier que le display manager est présent (greetd, gdm, etc.)
 if systemctl is-enabled greetd &>/dev/null 2>&1 || systemctl is-active greetd &>/dev/null 2>&1; then
