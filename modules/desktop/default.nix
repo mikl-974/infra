@@ -3,13 +3,13 @@
   imports = [
     ./hyprland.nix
     ./audio.nix
+    ./connectivity.nix
     ./portals.nix
     ./fonts.nix
     ./warp.nix
   ];
 
   hardware.graphics.enable = true;
-  networking.networkmanager.enable = true;
   security.polkit.enable = true;
   services.dbus.enable = true;
   services.greetd.enable = true;

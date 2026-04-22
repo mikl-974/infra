@@ -20,14 +20,16 @@ Briques conservees dans `workstation` :
 | Noctalia | theme et identite visuelle du poste — strictement personnel |
 | Hyprland + base desktop | specifique machines utilisateur |
 | Cloudflare WARP | client VPN desktop, pas une primitive infra generique |
+| Solaar / Bluetooth / Wi-Fi desktop | gestion locale des peripheriques et applets desktop — pas une primitive infra partagee |
 | Editeurs / IDE | VS Code, Rider, WebStorm — applications desktop dev |
 | theming / dotfiles | strictement desktop / utilisateur |
 
-## Separation desktop / dev / gaming / ai / shell
+## Separation desktop / utilities / dev / gaming / ai / shell
 
 | Couche | Ce qu'elle contient | Localisation |
 |---|---|---|
-| Base desktop | Hyprland, terminal, audio, Noctalia, WARP | `profiles/desktop-hyprland.nix` |
+| Base desktop | Hyprland, terminal, audio, Noctalia, WARP, Bluetooth, Wi-Fi, Solaar, utilitaires quotidiens | `profiles/desktop-hyprland.nix` |
+| Utilities desktop | Solaar, pavucontrol, brightnessctl, playerctl, nm-connection-editor | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` |
 | Dev utilisateur | VS Code, Rider, WebStorm, CLI outils systeme | `profiles/dev.nix` |
 | Gaming | Steam, Proton, Lutris, Bottles, mangohud, gamescope | `profiles/gaming.nix` |
 | AI local | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) | `profiles/ai.nix` |
@@ -72,11 +74,27 @@ Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs
 - **host** : identite machine + combinaison de profils
 - **vars.nix** : valeurs spécifiques à l'instance machine (username, disk, timezone…)
 - **profile** : composition de rôles et de briques fonctionnelles
-- **role** : composition d'apps + configuration système liée à un usage (gaming, ai, dev)
+- **role** : composition d'apps + configuration système liée à un usage (gaming, ai)
 - **module** : logique Nix isolee et reutilisable (apps, desktop, theming, shell)
 - **home** : configuration utilisateur (Home Manager)
 - **dotfiles** : configuration applicative brute (configs INI, CSS, conf)
 - **devShell** : outillage CLI/runtime dev local, specifique au poste de travail
+
+## Utilities desktop
+
+La workstation inclut une couche utilitaire desktop propre pour eviter de disperser :
+
+- les applications utilitaires dans `modules/apps/utilities.nix`
+- la connectivite locale et les integrations systeme dans `modules/desktop/connectivity.nix`
+
+Repartition retenue :
+
+| Couche | Contenu |
+|---|---|
+| `modules/apps/utilities.nix` | outils utilisateur quotidiens (pavucontrol, brightnessctl, playerctl, nm-connection-editor) |
+| `modules/desktop/connectivity.nix` | NetworkManager, nm-applet, Bluetooth, Blueman, Solaar via `hardware.logitech.wireless.*` |
+
+Solaar reste dans `workstation` car il gere des peripheriques desktop locaux (Logitech), avec des besoins udev et d'integration utilisateur. Ce n'est pas une brique `foundation`.
 
 ## Theming : Noctalia
 
@@ -100,6 +118,8 @@ Contenu : `dotnet-sdk`, `git`, `curl`, `jq`, `openssl`, `pkg-config`, `docker-cl
 Les IDEs (VS Code, Rider, WebStorm) sont installes comme paquets systeme, pas dans le shell.
 
 Voir `docs/devshells.md`.
+
+Voir aussi `docs/utilities.md` et `docs/profiles.md`.
 
 ## Installer une machine
 

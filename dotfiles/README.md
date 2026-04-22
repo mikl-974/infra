@@ -25,6 +25,7 @@ dotfiles/
 | Config utilisateur declarative (shell, git, etc.) | `home/default.nix` via home-manager |
 | Fichier de config brut applicatif (INI, CSS, conf) | `dotfiles/<app>/` |
 | Couleurs / theming Noctalia | `dotfiles/noctalia/` |
+| Config brute d'un utilitaire desktop (si necessaire) | `dotfiles/<app>/` |
 
 ## Comment ranger un nouveau dotfile
 
@@ -43,6 +44,7 @@ home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
 
 - Les modules NixOS -> `modules/`
 - La logique de profil -> `profiles/`
+- Les integrations systeme Bluetooth / Wi-Fi / Solaar -> `modules/desktop/`
 - Les secrets -> jamais dans le repo
 - Les fichiers generes automatiquement par des outils
 

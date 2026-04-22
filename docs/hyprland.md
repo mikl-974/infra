@@ -9,9 +9,11 @@ La base desktop Hyprland est organisee ainsi :
   - `modules/desktop/default.nix`
   - `modules/desktop/hyprland.nix`
   - `modules/desktop/audio.nix`
+  - `modules/desktop/connectivity.nix`
   - `modules/desktop/portals.nix`
   - `modules/desktop/fonts.nix`
   - `modules/desktop/warp.nix`
+  - `modules/apps/utilities.nix`
 - theming : `modules/theming/noctalia.nix`
 
 ## Composition actuelle
@@ -24,11 +26,15 @@ La base inclut :
 - xdg portal Hyprland
 - polkit
 - NetworkManager
+- nm-applet
+- Bluetooth + Blueman
+- Solaar (via `hardware.logitech.wireless.*`)
 - Cloudflare WARP
 - Noctalia (theme systeme)
 - terminal (`foot`)
 - launcher (`wofi`)
 - outils Wayland minimaux (`waybar`, `wl-clipboard`, `grim`, `slurp`)
+- utilitaires desktop (`pavucontrol`, `brightnessctl`, `playerctl`, `nm-connection-editor`)
 
 Tailscale est active via `profiles/networking.nix` (module `foundation`), pas depuis le profil desktop.
 
@@ -56,9 +62,20 @@ WARP est gere dans `modules/desktop/warp.nix` et active via `profiles/desktop-hy
 
 Il reste dans `workstation` parce que c'est un client VPN desktop (interface utilisateur), pas une primitive reseau serveur. Le module `foundation.networking.cloudflared` (tunnel daemon) est une brique differente et distincte.
 
+## Connectivite locale et utilitaires
+
+La base desktop integre aussi :
+
+- `modules/desktop/connectivity.nix` pour la pile Wi-Fi/Bluetooth locale et les applets
+- `modules/apps/utilities.nix` pour les petits outils quotidiens
+
+Solaar est gere dans `modules/desktop/connectivity.nix` via le module NixOS Logitech, car il a besoin des regles udev adequates.
+Les autres petits outils desktop restent dans `modules/apps/utilities.nix`.
+
 ## Etendre proprement
 
 - ajouter la logique desktop commune dans `modules/desktop/`
 - garder les choix machine-specifiques dans `hosts/`
 - deplacer la personnalisation utilisateur dans `dotfiles/` + `home/`
-- ne pas ajouter de logique reseau ici — utiliser `profiles/networking.nix`
+- garder Tailscale dans `profiles/networking.nix`
+- garder la connectivite locale desktop (Wi-Fi/Bluetooth/Solaar) dans `modules/desktop/`

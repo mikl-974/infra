@@ -28,15 +28,17 @@ Briques conservees dans `workstation` :
 - devShell `.NET` : environnement CLI de dev personnel (Docker, playwright) — pas une brique generique
 - Hyprland et la base desktop : specifique machines utilisateur
 - Cloudflare WARP : client VPN desktop, pas une primitive infra
+- Solaar / Bluetooth / Wi-Fi desktop : integration locale des peripheriques et applets utilisateur
 - Noctalia : theme et identite visuelle du poste
 - Editeurs / IDE (VS Code, Rider, WebStorm) : applications desktop dev
 - theming, dotfiles, profils desktop, configuration utilisateur
 
-## Separation desktop / dev / gaming / ai / shell
+## Separation desktop / utilities / dev / gaming / ai / shell
 
 | Couche | Localisation | Ce qu'elle contient |
 |---|---|---|
-| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia |
+| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi |
+| Utilities desktop | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` | Solaar, nm-applet, Blueman, pavucontrol, brightnessctl, playerctl |
 | Dev utilisateur | `profiles/dev.nix` | IDE (VS Code, Rider, WebStorm), outils CLI dev systeme |
 | Gaming | `profiles/gaming.nix` | Steam, Proton, Lutris, Bottles, mangohud, gamescope, gamemode |
 | AI local | `profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
@@ -76,16 +78,17 @@ hosts/                machines concretes
   laptop/
   gaming/
 profiles/             assemblages de roles reutilisables
-  desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP)
+  desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP, connectivite locale, utilities)
   dev.nix               outils dev utilisateur (IDE, CLI systeme)
   networking.nix        reseau (Tailscale)
   gaming.nix            profil gaming (Steam, Lutris, gamemode)
   ai.nix                profil AI local (ollama, llama-cpp, Flatpak)
 modules/              logique Nix isolee par domaine
-  desktop/            Hyprland, audio, portals, fonts, WARP
+  desktop/            Hyprland, audio, connectivity, portals, fonts, WARP
   theming/            Noctalia et theming systeme
   apps/
     default.nix       apps desktop generiques
+    utilities.nix     utilitaires desktop quotidiens
     editors.nix       IDE (VS Code, Rider, WebStorm)
     gaming.nix        apps gaming (Lutris, Bottles, mangohud, gamescope, wine)
     ai.nix            apps AI local (ollama, llama-cpp)
@@ -146,6 +149,21 @@ La couche `modules/roles/` est intermediaire entre `modules/apps/` et `profiles/
 - `profiles/<role>.nix` : point d'entree simple pour les hosts
 
 Un host importe des profils. Un profil importe un ou plusieurs roles. Un role importe des apps et configure le systeme.
+
+## Utilities desktop et connectivite locale
+
+La workstation contient une couche utilitaire desktop volontairement locale :
+
+- `modules/apps/utilities.nix` -> paquets utilitaires utilisateur
+- `modules/desktop/connectivity.nix` -> Wi-Fi, Bluetooth, Solaar et applets desktop
+
+Cette couche reste dans `workstation` parce qu'elle gere :
+
+- des applets et outils relies a une session desktop
+- des peripheriques locaux
+- des integrations utilisateur-machine
+
+Elle ne doit pas etre extraite vers `foundation` tant qu'elle n'est pas generique et multi-contexte.
 
 ## Distinction workstation/ai vs homelab/ai-server
 
