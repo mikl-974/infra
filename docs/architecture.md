@@ -32,12 +32,14 @@ Briques conservees dans `workstation` :
 - Editeurs / IDE (VS Code, Rider, WebStorm) : applications desktop dev
 - theming, dotfiles, profils desktop, configuration utilisateur
 
-## Separation desktop / dev / shell
+## Separation desktop / dev / gaming / ai / shell
 
 | Couche | Localisation | Ce qu'elle contient |
 |---|---|---|
 | Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia |
 | Dev utilisateur | `profiles/dev.nix` | IDE (VS Code, Rider, WebStorm), outils CLI dev systeme |
+| Gaming | `profiles/gaming.nix` | Steam, Proton, Lutris, Bottles, mangohud, gamescope, gamemode |
+| AI local | `profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
 | Shell dev | `devshells/dotnet.nix` | SDK .NET, Docker CLI, playwright, outils CLI |
 
 Les editeurs / IDE sont des applications desktop installes en tant que paquets systeme.
@@ -48,10 +50,11 @@ Le devShell fournit les runtimes et outils CLI avec lesquels les editeurs travai
 
 1. `hosts/` decrit une machine reelle
 2. chaque host importe un ou plusieurs `profiles/`
-3. les profils assemblent des `modules/` cibles et des briques `foundation`
-4. les dotfiles restent decouples dans `dotfiles/`
-5. les environnements de dev CLI sont definis localement dans `devshells/`
-6. la configuration utilisateur est geree par Home Manager (`home/default.nix`)
+3. les profils assemblent des `modules/roles/` (composition apps + config systeme)
+4. les roles importent des `modules/apps/` (paquets) et configurent les options systeme
+5. les dotfiles restent decouples dans `dotfiles/`
+6. les environnements de dev CLI sont definis localement dans `devshells/`
+7. la configuration utilisateur est geree par Home Manager (`home/default.nix`)
 
 ## Inputs flake
 
@@ -72,17 +75,23 @@ hosts/                machines concretes
     disko.nix         layout disque (GPT + EFI + btrfs)
   laptop/
   gaming/
-profiles/             assemblages de modules reutilisables
+profiles/             assemblages de roles reutilisables
   desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP)
   dev.nix               outils dev utilisateur (IDE, CLI systeme)
   networking.nix        reseau (Tailscale)
-  gaming.nix            profil gaming
+  gaming.nix            profil gaming (Steam, Lutris, gamemode)
+  ai.nix                profil AI local (ollama, llama-cpp, Flatpak)
 modules/              logique Nix isolee par domaine
   desktop/            Hyprland, audio, portals, fonts, WARP
   theming/            Noctalia et theming systeme
   apps/
     default.nix       apps desktop generiques
     editors.nix       IDE (VS Code, Rider, WebStorm)
+    gaming.nix        apps gaming (Lutris, Bottles, mangohud, gamescope, wine)
+    ai.nix            apps AI local (ollama, llama-cpp)
+  roles/
+    gaming.nix        role gaming (programs.steam, programs.gamemode + apps/gaming)
+    ai.nix            role AI local (Flatpak + apps/ai)
   shell/              configuration shell systeme
 devshells/            environnements de dev CLI locaux
   dotnet.nix          shell .NET (SDK, Docker CLI, playwright)
@@ -123,6 +132,32 @@ Une brique passe dans `foundation` si elle est :
 ## Extension propre
 
 - ajouter des modules petits et cibles dans `modules/`
+- pour un nouveau role : creer `modules/apps/<role>.nix` + `modules/roles/<role>.nix` + `profiles/<role>.nix`
 - factoriser les comportements communs en `profiles/`
 - consommer `foundation` via l'input flake, pas via copie locale
 - documenter chaque nouvelle brique fonctionnelle dans `docs/`
+
+## Couche roles (modules/roles/)
+
+La couche `modules/roles/` est intermediaire entre `modules/apps/` et `profiles/` :
+
+- `modules/apps/<role>.nix` : paquets et applications uniquement
+- `modules/roles/<role>.nix` : composition (imports apps + configuration systeme liee a l'usage)
+- `profiles/<role>.nix` : point d'entree simple pour les hosts
+
+Un host importe des profils. Un profil importe un ou plusieurs roles. Un role importe des apps et configure le systeme.
+
+## Distinction workstation/ai vs homelab/ai-server
+
+Le role `ai` de `workstation` est strictement local :
+- outils lances depuis la machine de l'utilisateur
+- API sur localhost uniquement (pas d'exposition reseau)
+- pas de service daemon partage
+
+Le role `ai-server` dans `homelab` est un service mutualisé :
+- expose une API sur le reseau local
+- sert plusieurs machines
+- tourne en tant que daemon systeme
+
+Cette distinction est architecturale et non-négociable.
+Voir `docs/ai.md` pour les détails.

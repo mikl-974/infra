@@ -23,12 +23,14 @@ Briques conservees dans `workstation` :
 | Editeurs / IDE | VS Code, Rider, WebStorm — applications desktop dev |
 | theming / dotfiles | strictement desktop / utilisateur |
 
-## Separation desktop / dev / shell
+## Separation desktop / dev / gaming / ai / shell
 
 | Couche | Ce qu'elle contient | Localisation |
 |---|---|---|
 | Base desktop | Hyprland, terminal, audio, Noctalia, WARP | `profiles/desktop-hyprland.nix` |
 | Dev utilisateur | VS Code, Rider, WebStorm, CLI outils systeme | `profiles/dev.nix` |
+| Gaming | Steam, Proton, Lutris, Bottles, mangohud, gamescope | `profiles/gaming.nix` |
+| AI local | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) | `profiles/ai.nix` |
 | Shell `.NET` | SDK .NET, Docker CLI, playwright | `devshells/dotnet.nix` |
 
 Les IDEs sont des applications desktop. Ils sont installes en tant que paquets systeme
@@ -38,8 +40,8 @@ Le shell `.NET` fournit les runtimes et outils CLI avec lesquels ces editeurs tr
 ## Structure
 
 - `hosts/` : definition des machines concretes (`main`, `laptop`, `gaming`) — chaque machine a un `vars.nix`
-- `profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `networking`)
-- `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `shell/`)
+- `profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `ai`, `networking`)
+- `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `roles/`, `shell/`)
 - `devshells/` : environnements de developpement CLI locaux (specifiques au poste)
 - `home/` : configuration Home Manager utilisateur (dotfiles, programmes)
 - `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `noctalia/`, `editors/`)
@@ -69,8 +71,9 @@ Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs
 
 - **host** : identite machine + combinaison de profils
 - **vars.nix** : valeurs spécifiques à l'instance machine (username, disk, timezone…)
-- **profile** : composition de briques fonctionnelles
-- **module** : logique Nix isolee et reutilisable
+- **profile** : composition de rôles et de briques fonctionnelles
+- **role** : composition d'apps + configuration système liée à un usage (gaming, ai, dev)
+- **module** : logique Nix isolee et reutilisable (apps, desktop, theming, shell)
 - **home** : configuration utilisateur (Home Manager)
 - **dotfiles** : configuration applicative brute (configs INI, CSS, conf)
 - **devShell** : outillage CLI/runtime dev local, specifique au poste de travail
@@ -163,3 +166,18 @@ Checklist opératoire : `docs/install-checklist.md`
 - `main` : base desktop + profil dev + reseau (Tailscale + WARP)
 - `laptop` : base desktop + profil dev + reseau
 - `gaming` : base desktop + profil gaming + reseau
+
+## Roles gaming et AI local
+
+Deux roles utilisateur sont disponibles en plus de la base desktop :
+
+| Role | Profil | Contenu |
+|---|---|---|
+| Gaming | `profiles/gaming.nix` | Steam + Proton, Lutris, Bottles (Battle.net), mangohud, gamescope, gamemode |
+| AI local | `profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
+
+Ces roles sont **locaux et orientés utilisateur** — pas de services réseau partagés.
+
+Pour le rôle AI : `workstation/ai` (local) est distinct de `homelab/ai-server` (service mutualisé). Voir `docs/ai.md`.
+
+Voir `docs/gaming.md` et `docs/ai.md` pour les détails.
