@@ -18,7 +18,7 @@ Briques conservees dans `workstation` :
 |---|---|
 | devShell `.NET` | environnement CLI de dev personnel (SDK, Docker, playwright) — pas une brique generique |
 | Noctalia | theme et identite visuelle du poste — strictement personnel |
-| Hyprland + base desktop | specifique machines utilisateur |
+| Hyprland + first-boot UX | specifique machines utilisateur |
 | Cloudflare WARP | client VPN desktop, pas une primitive infra generique |
 | Solaar / Bluetooth / Wi-Fi desktop | gestion locale des peripheriques et applets desktop — pas une primitive infra partagee |
 | Daily apps desktop | applications quotidiennes de base (web, PDF, images, fichiers) — specifiques a l'usage desktop |
@@ -48,7 +48,7 @@ Le shell `.NET` fournit les runtimes et outils CLI avec lesquels ces editeurs tr
 - `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `roles/`, `shell/`)
 - `devshells/` : environnements de developpement CLI locaux (specifiques au poste)
 - `home/` : configuration Home Manager utilisateur (dotfiles, programmes)
-- `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `noctalia/`, `editors/`)
+- `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `mako/`, `noctalia/`, `editors/`)
 - `docs/` : documentation d'architecture et d'usage
 - `scripts/` : orchestration, validation, vérification (ne redefinissent pas la configuration)
 - `templates/` : templates de configuration (host-vars.nix)
@@ -125,6 +125,17 @@ Les IDEs (VS Code, Rider, WebStorm) sont installes comme paquets systeme, pas da
 Voir `docs/devshells.md`.
 
 Voir aussi `docs/daily-apps.md`, `docs/utilities.md`, `docs/profiles.md` et `docs/update-workflow.md`.
+
+## First boot / UX Hyprland
+
+La base desktop ne se limite plus a installer Hyprland et des paquets :
+
+- `mako` est demarre explicitement dans la session Hyprland
+- `cliphist` est branche via `wl-paste --watch`
+- les dotfiles `hypr`, `foot`, `wofi` et `mako` sont lies par Home Manager
+- la session a des bindings de base utiles des le premier login
+
+Voir `docs/first-boot.md` et `docs/hyprland.md`.
 
 ## Installer une machine
 

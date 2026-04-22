@@ -8,9 +8,10 @@ Ces fichiers sont **bruts** — ce ne sont pas des modules Nix. Ils sont gérés
 
 ```
 dotfiles/
-  hypr/        Hyprland (hyprland.conf, keybinds, monitors, rules)
+  hypr/        Hyprland (hyprland.conf)
   foot/        Terminal foot (foot.ini)
   wofi/        Launcher wofi (config, style.css)
+  mako/        Notifications mako (config)
   shell/       Shell bash (.bashrc, aliases, env)
   noctalia/    Theme Noctalia (colors.conf, wallpapers, CSS GTK/waybar/foot)
   editors/     Editeurs (VS Code settings, Rider overrides)
@@ -40,6 +41,18 @@ Exemple dans `home/default.nix` :
 home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
 ```
 
+## Dotfiles actuellement actifs
+
+Les dotfiles effectivement relies par Home Manager sont :
+
+- `dotfiles/hypr/hyprland.conf`
+- `dotfiles/foot/foot.ini`
+- `dotfiles/wofi/config`
+- `dotfiles/wofi/style.css`
+- `dotfiles/mako/config`
+
+Ils sont actives via `/home/runner/work/workstation/workstation/home/default.nix`.
+
 ## Ce qui ne va PAS dans `dotfiles/`
 
 - Les modules NixOS -> `modules/`
@@ -53,8 +66,8 @@ home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
 Les dotfiles sont appliques lors de l'activation Home Manager :
 
 ```bash
-home-manager switch --flake .#main
-# ou via nixos-rebuild switch si home-manager est integre au systeme
+sudo nixos-rebuild switch --flake .#$(hostname)
 ```
 
-Voir `docs/bootstrap.md` pour le workflow complet d'installation.
+Dans cette architecture, Home Manager est integre au systeme.
+Voir `docs/bootstrap.md` et `docs/update-workflow.md` pour le workflow complet.

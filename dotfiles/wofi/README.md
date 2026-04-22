@@ -3,6 +3,6 @@
 # Files in this directory are managed by Home Manager (home/default.nix).
 # They are symlinked to ~/.config/wofi/ on the active machine.
 #
-# Typical contents:
+# Active contents:
 #   config               — wofi launch options
-#   style.css            — GTK CSS styling (colors sourced from Noctalia)
+#   style.css            — minimal launcher styling

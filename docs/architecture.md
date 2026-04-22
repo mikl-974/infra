@@ -26,7 +26,7 @@ Briques actuellement consommees depuis `foundation` :
 Briques conservees dans `workstation` :
 
 - devShell `.NET` : environnement CLI de dev personnel (Docker, playwright) — pas une brique generique
-- Hyprland et la base desktop : specifique machines utilisateur
+- Hyprland et la couche UX de premier login : specifique machines utilisateur
 - Cloudflare WARP : client VPN desktop, pas une primitive infra
 - Solaar / Bluetooth / Wi-Fi desktop : integration locale des peripheriques et applets utilisateur
 - Daily apps desktop : applications quotidiennes de base (web, PDF, images, fichiers)
@@ -38,7 +38,7 @@ Briques conservees dans `workstation` :
 
 | Couche | Localisation | Ce qu'elle contient |
 |---|---|---|
-| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi, daily apps |
+| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi, daily apps, UX de session |
 | Daily apps | `modules/apps/daily.nix` | Firefox, Zathura, imv, Thunar, File Roller, cliphist, mako |
 | Utilities desktop | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` | Solaar, nm-applet, Blueman, pavucontrol, brightnessctl, playerctl, nm-connection-editor |
 | Dev utilisateur | `profiles/dev.nix` | IDE (VS Code, Rider, WebStorm), outils CLI dev systeme |
@@ -59,6 +59,7 @@ Le devShell fournit les runtimes et outils CLI avec lesquels les editeurs travai
 5. les dotfiles restent decouples dans `dotfiles/`
 6. les environnements de dev CLI sont definis localement dans `devshells/`
 7. la configuration utilisateur est geree par Home Manager (`home/default.nix`)
+8. les fichiers applicatifs bruts actifs vivent dans `dotfiles/`
 
 ## Inputs flake
 
@@ -102,11 +103,12 @@ modules/              logique Nix isolee par domaine
 devshells/            environnements de dev CLI locaux
   dotnet.nix          shell .NET (SDK, Docker CLI, playwright)
 home/                 configuration Home Manager (utilisateur)
-  default.nix         dotfiles, xdg, paquets utilisateur
+  default.nix         liens vers les dotfiles actifs
 dotfiles/             configurations applicatives brutes
   hypr/               Hyprland
   foot/               terminal
   wofi/               launcher
+  mako/               notifications
   shell/              shell
   noctalia/           theme Noctalia (palette, assets)
   editors/            editeurs (VS Code, Rider)
@@ -176,6 +178,21 @@ Frontieres retenues :
 - `utilities.nix` -> helpers techniques et petits outils systeme
 - `connectivity.nix` -> integrations desktop/systeme liees au reseau et aux peripheriques
 - `editors.nix` -> editeurs et IDE
+
+## Frontiere modules / Home Manager / dotfiles
+
+Regle retenue :
+
+- `modules/` -> paquets, services, options systeme, activation des briques desktop
+- `home/default.nix` -> declaration explicite des fichiers utilisateur actifs
+- `dotfiles/` -> contenu brut des applications (`hyprland.conf`, `foot.ini`, `wofi`, `mako`, ...)
+
+Exemple concret :
+
+- `modules/apps/daily.nix` installe `mako` et `cliphist`
+- `dotfiles/hypr/hyprland.conf` definit l'autostart et les bindings
+- `dotfiles/mako/config` definit le comportement du daemon de notifications
+- `home/default.nix` lie ces fichiers dans `~/.config/`
 
 ## Distinction workstation/ai vs homelab/ai-server
 

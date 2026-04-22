@@ -15,6 +15,11 @@ La base desktop Hyprland est organisee ainsi :
   - `modules/desktop/warp.nix`
   - `modules/apps/daily.nix`
   - `modules/apps/utilities.nix`
+  - `home/default.nix`
+  - `dotfiles/hypr/hyprland.conf`
+  - `dotfiles/wofi/`
+  - `dotfiles/foot/`
+  - `dotfiles/mako/`
 - theming : `modules/theming/noctalia.nix`
 
 ## Composition actuelle
@@ -37,6 +42,10 @@ La base inclut :
 - applications quotidiennes (`firefox`, `zathura`, `imv`, `thunar`, `file-roller`, `cliphist`, `mako`)
 - outils Wayland minimaux (`waybar`, `wl-clipboard`, `grim`, `slurp`)
 - utilitaires desktop (`pavucontrol`, `brightnessctl`, `playerctl`, `nm-connection-editor`)
+- dotfiles actifs pour Hyprland / foot / wofi / mako
+- autostart explicite de `mako`
+- historique clipboard actif via `cliphist` + `wl-paste --watch`
+- bindings de base pour terminal, launcher, navigateur, fichiers et clipboard history
 
 Tailscale est active via `profiles/networking.nix` (module `foundation`), pas depuis le profil desktop.
 
@@ -76,10 +85,50 @@ Solaar est gere dans `modules/desktop/connectivity.nix` via le module NixOS Logi
 Les applications quotidiennes restent dans `modules/apps/daily.nix`.
 Les petits outils techniques desktop restent dans `modules/apps/utilities.nix`.
 
+## UX du premier login
+
+La session Hyprland integre maintenant une base UX explicite et minimale :
+
+- `mako` demarre via `exec-once`
+- `cliphist` est alimente via deux watchers `wl-paste`
+- `SUPER+Return` ouvre `foot`
+- `SUPER+Space` ouvre `wofi`
+- `SUPER+B` ouvre Firefox
+- `SUPER+E` ouvre Thunar
+- `SUPER+V` ouvre l'historique clipboard via `cliphist` + `wofi`
+
+Cette couche reste volontairement simple :
+
+- pas de logique cachee dans les modules Nix
+- pas de script auxiliaire local
+- pas de configuration eparpillee entre plusieurs couches sans regle claire
+
+## Frontiere Hyprland / Home Manager / dotfiles
+
+Repartition retenue :
+
+| Couche | Rôle |
+|---|---|
+| `modules/desktop/hyprland.nix` | active Hyprland et les paquets Wayland de base |
+| `modules/apps/daily.nix` | installe `mako` et `cliphist` comme apps desktop |
+| `home/default.nix` | lie les fichiers utilisateur actifs |
+| `dotfiles/hypr/hyprland.conf` | autostart et bindings Hyprland |
+| `dotfiles/wofi/` | comportement et style du launcher |
+| `dotfiles/foot/` | configuration du terminal |
+| `dotfiles/mako/` | configuration du daemon de notifications |
+
+Ainsi :
+
+- la logique systeme reste dans les modules
+- la selection des fichiers actifs reste dans Home Manager
+- le contenu applicatif brut reste dans `dotfiles/`
+
 ## Etendre proprement
 
 - ajouter la logique desktop commune dans `modules/desktop/`
 - garder les applications quotidiennes dans `modules/apps/daily.nix`
+- garder l'autostart et les bindings utilisateur dans `dotfiles/hypr/hyprland.conf`
+- garder les fichiers applicatifs bruts dans `dotfiles/`
 - garder les choix machine-specifiques dans `hosts/`
 - deplacer la personnalisation utilisateur dans `dotfiles/` + `home/`
 - garder Tailscale dans `profiles/networking.nix`

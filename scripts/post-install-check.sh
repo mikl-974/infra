@@ -135,6 +135,8 @@ check_dotfile() {
 check_dotfile ".config/hypr/hyprland.conf"  "Config Hyprland"
 check_dotfile ".config/foot/foot.ini"        "Config foot (terminal)"
 check_dotfile ".config/wofi/config"          "Config wofi (launcher)"
+check_dotfile ".config/wofi/style.css"       "Style wofi"
+check_dotfile ".config/mako/config"          "Config mako"
 
 # ---------------------------------------------------------------------------
 # 5. Hyprland / session desktop
@@ -149,6 +151,23 @@ if command -v Hyprland &>/dev/null; then
 else
   fail "Hyprland introuvable dans PATH — le profil desktop-hyprland n'est peut-être pas activé"
 fi
+
+check_command() {
+  local cmd="$1"
+  local label="$2"
+  if command -v "$cmd" &>/dev/null; then
+    ok "$label disponible : $(command -v "$cmd")"
+  else
+    warn "$label introuvable dans PATH"
+  fi
+}
+
+check_command "foot"     "Terminal foot"
+check_command "wofi"     "Launcher wofi"
+check_command "mako"     "Notifications mako"
+check_command "cliphist" "Clipboard history"
+check_command "firefox"  "Navigateur web"
+check_command "thunar"   "Gestionnaire de fichiers"
 
 # Vérifier que le display manager est présent (greetd, gdm, etc.)
 if systemctl is-enabled greetd &>/dev/null 2>&1 || systemctl is-active greetd &>/dev/null 2>&1; then

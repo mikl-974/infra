@@ -38,8 +38,8 @@ Applications retenues :
 | `mako` | notifications desktop Wayland |
 
 Ces paquets sont installes explicitement comme apps desktop.
-Cette passe n'ajoute pas de demarrage implicite ou de logique cachee dans Hyprland/Home Manager.
-Si une integration plus poussee est souhaitee (autostart, bindings, menu clipboard, style mako), elle doit etre ajoutee explicitement dans une etape dediee.
+Quand une integration UX est necessaire, elle est declaree explicitement dans les dotfiles actifs et liee par Home Manager.
+Voir `docs/first-boot.md` pour l'integration actuelle de `mako` et `cliphist`.
 
 ## Pourquoi ces apps sont dans `daily.nix`
 
