@@ -15,19 +15,20 @@ Parcours NixOS Anywhere
 ─────────────────────────────────────────────────────────────
 1. Machine cible bootée sur live ISO NixOS (SSH actif)
 2. Initialiser la config : nix run .#init-host -- main
-3. Valider : nix run .#validate-install -- main
-4. Lancer : nix run .#install-anywhere -- main <IP-CIBLE>
-5. Premier boot : NixOS opérationnel, Home Manager actif
-6. Vérifier : nix run .#post-install-check
+3. Diagnostiquer : nix run .#doctor -- --host main
+4. Valider : nix run .#validate-install -- main
+5. Lancer : nix run .#install-anywhere -- main <IP-CIBLE>
+6. Premier boot : NixOS opérationnel, Home Manager actif
+7. Vérifier : nix run .#post-install-check -- --host main
 
 Parcours Manuel
 ─────────────────────────────────────────────────────────────
 1. Boot sur ISO NixOS
 2. Préparer le réseau, partitionner, monter
-3. Cloner le repo, initialiser vars.nix, valider
+3. Cloner le repo, initialiser vars.nix, lancer doctor puis validate-install
 4. nixos-install --flake .#main --root /mnt
 5. Reboot
-6. Vérifier : nix run .#post-install-check
+6. Vérifier : nix run .#post-install-check -- --host main
 ```
 
 ## Étapes détaillées
@@ -55,6 +56,7 @@ Ou éditer directement `hosts/main/vars.nix` :
 
 ```nix
 {
+  system   = "x86_64-linux";   # plateforme NixOS du host
   username = "mikl";           # nom d'utilisateur système
   hostname = "main";           # doit correspondre à la clé nixosConfigurations
   disk     = "/dev/nvme0n1";   # vérifier avec lsblk sur la machine cible
@@ -64,7 +66,7 @@ Ou éditer directement `hosts/main/vars.nix` :
 ```
 
 Ces valeurs sont lues automatiquement par :
-- `flake.nix` → username pour Home Manager
+- `flake.nix` → système du host (`system`) + username pour Home Manager
 - `hosts/main/default.nix` → hostname, timezone, locale, définition utilisateur
 - `hosts/main/disko.nix` → disque cible
 
@@ -73,10 +75,17 @@ Aucun autre fichier n'est à modifier.
 ### 3. Valider la configuration
 
 ```bash
+nix run .#doctor -- --host main
+```
+
+Puis :
+
+```bash
 nix run .#validate-install -- main
 ```
 
 Vérifications effectuées :
+- outils locaux et structure du repo (`doctor`)
 - `vars.nix` existe et tous les champs obligatoires sont définis
 - Aucun placeholder `DEFINE_` dans les fichiers structurants
 - Fichiers critiques présents (`default.nix`, `disko.nix`)
@@ -125,7 +134,7 @@ nix develop .#dotnet
 ### 6. Vérifier l'installation
 
 ```bash
-nix run .#post-install-check
+nix run .#post-install-check -- --host main
 ```
 
 Ou manuellement :
@@ -163,6 +172,8 @@ sudo nixos-rebuild switch --flake .#$(hostname)
 ```
 
 Voir `docs/update-workflow.md` pour le workflow complet (etat Git, commit, push, verification).
+
+Pour le premier boot / premier login, voir `docs/first-boot.md`.
 
 Ou à distance :
 

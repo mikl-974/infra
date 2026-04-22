@@ -11,6 +11,10 @@
 # Ou utiliser le script d'initialisation :
 #   nix run .#init-host -- <name>
 {
+  # Plateforme NixOS.
+  # Valeurs supportees : "x86_64-linux", "aarch64-linux"
+  system = "x86_64-linux";
+
   # Nom d'utilisateur système.
   # Doit être un identifiant Unix valide (lettres minuscules, chiffres, tirets).
   # Exemple : "alice", "bob", "mikl"

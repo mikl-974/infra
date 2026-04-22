@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
-# install-anywhere.sh — Orchestration de l'installation via NixOS Anywhere
-#
-# Ce script orchestre et vérifie le parcours NixOS Anywhere.
-# Il ne redéfinit pas la configuration — celle-ci reste dans flake.nix et hosts/.
-#
-# Usage :
-#   ./scripts/install-anywhere.sh <host> <ip-cible>
-#   nix run .#install-anywhere -- <host> <ip-cible>
-#
-# Exemple :
-#   ./scripts/install-anywhere.sh main 192.168.1.50
+# install-anywhere.sh — Orchestration transparente de l'installation via NixOS Anywhere
 
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ "$_SCRIPT_DIR" == /nix/store/* ]]; then
-  REPO_ROOT="$PWD"
-else
-  REPO_ROOT="$(cd "$_SCRIPT_DIR/.." && pwd)"
-fi
+# shellcheck source=./lib/workstation-install.sh
+source "$_SCRIPT_DIR/lib/workstation-install.sh"
+REPO_ROOT="$(resolve_repo_root "$_SCRIPT_DIR")"
 
 RED='\033[0;31m'
 GRN='\033[0;32m'
@@ -26,54 +14,21 @@ YLW='\033[1;33m'
 BLD='\033[1m'
 RST='\033[0m'
 
-# ---------------------------------------------------------------------------
-# Arguments
-# ---------------------------------------------------------------------------
-
 if [[ $# -lt 2 ]]; then
   echo "Usage: $0 <host> <ip-cible>"
-  echo ""
-  echo "Hosts disponibles : $(ls "$REPO_ROOT/hosts" | tr '\n' ' ')"
-  echo ""
-  echo "Exemple : $0 main 192.168.1.50"
+  echo "Hosts disponibles : $(list_hosts "$REPO_ROOT")"
   exit 1
 fi
 
 HOST="$1"
 TARGET_IP="$2"
-
-echo ""
-echo -e "${BLD}=== Installation NixOS Anywhere : host '$HOST' → $TARGET_IP ===${RST}"
-echo ""
-
-# ---------------------------------------------------------------------------
-# 1. Validation préalable
-# ---------------------------------------------------------------------------
-
-echo -e "${BLD}── Étape 1/5 : Validation de la configuration${RST}"
-echo ""
-
+VARS_FILE="$(host_vars_file "$REPO_ROOT" "$HOST")"
+DOCTOR_SCRIPT="$REPO_ROOT/scripts/doctor.sh"
 VALIDATE_SCRIPT="$REPO_ROOT/scripts/validate-install.sh"
-if [[ -x "$VALIDATE_SCRIPT" ]]; then
-  if ! "$VALIDATE_SCRIPT" "$HOST"; then
-    echo ""
-    echo -e "${RED}✘ Validation échouée — installation annulée.${RST}"
-    echo "  Corrige les erreurs signalées par validate-install.sh avant de relancer."
-    exit 1
-  fi
-else
-  echo -e "${YLW}⚠ validate-install.sh introuvable ou non exécutable — validation ignorée.${RST}"
-fi
 
-# ---------------------------------------------------------------------------
-# 2. Vérification des prérequis locaux
-# ---------------------------------------------------------------------------
-
-echo ""
-echo -e "${BLD}── Étape 2/5 : Vérification des prérequis${RST}"
-echo ""
-
-MISSING=0
+SYSTEM="$(read_nix_string_var "$VARS_FILE" "system")"
+USERNAME="$(read_nix_string_var "$VARS_FILE" "username")"
+DISK="$(read_nix_string_var "$VARS_FILE" "disk")"
 
 check_cmd() {
   local cmd="$1"
@@ -82,99 +37,126 @@ check_cmd() {
     echo -e "  ${GRN}✔${RST}  $cmd disponible"
   else
     echo -e "  ${RED}✘${RST}  $cmd introuvable — $hint"
-    MISSING=$(( MISSING + 1 ))
+    exit 1
   fi
 }
 
-check_cmd "nix"         "Nix doit être installé avec les flakes activés"
-check_cmd "ssh"         "SSH est requis pour accéder à la machine cible"
+echo ""
+echo -e "${BLD}=== Installation NixOS Anywhere : host '$HOST' → $TARGET_IP ===${RST}"
+echo ""
 
-# Vérifier que les flakes sont activés
-if nix flake --help &>/dev/null 2>&1; then
-  echo -e "  ${GRN}✔${RST}  nix flakes activés"
+echo -e "${BLD}── Étape 1/6 : Diagnostic local${RST}"
+if [[ -f "$DOCTOR_SCRIPT" ]]; then
+  bash "$DOCTOR_SCRIPT" --host "$HOST"
 else
-  echo -e "  ${YLW}⚠${RST}  Impossible de vérifier l'activation des flakes — assure-toi qu'ils sont activés"
-fi
-
-if [[ $MISSING -gt 0 ]]; then
-  echo ""
-  echo -e "${RED}✘ Prérequis manquants — installation annulée.${RST}"
+  echo -e "  ${RED}✘${RST}  scripts/doctor.sh manquant"
   exit 1
 fi
 
-# ---------------------------------------------------------------------------
-# 3. Vérification de la connectivité SSH
-# ---------------------------------------------------------------------------
-
 echo ""
-echo -e "${BLD}── Étape 3/5 : Vérification de la connectivité SSH${RST}"
-echo ""
-
-echo "  Test SSH vers root@$TARGET_IP ..."
-if ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
-       "root@$TARGET_IP" "echo OK" &>/dev/null; then
-  echo -e "  ${GRN}✔${RST}  SSH root@$TARGET_IP accessible"
+echo -e "${BLD}── Étape 2/6 : Validation du host${RST}"
+if [[ -f "$VALIDATE_SCRIPT" ]]; then
+  bash "$VALIDATE_SCRIPT" "$HOST"
 else
-  echo -e "  ${RED}✘${RST}  Impossible de se connecter à root@$TARGET_IP"
-  echo ""
-  echo "  Vérifications :"
-  echo "   • La machine cible est-elle bootée sur un live ISO NixOS ?"
-  echo "   • L'IP est-elle correcte ? (lancer 'ip a' sur la machine cible)"
-  echo "   • SSH est-il actif sur la cible ? (systemctl status sshd)"
-  echo "   • Le mot de passe root ou la clé SSH est-elle configurée ?"
+  echo -e "  ${RED}✘${RST}  scripts/validate-install.sh manquant"
   exit 1
 fi
 
-# ---------------------------------------------------------------------------
-# 4. Rappel des points sensibles
-# ---------------------------------------------------------------------------
-
-echo ""
-echo -e "${BLD}── Étape 4/5 : Points à vérifier avant de continuer${RST}"
-echo ""
-
-DISK=$(grep -oP 'disk\s*=\s*"\K[^"]+' "$REPO_ROOT/hosts/$HOST/vars.nix" 2>/dev/null | head -1 || echo "inconnu")
-USERNAME=$(grep -oP 'username\s*=\s*"\K[^"]+' "$REPO_ROOT/hosts/$HOST/vars.nix" 2>/dev/null | head -1 || echo "inconnu")
-
-echo -e "  Disque cible configuré dans disko.nix : ${BLD}$DISK${RST}"
-echo -e "  Username Home Manager dans flake.nix  : ${BLD}$USERNAME${RST}"
-echo ""
-echo -e "  ${YLW}ATTENTION${RST} : NixOS Anywhere va ${RED}effacer et reformater${RST} le disque $DISK."
-echo "  Assure-toi que c'est bien le bon disque sur la machine cible."
-echo "  Lance 'lsblk' sur la machine cible pour confirmer."
-echo ""
-
-read -rp "  Confirmer l'installation sur $TARGET_IP avec le host '$HOST' ? [oui/NON] " CONFIRM
-if [[ "${CONFIRM,,}" != "oui" ]]; then
+if ! host_uses_disko "$REPO_ROOT" "$HOST"; then
   echo ""
+  echo -e "${RED}✘ Ce host n'a pas de disko.nix : NixOS Anywhere n'est pas disponible.${RST}"
+  echo "  Utiliser le fallback : nix run .#install-manual -- --host $HOST"
+  exit 1
+fi
+
+echo ""
+echo -e "${BLD}── Étape 3/6 : Prérequis locaux${RST}"
+check_cmd "nix" "Nix avec flakes est requis"
+check_cmd "ssh" "SSH est requis pour joindre la cible"
+check_cmd "ssh-keyscan" "nécessaire pour lire la clé hôte avant connexion"
+check_cmd "ssh-keygen" "nécessaire pour afficher l'empreinte de la clé hôte"
+
+if ! (cd "$REPO_ROOT" && nix flake show . --all-systems --no-write-lock-file >/dev/null); then
+  echo -e "  ${RED}✘${RST}  Le flake n'est pas lisible par nix"
+  exit 1
+fi
+echo -e "  ${GRN}✔${RST}  Flake lisible"
+
+echo ""
+echo -e "${BLD}── Étape 4/6 : Vérification de la clé SSH et de la connectivité${RST}"
+TMP_KNOWN_HOSTS="$(mktemp)"
+trap 'rm -f "$TMP_KNOWN_HOSTS"' EXIT
+
+if ! ssh-keyscan -T 10 "$TARGET_IP" > "$TMP_KNOWN_HOSTS" 2>/dev/null; then
+  echo -e "  ${RED}✘${RST}  Impossible de récupérer la clé SSH de $TARGET_IP"
+  echo "  Vérifie que la cible est bootée, joignable et que SSH est actif."
+  exit 1
+fi
+
+if [[ ! -s "$TMP_KNOWN_HOSTS" ]]; then
+  echo -e "  ${RED}✘${RST}  Aucune clé SSH récupérée depuis $TARGET_IP"
+  exit 1
+fi
+
+echo "  Empreintes récupérées pour $TARGET_IP :"
+ssh-keygen -lf "$TMP_KNOWN_HOSTS" | sed 's/^/    /'
+echo ""
+echo "  Vérifie ces empreintes sur la machine cible avant de continuer :"
+echo "    ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub"
+echo "    ssh-keygen -lf /etc/ssh/ssh_host_rsa_key.pub"
+echo ""
+read -rp "  Faire confiance à cette clé hôte pour $TARGET_IP ? [oui/NON] " TRUST_HOST
+if [[ "${TRUST_HOST,,}" != "oui" ]]; then
   echo "  Installation annulée."
   exit 0
 fi
 
-# ---------------------------------------------------------------------------
-# 5. Lancement de nixos-anywhere
-# ---------------------------------------------------------------------------
+if ssh -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+       -o UserKnownHostsFile="$TMP_KNOWN_HOSTS" \
+       "root@$TARGET_IP" "echo OK" &>/dev/null; then
+  echo -e "  ${GRN}✔${RST}  SSH root@$TARGET_IP accessible"
+else
+  echo -e "  ${RED}✘${RST}  Impossible de se connecter à root@$TARGET_IP"
+  echo "  Vérifications utiles :"
+  echo "   • la machine cible est bootée sur un live ISO NixOS"
+  echo "   • systemctl status sshd sur la cible"
+  echo "   • mot de passe root ou clé SSH configurés"
+  exit 1
+fi
 
 echo ""
-echo -e "${BLD}── Étape 5/5 : Lancement de NixOS Anywhere${RST}"
+echo -e "${BLD}── Étape 5/6 : Récapitulatif opératoire${RST}"
+echo "  Host attr     : $HOST"
+echo "  Système       : ${SYSTEM:-inconnu}"
+echo "  Username      : ${USERNAME:-inconnu}"
+echo "  Disque cible  : ${DISK:-inconnu}"
+echo "  Cible SSH     : root@$TARGET_IP"
+echo "  Flake         : .#$HOST"
 echo ""
-echo "  Commande exécutée :"
+echo -e "  ${YLW}ATTENTION${RST} : le disque ${DISK:-inconnu} sera effacé et reformaté."
+echo "  Confirme le disque avec 'lsblk' sur la machine cible avant de continuer."
+echo ""
+read -rp "  Lancer l'installation NixOS Anywhere pour '$HOST' sur $TARGET_IP ? [oui/NON] " CONFIRM
+if [[ "${CONFIRM,,}" != "oui" ]]; then
+  echo "  Installation annulée."
+  exit 0
+fi
+
+echo ""
+echo -e "${BLD}── Étape 6/6 : Lancement de NixOS Anywhere${RST}"
+echo "  Commande :"
 echo -e "  ${BLD}nix run nixpkgs#nixos-anywhere -- --flake .#$HOST root@$TARGET_IP${RST}"
 echo ""
-
 cd "$REPO_ROOT"
 nix run nixpkgs#nixos-anywhere -- --flake ".#$HOST" "root@$TARGET_IP"
-
-# ---------------------------------------------------------------------------
-# Résumé post-installation
-# ---------------------------------------------------------------------------
 
 echo ""
 echo -e "${GRN}${BLD}=== Installation terminée ===${RST}"
 echo ""
 echo "  Prochaines étapes :"
 echo "   1. Attendre le reboot de la machine cible"
-echo "   2. Se reconnecter : ssh $USERNAME@$TARGET_IP"
-echo "   3. Vérifier l'installation : nix run .#post-install-check"
-echo "   4. Si nécessaire, rebuilder : sudo nixos-rebuild switch --flake .#$HOST"
+echo "   2. Se connecter avec l'utilisateur '${USERNAME:-attendu}'"
+echo "   3. Relire : docs/first-boot.md"
+echo "   4. Vérifier : nix run .#post-install-check -- --host $HOST"
+echo "   5. Si besoin : sudo nixos-rebuild switch --flake .#$HOST"
 echo ""

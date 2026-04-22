@@ -27,7 +27,7 @@
   outputs = { nixpkgs, foundation, disko, home-manager, ... }:
     let
       lib = nixpkgs.lib;
-      systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
       # Foundation NixOS modules consumed by all workstation hosts.
       # Home Manager user binding is per-host (username lives in hosts/<name>/vars.nix).
@@ -47,7 +47,7 @@
       # modules — list of NixOS modules specific to the host
       mkHost = { vars, modules }:
         lib.nixosSystem {
-          system = "x86_64-linux";
+          system = vars.system or "x86_64-linux";
           # hostVars is available to every module in this host as a function argument.
           specialArgs = { hostVars = vars; };
           modules = sharedModules ++ [
@@ -96,6 +96,7 @@
           init-host          = mkApp ./scripts/init-host.sh;
           show-config        = mkApp ./scripts/show-config.sh;
           validate-install   = mkApp ./scripts/validate-install.sh;
+          doctor             = mkApp ./scripts/doctor.sh;
           install-anywhere   = mkApp ./scripts/install-anywhere.sh;
           install-manual     = mkApp ./scripts/install-manual.sh;
           post-install-check = mkApp ./scripts/post-install-check.sh;

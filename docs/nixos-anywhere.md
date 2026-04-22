@@ -13,6 +13,7 @@ Sur la machine hôte (depuis laquelle tu lances l'installation) :
 
 - Nix avec flakes activé
 - Accès SSH à la machine cible (live ISO ou machine existante)
+- `ssh-keyscan` et `ssh-keygen` disponibles pour vérifier explicitement la clé hôte
 
 Sur la machine cible :
 
@@ -31,6 +32,7 @@ nix run .#init-host -- main
 ```
 
 Ce script interactif crée `hosts/main/vars.nix` avec :
+- system (plateforme NixOS du host)
 - username (identifiant Unix de l'utilisateur)
 - hostname (doit correspondre à la clé dans flake.nix)
 - disk (device cible — lancer `lsblk` sur la machine pour l'identifier)
@@ -41,6 +43,7 @@ Ou éditer directement `hosts/main/vars.nix` :
 
 ```nix
 {
+  system   = "x86_64-linux";
   username = "mikl";
   hostname = "main";
   disk     = "/dev/nvme0n1";  # identifier avec lsblk sur la machine cible
@@ -52,12 +55,20 @@ Ou éditer directement `hosts/main/vars.nix` :
 ### 2. Vérifier la configuration
 
 ```bash
+nix run .#doctor -- --host main
+```
+
+Ce diagnostic vérifie la disponibilité des outils locaux, la structure du repo et l'exposition des commandes flake.
+
+### 3. Valider la configuration
+
+```bash
 nix run .#validate-install -- main
 ```
 
-Ce script vérifie que `vars.nix` est complet, que les fichiers critiques existent, et qu'aucun placeholder n'est resté dans les fichiers structurants.
+Ce script vérifie que `vars.nix` est complet (`system`, `username`, `hostname`, `disk` si disko est présent, `timezone`, `locale`), que les fichiers critiques existent, qu'aucun placeholder ne reste, que le host est bien exposé dans `flake.nix`, et que les dotfiles activés existent réellement.
 
-### 3. Afficher un résumé de la config effective
+### 4. Afficher un résumé de la config effective
 
 ```bash
 nix run .#show-config -- main
@@ -71,7 +82,14 @@ nix run .#show-config -- main
 nix run .#install-anywhere -- main <IP-MACHINE-CIBLE>
 ```
 
-Ce script valide la configuration, vérifie la connectivité SSH, demande confirmation, puis lance NixOS Anywhere.
+Ce script :
+
+1. lance `doctor`
+2. lance `validate-install`
+3. vérifie les prérequis locaux
+4. récupère et affiche les empreintes SSH de la cible
+5. demande une confirmation explicite
+6. lance NixOS Anywhere
 
 ### Directement
 
@@ -94,7 +112,7 @@ Après le premier boot :
 
 ```bash
 # Vérifier l'installation
-nix run .#post-install-check
+nix run .#post-install-check -- --host main
 
 # Rebuilder si nécessaire
 sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
@@ -124,6 +142,6 @@ profiles/               profils assemblés par le host
 modules/                modules Nix
 home/default.nix        configuration Home Manager (dotfiles, programmes)
 dotfiles/               fichiers de configuration bruts
-scripts/                init-host, show-config, validate-install, install-anywhere, post-install-check
+scripts/                init-host, show-config, doctor, validate-install, install-anywhere, install-manual, post-install-check
 templates/host-vars.nix template de vars.nix pour un nouveau host
 ```

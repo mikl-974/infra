@@ -1,16 +1,46 @@
-# First boot / UX Hyprland
+# First boot / first login
 
 ## Objectif
 
-Cette passe rend la session utilisateur directement exploitable au premier login.
+Cette doc couvre le passage critique entre :
 
-Le but n'est pas de ricer le desktop, mais de fournir une base simple, explicite et utile :
+- installation terminée
+- premier boot
+- premier login
+- machine réellement prête
+
+Le but n'est pas de ricer le desktop, mais de confirmer que la workstation est exploitable :
 
 - notifications actives
 - historique clipboard actif
 - launcher branche
 - terminal branche
 - dotfiles reellement utilises
+- install / rebuild / Home Manager cohérents
+
+## Workflow recommandé après installation
+
+Ordre officiel :
+
+1. se connecter avec l'utilisateur défini dans `hosts/<host>/vars.nix`
+2. si nécessaire : `sudo nixos-rebuild switch --flake .#<host>`
+3. lancer : `nix run .#post-install-check -- --host <host>`
+4. relire les warnings éventuels
+5. vérifier la session Hyprland au premier login
+
+## Ce qu'il faut vérifier au premier boot
+
+- le hostname attendu est bien appliqué
+- l'utilisateur attendu existe
+- `nixos-rebuild` fonctionne
+- le repo est bien présent localement si tu comptes rebuilder depuis la machine
+- Home Manager a bien posé les dotfiles actifs
+
+Commande de base :
+
+```bash
+nix run .#post-install-check -- --host main
+```
 
 ## Ce qui est integre
 
@@ -75,6 +105,23 @@ Des la premiere session Hyprland :
 - `SUPER+E` ouvre Thunar
 - `SUPER+V` ouvre l'historique clipboard
 
+Checks manuels utiles :
+
+```bash
+ls -la ~/.config/hypr/
+ls -la ~/.config/wofi/
+ls -la ~/.config/foot/
+ls -la ~/.config/mako/
+
+which Hyprland
+which foot
+which wofi
+which mako
+which cliphist
+which firefox
+which thunar
+```
+
 ## Frontieres
 
 Regle stricte :
@@ -89,28 +136,20 @@ Concretement :
 - ne pas mettre le contenu d'un fichier `config` dans `home/default.nix`
 - ne pas utiliser `dotfiles/` pour de la logique systeme
 
-## Verification
+## Verification et remediation
 
 Apres rebuild :
 
 ```bash
-nix run .#post-install-check
+nix run .#post-install-check -- --host main
 ```
 
-Verifications manuelles utiles :
+Si un point critique manque :
 
-```bash
-ls -la ~/.config/hypr/
-ls -la ~/.config/wofi/
-ls -la ~/.config/foot/
-ls -la ~/.config/mako/
-
-which Hyprland
-which foot
-which wofi
-which mako
-which cliphist
-```
+- relancer `sudo nixos-rebuild switch --flake .#main`
+- relancer `nix run .#post-install-check -- --host main`
+- vérifier `home/default.nix` et les dotfiles réellement référencés
+- vérifier que le host importe bien les profils attendus
 
 ## Etendre proprement
 

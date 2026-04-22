@@ -63,6 +63,7 @@ Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs
 ```nix
 # hosts/main/vars.nix
 {
+  system   = "x86_64-linux";
   username = "mikl";
   hostname = "main";
   disk     = "/dev/nvme0n1";
@@ -153,19 +154,25 @@ cp templates/host-vars.nix hosts/main/vars.nix
 # éditer hosts/main/vars.nix
 ```
 
-### 2. Valider la configuration
+### 2. Diagnostiquer le repo et le host
+
+```bash
+nix run .#doctor -- --host main
+```
+
+### 3. Valider la configuration du host
 
 ```bash
 nix run .#validate-install -- main
 ```
 
-### 3. Afficher la config effective
+### 4. Afficher la config effective
 
 ```bash
 nix run .#show-config -- main
 ```
 
-### 4. Installer
+### 5. Installer
 
 **Via NixOS Anywhere (recommandé)** :
 
@@ -173,26 +180,27 @@ nix run .#show-config -- main
 nix run .#install-anywhere -- main <IP-CIBLE>
 ```
 
-**Installation manuelle** :
+**Installation manuelle (fallback)** :
 
 ```bash
 nix run .#install-manual -- --host main
 ```
 
-Voir `docs/nixos-anywhere.md`, `docs/manual-install.md` et `docs/bootstrap.md`.
+Voir `docs/nixos-anywhere.md`, `docs/manual-install.md`, `docs/bootstrap.md` et `docs/first-boot.md`.
 
 ## Validation et vérification
 
 Avant l'installation :
 
 ```bash
+nix run .#doctor -- --host main
 nix run .#validate-install -- main
 ```
 
 Après l'installation :
 
 ```bash
-nix run .#post-install-check
+nix run .#post-install-check -- --host main
 ```
 
 Checklist opératoire : `docs/install-checklist.md`

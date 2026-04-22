@@ -186,6 +186,7 @@ Regle retenue :
 - `modules/` -> paquets, services, options systeme, activation des briques desktop
 - `home/default.nix` -> declaration explicite des fichiers utilisateur actifs
 - `dotfiles/` -> contenu brut des applications (`hyprland.conf`, `foot.ini`, `wofi`, `mako`, ...)
+- `scripts/` -> orchestration, diagnostic, validation et vérification ; jamais source de vérité
 
 Exemple concret :
 

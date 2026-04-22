@@ -1,23 +1,12 @@
 #!/usr/bin/env bash
 # show-config.sh — Affiche la configuration effective d'une machine
-#
-# Lit hosts/<name>/vars.nix et affiche un résumé des valeurs configurées.
-#
-# Usage :
-#   ./scripts/show-config.sh <host>
-#   nix run .#show-config -- <host>
-#
-# Exemple :
-#   ./scripts/show-config.sh main
 
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ "$_SCRIPT_DIR" == /nix/store/* ]]; then
-  REPO_ROOT="$PWD"
-else
-  REPO_ROOT="$(cd "$_SCRIPT_DIR/.." && pwd)"
-fi
+# shellcheck source=./lib/workstation-install.sh
+source "$_SCRIPT_DIR/lib/workstation-install.sh"
+REPO_ROOT="$(resolve_repo_root "$_SCRIPT_DIR")"
 
 BLD='\033[1m'
 CYN='\033[0;36m'
@@ -27,23 +16,19 @@ RED='\033[0;31m'
 DIM='\033[2m'
 RST='\033[0m'
 
-# ---------------------------------------------------------------------------
-# Argument
-# ---------------------------------------------------------------------------
-
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <host>"
-  echo "Hosts disponibles : $(ls "$REPO_ROOT/hosts" | tr '\n' ' ')"
+  echo "Hosts disponibles : $(list_hosts "$REPO_ROOT")"
   exit 1
 fi
 
 HOST="$1"
 HOST_DIR="$REPO_ROOT/hosts/$HOST"
-VARS_FILE="$HOST_DIR/vars.nix"
+VARS_FILE="$(host_vars_file "$REPO_ROOT" "$HOST")"
 
 if [[ ! -d "$HOST_DIR" ]]; then
   echo -e "${RED}Erreur : hosts/$HOST/ introuvable.${RST}"
-  echo "Hosts disponibles : $(ls "$REPO_ROOT/hosts" | tr '\n' ' ')"
+  echo "Hosts disponibles : $(list_hosts "$REPO_ROOT")"
   exit 1
 fi
 
@@ -51,114 +36,85 @@ echo ""
 echo -e "${BLD}${CYN}=== Configuration effective : host '$HOST' ===${RST}"
 echo ""
 
-# ---------------------------------------------------------------------------
-# Lecture de vars.nix
-# ---------------------------------------------------------------------------
-
-read_var() {
-  local key="$1"
-  grep -oP "${key}\s*=\s*\"\K[^\"]+" "$VARS_FILE" 2>/dev/null | head -1 || echo ""
-}
-
 show_field() {
   local label="$1"
   local value="$2"
   local width=12
   if [[ -z "$value" ]]; then
     printf "  %-${width}s %s\n" "$label" "$(echo -e "${DIM}(non défini)${RST}")"
-  elif echo "$value" | grep -qE '^DEFINE_'; then
+  elif is_placeholder_value "$value"; then
     printf "  %-${width}s %s\n" "$label" "$(echo -e "${YLW}${value}${RST}  ← à définir")"
   else
     printf "  %-${width}s %s\n" "$label" "$(echo -e "${GRN}${value}${RST}")"
   fi
 }
 
-# ---------------------------------------------------------------------------
-# vars.nix
-# ---------------------------------------------------------------------------
-
 echo -e "${BLD}── vars.nix${RST}  (hosts/$HOST/vars.nix)"
 echo ""
-
 if [[ ! -f "$VARS_FILE" ]]; then
   echo -e "  ${RED}✘  hosts/$HOST/vars.nix introuvable.${RST}"
   echo ""
   echo "  Initialiser avec :"
   echo "    nix run .#init-host -- $HOST"
-  echo ""
   exit 1
 fi
 
-USERNAME=$(read_var "username")
-HOSTNAME_VAL=$(read_var "hostname")
-DISK=$(read_var "disk")
-TIMEZONE=$(read_var "timezone")
-LOCALE=$(read_var "locale")
+SYSTEM="$(read_nix_string_var "$VARS_FILE" "system")"
+USERNAME="$(read_nix_string_var "$VARS_FILE" "username")"
+HOSTNAME_VAL="$(read_nix_string_var "$VARS_FILE" "hostname")"
+DISK="$(read_nix_string_var "$VARS_FILE" "disk")"
+TIMEZONE="$(read_nix_string_var "$VARS_FILE" "timezone")"
+LOCALE="$(read_nix_string_var "$VARS_FILE" "locale")"
 
-show_field "username"  "$USERNAME"
-show_field "hostname"  "$HOSTNAME_VAL"
-[[ -f "$HOST_DIR/disko.nix" ]] && show_field "disk" "$DISK"
-show_field "timezone"  "$TIMEZONE"
-show_field "locale"    "$LOCALE"
+show_field "system"   "$SYSTEM"
+show_field "username" "$USERNAME"
+show_field "hostname" "$HOSTNAME_VAL"
+[[ -f "$(host_disko_file "$REPO_ROOT" "$HOST")" ]] && show_field "disk" "$DISK"
+show_field "timezone" "$TIMEZONE"
+show_field "locale"   "$LOCALE"
 
 echo ""
-
-# ---------------------------------------------------------------------------
-# Fichiers du host
-# ---------------------------------------------------------------------------
-
 echo -e "${BLD}── Fichiers du host${RST}"
 echo ""
-
-show_file() {
-  local path="$1"
-  local label="$2"
-  if [[ -f "$REPO_ROOT/$path" ]]; then
-    echo -e "  ${GRN}✔${RST}  $label ($path)"
+for path in \
+  "$VARS_FILE|vars.nix" \
+  "$(host_default_file "$REPO_ROOT" "$HOST")|default.nix" \
+  "$(host_disko_file "$REPO_ROOT" "$HOST")|disko.nix"; do
+  file="${path%%|*}"
+  label="${path##*|}"
+  if [[ -f "$file" ]]; then
+    echo -e "  ${GRN}✔${RST}  $label"
   else
-    echo -e "  ${DIM}—${RST}  $label ($path) — absent"
+    echo -e "  ${DIM}—${RST}  $label — absent"
   fi
-}
-
-show_file "hosts/$HOST/vars.nix"     "vars.nix"
-show_file "hosts/$HOST/default.nix"  "default.nix"
-show_file "hosts/$HOST/disko.nix"    "disko.nix"
+done
 
 echo ""
-
-# ---------------------------------------------------------------------------
-# Profils actifs
-# ---------------------------------------------------------------------------
-
-DEFAULT_NIX="$HOST_DIR/default.nix"
+DEFAULT_NIX="$(host_default_file "$REPO_ROOT" "$HOST")"
 if [[ -f "$DEFAULT_NIX" ]]; then
   echo -e "${BLD}── Profils importés${RST}"
   echo ""
-  grep -oP '../../profiles/\K[^"]+(?=\.nix)' "$DEFAULT_NIX" 2>/dev/null | while read -r p; do
-    echo "  ·  $p"
-  done
+  sed -nE 's#^[[:space:]]*\.\./\.\./profiles/([^[:space:]]+)\.nix.*#  ·  \1#p' "$DEFAULT_NIX"
   echo ""
 fi
 
-# ---------------------------------------------------------------------------
-# Statut de configuration
-# ---------------------------------------------------------------------------
-
 echo -e "${BLD}── Statut${RST}"
 echo ""
-
 UNDEFINED=0
-for val in "$USERNAME" "$HOSTNAME_VAL" "$TIMEZONE" "$LOCALE"; do
-  echo "$val" | grep -qE '^DEFINE_' && UNDEFINED=$(( UNDEFINED + 1 ))
+for value in "$SYSTEM" "$USERNAME" "$HOSTNAME_VAL" "$TIMEZONE" "$LOCALE"; do
+  if [[ -z "$value" ]] || is_placeholder_value "$value"; then
+    UNDEFINED=$(( UNDEFINED + 1 ))
+  fi
 done
-if [[ -f "$HOST_DIR/disko.nix" ]]; then
-  echo "$DISK" | grep -qE '^DEFINE_|^/dev/DEFINE_' && UNDEFINED=$(( UNDEFINED + 1 ))
+if [[ -f "$(host_disko_file "$REPO_ROOT" "$HOST")" ]] && { [[ -z "$DISK" ]] || is_placeholder_value "$DISK"; }; then
+  UNDEFINED=$(( UNDEFINED + 1 ))
 fi
 
 if [[ $UNDEFINED -eq 0 ]]; then
   echo -e "  ${GRN}✔  Configuration complète — prête pour validation.${RST}"
   echo ""
   echo "  Prochaine étape :"
+  echo "    nix run .#doctor -- --host $HOST"
   echo "    nix run .#validate-install -- $HOST"
 else
   echo -e "  ${YLW}⚠  $UNDEFINED champ(s) à définir dans hosts/$HOST/vars.nix.${RST}"

@@ -149,7 +149,7 @@ ls -la ~/.config
 Pour un controle post-install plus large :
 
 ```bash
-nix run .#post-install-check
+nix run .#post-install-check -- --host $(hostname)
 ```
 
 ## 8. Commit des changements
@@ -228,7 +228,7 @@ git pull --ff-only
 # modifier les fichiers
 git diff
 sudo nixos-rebuild switch --flake .#$(hostname)
-nix run .#post-install-check
+nix run .#post-install-check -- --host $(hostname)
 git add .
 git commit -m "feat: update workstation config"
 git push

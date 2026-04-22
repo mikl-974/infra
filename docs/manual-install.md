@@ -184,6 +184,7 @@ Ouvrir `hosts/main/vars.nix` et renseigner les valeurs :
 
 ```nix
 {
+  system   = "x86_64-linux";   # plateforme NixOS du host
   username = "mikl";           # nom d'utilisateur système
   hostname = "main";           # doit correspondre à la clé nixosConfigurations
   disk     = "/dev/nvme0n1";   # vérifier avec lsblk sur la machine cible
@@ -193,6 +194,12 @@ Ouvrir `hosts/main/vars.nix` et renseigner les valeurs :
 ```
 
 ### Valider la configuration
+
+```bash
+nix run .#doctor -- --host main
+```
+
+Puis :
 
 ```bash
 nix run .#validate-install -- main
@@ -244,9 +251,8 @@ nixos-rebuild list-generations
 # Rebuilder si nécessaire
 sudo nixos-rebuild switch --flake /root/workstation#main
 
-# Vérifier les symlinks Home Manager
-ls -la ~/.config/hypr/
-ls -la ~/.config/foot/
+# Vérifier l'état général
+nix run .#post-install-check -- --host main
 ```
 
 ---
@@ -272,6 +278,8 @@ Pour activer un dotfile :
 
 Les symlinks sont créés dans `~/.config/` automatiquement.
 
+Voir aussi `docs/first-boot.md` pour les vérifications concrètes de premier login.
+
 ---
 
 ## 11. Vérifications post-installation
@@ -279,7 +287,7 @@ Les symlinks sont créés dans `~/.config/` automatiquement.
 Lancer le script de vérification post-install :
 
 ```bash
-nix run .#post-install-check
+nix run .#post-install-check -- --host main
 ```
 
 Ou manuellement :
@@ -331,9 +339,10 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 | SSH live | `systemctl start sshd && passwd root` |
 | Disques | `lsblk` |
 | Initialiser vars.nix | `nix run .#init-host -- main` |
+| Doctor | `nix run .#doctor -- --host main` |
 | Partitionnement disko | `nix run github:nix-community/disko -- --mode disko hosts/main/disko.nix` |
 | Clone repo | `git clone https://github.com/mikl-974/workstation` |
 | Validation pré-install | `nix run .#validate-install -- main` |
 | Installation | `nixos-install --flake /root/workstation#main --root /mnt` |
 | Rebuild | `sudo nixos-rebuild switch --flake .#main` |
-| Post-install check | `nix run .#post-install-check` |
+| Post-install check | `nix run .#post-install-check -- --host main` |
