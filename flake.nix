@@ -218,6 +218,12 @@
           validate-inventory = mkApp ./scripts/validate-inventory.sh;
           deploy-contabo     = mkApp ./scripts/deploy-contabo.sh;
           deploy-all-hosts   = mkApp ./scripts/deploy-all-hosts.sh;
+          plan-azure-ext         = mkApp ./scripts/plan-azure-ext.sh;
+          deploy-azure-ext       = mkApp ./scripts/deploy-azure-ext.sh;
+          plan-cloudflare-ext    = mkApp ./scripts/plan-cloudflare-ext.sh;
+          deploy-cloudflare-ext  = mkApp ./scripts/deploy-cloudflare-ext.sh;
+          plan-gcp-ext           = mkApp ./scripts/plan-gcp-ext.sh;
+          deploy-gcp-ext         = mkApp ./scripts/deploy-gcp-ext.sh;
         }
       );
 

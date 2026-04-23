@@ -56,5 +56,26 @@
       address = "contabo";
       region = "eu-central";
     };
+
+    azure-ext = {
+      kind = "azureContainerApps";
+      runtime = "tofu";
+      address = "azure-ext";
+      region = "westeurope";
+    };
+
+    cloudflare-ext = {
+      kind = "cloudflareContainers";
+      runtime = "tofu";
+      address = "cloudflare-ext";
+      region = "global";
+    };
+
+    gcp-ext = {
+      kind = "gcpCloudRun";
+      runtime = "tofu";
+      address = "gcp-ext";
+      region = "europe-west1";
+    };
   };
 }

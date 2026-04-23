@@ -34,5 +34,12 @@ in
       { stack = "kopia"; instance = "kopia-contabo"; role = "backup-client"; }
       { stack = "nextcloud"; instance = "nextcloud-qtalk"; role = "main"; }
     ];
+
+    azure-ext = [
+      { stack = "uptime-kuma"; instance = "uptime-kuma-public"; }
+    ];
+
+    cloudflare-ext = [ ];
+    gcp-ext = [ ];
   };
 }
