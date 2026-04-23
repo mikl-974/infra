@@ -6,6 +6,7 @@ Briques Nix réutilisables composées dans les targets et profils.
 
 Ce dossier contient uniquement :
 - modules NixOS réutilisables
+- modules Darwin réutilisables
 - profils réutilisables
 - devshells
 - templates
@@ -22,6 +23,7 @@ Il ne contient jamais :
 |---|---|
 | `modules/apps/` | Paquets et applications desktop |
 | `modules/containers/` | Moteurs de containers locaux |
+| `modules/darwin/` | Base et intégrations Darwin (`nix-darwin`, `nix-homebrew`) |
 | `modules/desktop/` | Base système desktop (Hyprland, audio, connectivité) |
 | `modules/devshells/` | Environnements de développement CLI |
 | `modules/profiles/` | Assemblages réutilisables (composés dans les targets) |

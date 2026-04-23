@@ -28,19 +28,42 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
+    # Kept available for future Darwin tap pinning if/when the repo needs it.
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
   };
 
-  outputs = { nixpkgs, foundation, disko, home-manager, sops-nix, ... }:
+  outputs = inputs@{ self, nixpkgs, foundation, disko, home-manager, sops-nix, nix-darwin, nix-homebrew, ... }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
-      # Shared building blocks used by all infra targets.
+      # Shared building blocks used by all infra NixOS targets.
       sharedModules = [
         foundation.nixosModules.networkingTailscale
         home-manager.nixosModules.home-manager
         sops-nix.nixosModules.sops
         ./modules/security/sops.nix
+      ];
+
+      # Shared building blocks used by Darwin targets.
+      sharedDarwinModules = [
+        nix-homebrew.darwinModules.nix-homebrew
       ];
 
       # Prefer an explicit per-host Home Manager composition when it exists.
@@ -62,12 +85,13 @@
           };
 
       # Build a NixOS host from its vars.nix and host-specific modules.
-      # vars   — attrset imported from targets/hosts/<name>/vars.nix
-      # modules — list of NixOS modules specific to the target
       mkHost = { vars, modules }:
         lib.nixosSystem {
           system = vars.system or "x86_64-linux";
-          specialArgs = { hostVars = vars; };
+          specialArgs = {
+            hostVars = vars;
+            flakeSelf = self;
+          };
           modules = sharedModules ++ [
             {
               home-manager.useGlobalPkgs = true;
@@ -79,6 +103,17 @@
               home-manager.users = mkHomeUsers vars;
             }
           ] ++ modules;
+        };
+
+      # Build a Darwin host from its vars.nix and host-specific modules.
+      mkDarwinHost = { vars, modules }:
+        nix-darwin.lib.darwinSystem {
+          system = vars.system or "aarch64-darwin";
+          specialArgs = {
+            hostVars = vars;
+            flakeSelf = self;
+          };
+          modules = sharedDarwinModules ++ modules;
         };
     in
     {
@@ -101,6 +136,15 @@
         ms-s1-max = mkHost {
           vars   = import ./targets/hosts/ms-s1-max/vars.nix;
           modules = [ ./targets/hosts/ms-s1-max/default.nix ];
+        };
+      };
+
+      darwinConfigurations = {
+        # Retained as-is for now: it is already the working flake entrypoint and
+        # there is no stronger durable naming signal in the repo yet.
+        macmini = mkDarwinHost {
+          vars = import ./targets/hosts/macmini/vars.nix;
+          modules = [ ./targets/hosts/macmini/default.nix ];
         };
       };
 

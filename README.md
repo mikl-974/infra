@@ -7,13 +7,57 @@ la composition utilisateur, les dotfiles, les services et les secrets.
 ## Structure retenue
 
 - `modules/` : briques composables réutilisables
-- `targets/hosts/` : machines réelles
+- `targets/hosts/` : machines réelles, NixOS ou Darwin
 - `home/` : composition Home Manager (`users/`, `roles/`, `targets/`)
 - `dotfiles/` : bibliothèque de configs applicatives réutilisables
 - `stacks/` : services/applications portés par ce repo
 - `secrets/` : secrets chiffrés avec `sops-nix`
 - `docs/` : documentation
 - `scripts/` : orchestration légère / validation
+
+## Targets concrets actuellement modélisés
+
+### NixOS
+- `main`
+- `laptop`
+- `gaming`
+- `ms-s1-max`
+
+### Darwin
+- `macmini`
+
+`macmini` reste le nom retenu à ce stade :
+- c'est déjà l'entrée fonctionnelle connue pour `darwin-rebuild --flake .#macmini`
+- aucun signal plus durable n'existe encore dans le repo pour justifier un renommage propre
+- le refactor avance donc sans régression inutile
+
+## Darwin : structure désormais retenue
+
+Le target Darwin est maintenant explicite dans le repo :
+- `targets/hosts/macmini/vars.nix`
+- `targets/hosts/macmini/default.nix`
+- `targets/hosts/macmini/config/default.nix`
+- `targets/hosts/macmini/config/user.nix`
+- `targets/hosts/macmini/config/apps.nix`
+- `targets/hosts/macmini/config/networking.nix`
+
+Briques Darwin réutilisables :
+- `modules/darwin/base.nix`
+- `modules/darwin/homebrew.nix`
+
+Le `flake.nix` expose maintenant :
+- `nixosConfigurations.*`
+- `darwinConfigurations.macmini`
+
+## Rôle de Nix / Homebrew / MAS sur Darwin
+
+Pour `macmini` :
+- Nix = paquets disponibles proprement via nixpkgs (`vim`, `neovim`, `alacritty`, `vscode`, JetBrains Mono)
+- Homebrew casks = apps GUI macOS adaptées à Homebrew (`moonlight`, `omniwm`)
+- MAS = apps mieux consommées via l'App Store (`NordVPN`, `Tailscale`)
+
+`nix-darwin` reste la base de composition système Darwin.
+`nix-homebrew` reste l'adapter d'intégration Homebrew.
 
 ## Flux `sops-nix` réellement branché
 
@@ -31,57 +75,3 @@ Premier flux réel branché :
   - `/run/secrets/ms-s1-max/bootstrap/dfo-password`
 
 Voir `docs/secrets.md`.
-
-## Dotfiles réellement branchés
-
-### `mfo`
-`mfo` consomme réellement :
-- Hyprland
-- profil Hyprland user (`chromium`)
-- foot
-- wofi
-- mako
-
-### `dfo`
-`dfo` consomme réellement :
-- Kitty
-- profil Kitty user
-- réglages GTK communs Noctalia pour GNOME
-- préférences GNOME utilisateur
-- Firefox avec réglages Home Manager minimaux
-
-Voir `docs/user-composition.md`.
-
-## Cas concret : `ms-s1-max`
-
-### Système machine
-`targets/hosts/ms-s1-max/` déclare :
-- Hyprland + GNOME
-- gaming (Steam/Lutris côté système)
-- Tailscale
-- Cloudflare WARP
-- stack `ai-server`
-- `sops-nix`
-
-### Composition utilisateur
-`home/targets/ms-s1-max.nix` compose :
-- `mfo` → Hyprland, Steam, Chromium
-- `dfo` → GNOME, Lutris, Steam, Firefox, Kitty
-
-### Limite explicite
-NordVPN reste documenté seulement tant que `nixpkgs` ne fournit pas de package/module officiel exploitable sur la base `nixos-unstable` retenue.
-
-## Legacy réduit, pas cassé brutalement
-
-`home/users/default.nix` existe encore comme **fallback de compatibilité transitoire** pour les targets pas encore migrés vers `home/targets/`.
-
-Le chemin recommandé est désormais :
-- `home/users/<user>.nix`
-- `home/roles/*.nix`
-- `home/targets/<host>.nix`
-
-Les scripts de validation ne supposent plus uniquement `home/users/default.nix` lorsqu'un target Home Manager dédié existe.
-
-## Nix unstable
-
-Les packages suivent `nixos-unstable` via l’input `nixpkgs` du `flake.nix`.

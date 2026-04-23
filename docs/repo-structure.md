@@ -8,7 +8,7 @@ les dotfiles, les services et les secrets.
 
 - `modules/` : briques Nix réutilisables
 - `targets/` : cibles concrètes
-  - `targets/hosts/` : machines réelles
+  - `targets/hosts/` : machines réelles NixOS et Darwin
 - `home/` : composition Home Manager users / roles / targets
 - `dotfiles/` : bibliothèque de fichiers applicatifs réutilisables
 - `stacks/` : services/applications portés par le repo
@@ -20,18 +20,19 @@ les dotfiles, les services et les secrets.
 
 ### `modules/`
 Contient des briques réutilisables :
-- modules système
+- modules système NixOS
+- modules Darwin
 - profils réutilisables
 - devshells
 - sécurité / intégrations transverses
-- templates
+- helpers et templates
 
 ### `targets/`
 Contient la réalité des machines :
 - un host concret dans `targets/hosts/<name>/`
 - ses variables machine
-- sa config NixOS
-- éventuellement son layout disque
+- sa config NixOS ou Darwin
+- éventuellement son layout disque côté NixOS
 
 ### `home/`
 Contient la composition utilisateur :

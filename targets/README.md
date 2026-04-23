@@ -12,7 +12,7 @@ Cibles concrètes portées par le repo `infra`.
 `targets/` contient uniquement :
 - la réalité machine
 - la config machine
-- le layout disque si nécessaire
+- le layout disque si nécessaire côté NixOS
 - la logique de bootstrap / installation liée à cette machine
 
 Il ne contient jamais :
@@ -20,16 +20,35 @@ Il ne contient jamais :
 - des stacks applicatives génériques
 - de la composition Home Manager utilisateur
 
+## NixOS et Darwin
+
+`targets/hosts/` peut maintenant contenir :
+- un host NixOS exposé via `nixosConfigurations.<name>`
+- un host Darwin exposé via `darwinConfigurations.<name>`
+
+Le target Darwin reste une machine concrète, pas un faux target NixOS.
+
 ## Hosts actuels
 
+### NixOS
 - `main`
 - `laptop`
 - `gaming`
 - `ms-s1-max`
 
+### Darwin
+- `macmini`
+
 ## Ajouter une machine
 
+### NixOS
 1. créer `targets/hosts/<name>/vars.nix`
 2. créer `targets/hosts/<name>/default.nix`
 3. ajouter `disko.nix` si nécessaire
 4. exposer la machine dans `flake.nix`
+
+### Darwin
+1. créer `targets/hosts/<name>/vars.nix`
+2. créer `targets/hosts/<name>/default.nix`
+3. créer `targets/hosts/<name>/config/` pour les responsabilités machine
+4. exposer la machine dans `flake.nix` via `darwinConfigurations.<name>`
