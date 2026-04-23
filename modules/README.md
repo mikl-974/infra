@@ -26,6 +26,7 @@ Il ne contient jamais :
 | `modules/devshells/` | Environnements de développement CLI |
 | `modules/profiles/` | Assemblages réutilisables (composés dans les targets) |
 | `modules/roles/` | Composition d'apps + config système pour un usage |
+| `modules/security/` | Intégrations sécurité réutilisables (`sops-nix`) |
 | `modules/shell/` | Configuration shell système |
 | `modules/theming/` | Theming et identité visuelle |
 | `modules/templates/` | Templates de configuration |

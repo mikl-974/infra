@@ -9,7 +9,7 @@
   #   - user-managed processes, not system daemons
   #
   # Distinction from infra ai-server stack:
-  #   workstation/ai  — tools the user runs locally on their own machine
+  #   local user ai    — tools the user runs locally on their own machine
   #   stacks/ai-server — shared inference service exposed to other machines
   #
   # The ollama CLI is available after enabling this role. Start it manually:
