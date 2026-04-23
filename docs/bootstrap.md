@@ -117,9 +117,9 @@ Les dotfiles sont gérés par Home Manager, intégré dans le système NixOS.
 
 Ajouter un dotfile :
 1. Placer le fichier dans `dotfiles/<app>/`
-2. L'enregistrer dans la composition Home Manager active (`home/targets/<host>.nix` ou, en compatibilité, `home/users/default.nix`) :
+2. L'enregistrer dans la composition Home Manager active (`home/targets/main.nix` pour `main`, ou `home/targets/<host>.nix` pour un host déjà migré) :
    ```nix
-   home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
+   home.file.".config/foot/foot.ini".source = ../dotfiles/terminal/foot.ini;
    ```
 3. Rebuilder : `sudo nixos-rebuild switch --flake .#main`
 

@@ -126,6 +126,14 @@ if [[ -n "$HOST" ]]; then
   else
     warn "NixOS Anywhere indisponible pour ce host (pas de disko.nix)"
   fi
+
+  if [[ -f "$(home_target_file "$REPO_ROOT" "$HOST")" ]]; then
+    ok "home/targets/$HOST.nix existe — composition Home Manager moderne détectée"
+  elif [[ -f "$(home_fallback_file "$REPO_ROOT")" ]]; then
+    warn "home/targets/$HOST.nix absent — fallback legacy home/users/default.nix encore utilisé"
+  else
+    fail "Aucune composition Home Manager trouvée pour '$HOST'"
+  fi
 fi
 
 echo ""

@@ -49,8 +49,8 @@ nix run .#post-install-check -- --host main
 `mako` est :
 
 - installe via `modules/apps/daily.nix`
-- configure dans `dotfiles/mako/config`
-- demarre explicitement dans `dotfiles/hypr/hyprland.conf`
+- configure dans `dotfiles/notifications/config`
+- demarre explicitement dans `dotfiles/hyprland/hyprland.conf`
 
 Autostart :
 
@@ -83,11 +83,11 @@ bind = $mod, V, exec, sh -c "cliphist list | wofi --dmenu --prompt 'Clipboard' |
 
 Les dotfiles effectivement branches par Home Manager sont :
 
-- `dotfiles/hypr/hyprland.conf`
-- `dotfiles/foot/foot.ini`
-- `dotfiles/wofi/config`
-- `dotfiles/wofi/style.css`
-- `dotfiles/mako/config`
+- `dotfiles/hyprland/hyprland.conf`
+- `dotfiles/terminal/foot.ini`
+- `dotfiles/launchers/config`
+- `dotfiles/launchers/style.css`
+- `dotfiles/notifications/config`
 
 Ils sont lies depuis :
 

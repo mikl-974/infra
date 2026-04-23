@@ -10,7 +10,7 @@
 #   nix run .#init-host -- main
 {
   system   = "x86_64-linux";    # NixOS platform
-  username = "DEFINE_USERNAME"; # system username — must be a valid Unix username
+  username = "mikl";            # primary interactive user of the main workstation
   hostname = "main";            # hostname — matches nixosConfigurations key in flake.nix
   disk     = "/dev/DEFINE_DISK"; # target disk — run `lsblk` on the target (e.g. /dev/nvme0n1)
   timezone = "Europe/Paris";    # see: timedatectl list-timezones

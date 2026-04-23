@@ -12,6 +12,18 @@ Composition Home Manager des users, rôles et targets.
 
 ## Modèle concret
 
+### `main`
+- identité : `home/users/mikl.nix`
+- rôle : `desktop-hyprland`
+- composition finale : `home/targets/main.nix`
+- dotfiles réellement actifs :
+  - `dotfiles/hyprland/hyprland.conf`
+  - `dotfiles/hyprland/profiles/default.conf`
+  - `dotfiles/terminal/foot.ini`
+  - `dotfiles/launchers/config`
+  - `dotfiles/launchers/style.css`
+  - `dotfiles/notifications/config`
+
 ### `mfo`
 - identité : `home/users/mfo.nix`
 - rôles : `desktop-hyprland`, `gaming-steam`, `browser-chromium`
@@ -25,7 +37,7 @@ Composition Home Manager des users, rôles et targets.
 ## Legacy
 
 `home/users/default.nix` reste un fallback transitoire pour les anciens hosts.
-Ce n'est plus le chemin recommandé.
+Ce n'est plus le chemin recommandé, `main` n'en dépend plus, et il ne couvre plus que `laptop` et `gaming`.
 
 Le chemin recommandé est :
 - `home/users/<user>.nix`

@@ -70,10 +70,9 @@ host_has_profile() {
   local repo_root="$1"
   local host="$2"
   local profile="$3"
-  local default_file
-  default_file="$(host_default_file "$repo_root" "$host")"
+  local host_dir="$repo_root/targets/hosts/$host"
 
-  [[ -f "$default_file" ]] && grep -q "../../modules/profiles/${profile}\.nix" "$default_file"
+  [[ -d "$host_dir" ]] && grep -R -q "modules/profiles/${profile}.nix" "$host_dir"
 }
 
 host_uses_disko() {

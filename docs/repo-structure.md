@@ -40,6 +40,11 @@ Contient la composition utilisateur :
 - `home/roles/` = rôles composables
 - `home/targets/` = binding final par machine
 
+Exemples réels :
+- `home/users/mikl.nix` = identité du user de `main`
+- `home/targets/main.nix` = composition finale de `main`
+- `home/targets/ms-s1-max.nix` = composition finale de `ms-s1-max`
+
 ### `dotfiles/`
 Contient uniquement du contenu brut applicatif.
 Le choix de qui consomme quoi se fait dans `home/`.

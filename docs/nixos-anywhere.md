@@ -121,6 +121,11 @@ sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
 Home Manager est intégré dans le système NixOS via `home-manager.nixosModules.home-manager`.
 Il s'applique automatiquement lors de `nixos-rebuild switch` — les dotfiles sont symlinqués dans `~/.config/`.
 
+Pour `main`, la composition active passe désormais explicitement par :
+- `home/targets/main.nix`
+- `home/users/mikl.nix`
+- `home/roles/desktop-hyprland.nix`
+
 Voir `docs/bootstrap.md` pour le workflow complet post-installation.
 
 ## Reconstruire la machine
@@ -136,12 +141,15 @@ sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
 ```
 targets/hosts/main/vars.nix     variables machine (username, disk, timezone…) — seul fichier à éditer
 flake.nix               inputs disko + home-manager, nixosConfigurations.main, apps
-targets/hosts/main/default.nix  configuration du host (boot, hostname, profils, utilisateur)
+targets/hosts/main/default.nix  entrée du host `main`
+targets/hosts/main/config/default.nix configuration du host (boot, hostname, profils)
+targets/hosts/main/config/user.nix    utilisateur système du host
 targets/hosts/main/disko.nix    layout disque (GPT + EFI + btrfs) — lit le disque depuis vars.nix
 modules/profiles/       profils assembles par les targets (desktop-hyprland, dev, networking, gaming, ai)
 modules/                modules Nix
-home/targets/<host>.nix       composition Home Manager recommandée par host
-home/users/default.nix        fallback legacy temporaire pour les hosts non migrés
+home/targets/main.nix   composition Home Manager de `main`
+home/users/mikl.nix     identité utilisateur de `main`
+home/users/default.nix  fallback legacy temporaire pour les hosts non migrés
 dotfiles/               fichiers de configuration bruts
 scripts/                init-host, show-config, doctor, validate-install, install-anywhere, install-manual, post-install-check
 templates/host-vars.nix template de vars.nix pour un nouveau host

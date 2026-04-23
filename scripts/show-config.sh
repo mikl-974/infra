@@ -90,11 +90,24 @@ for path in \
 done
 
 echo ""
+echo -e "${BLD}── Composition Home Manager${RST}"
+echo ""
+if [[ -f "$(home_target_file "$REPO_ROOT" "$HOST")" ]]; then
+  echo -e "  ${GRN}✔${RST}  home/targets/$HOST.nix"
+elif [[ -f "$(home_fallback_file "$REPO_ROOT")" ]]; then
+  echo -e "  ${YLW}⚠${RST}  fallback legacy : home/users/default.nix"
+else
+  echo -e "  ${RED}✘${RST}  aucune composition Home Manager trouvée"
+fi
+
+echo ""
 DEFAULT_NIX="$(host_default_file "$REPO_ROOT" "$HOST")"
-if [[ -f "$DEFAULT_NIX" ]]; then
+if [[ -d "$HOST_DIR" ]]; then
   echo -e "${BLD}── Profils importés${RST}"
   echo ""
-  sed -nE 's#^[[:space:]]*\.\./\.\./modules/profiles/([^[:space:]]+)\.nix.*#  ·  \1#p' "$DEFAULT_NIX"
+  grep -RhoE 'modules/profiles/[^[:space:]]+\.nix' "$HOST_DIR" \
+    | sed -E 's#.*modules/profiles/([^[:space:]]+)\.nix#  ·  \1#' \
+    | sort -u
   echo ""
 fi
 

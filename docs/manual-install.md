@@ -259,15 +259,15 @@ nix run .#post-install-check -- --host main
 
 ## 10. Dotfiles
 
-Les dotfiles sont gérés par Home Manager via la composition Home Manager active (`home/targets/<host>.nix` ou, en compatibilité, `home/users/default.nix`).
+Les dotfiles sont gérés par Home Manager via la composition Home Manager active (`home/targets/main.nix` pour `main`, ou `home/targets/<host>.nix` pour un host déjà migré).
 
 Pour activer un dotfile :
 
 1. Placer le fichier dans `dotfiles/<app>/`
-2. L'enregistrer dans la composition Home Manager active (`home/targets/<host>.nix` ou, en compatibilité, `home/users/default.nix`) :
+2. L'enregistrer dans la composition Home Manager active (`home/targets/main.nix` pour `main`, ou `home/targets/<host>.nix` pour un host déjà migré) :
 
    ```nix
-   home.file.".config/hypr/hyprland.conf".source = ../dotfiles/hypr/hyprland.conf;
+   home.file.".config/hypr/hyprland.conf".source = ../dotfiles/hyprland/hyprland.conf;
    ```
 
 3. Rebuilder :

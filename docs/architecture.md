@@ -17,10 +17,10 @@ Il porte maintenant ensemble :
 | Couche | Rôle | Exemple |
 |---|---|---|
 | `modules/` | briques réutilisables | profiles, security, darwin |
-| `targets/hosts/` | réalité machine | `ms-s1-max`, `macmini` |
-| `home/users/` | identité d’un user | `mfo.nix`, `dfo.nix` |
+| `targets/hosts/` | réalité machine | `main`, `ms-s1-max`, `macmini` |
+| `home/users/` | identité d’un user | `mikl.nix`, `mfo.nix`, `dfo.nix` |
 | `home/roles/` | binding réutilisable par usage | `desktop-hyprland.nix`, `terminal-kitty.nix` |
-| `home/targets/` | composition finale par machine | `ms-s1-max.nix` |
+| `home/targets/` | composition finale par machine | `main.nix`, `ms-s1-max.nix` |
 | `dotfiles/` | contenu brut réutilisable | Hyprland, Kitty, GTK |
 | `stacks/` | services/applications | `ai-server/` |
 | `secrets/` | source chiffrée | `secrets/hosts/ms-s1-max.yaml` |
@@ -33,6 +33,20 @@ Le repo distingue maintenant explicitement :
 
 Un target Darwin reste un target concret dans `targets/hosts/`.
 Il ne devient pas un faux host NixOS.
+
+## NixOS moderne actuel
+
+Deux targets NixOS réels valident maintenant le modèle moderne :
+- `main` en mono-user explicite
+- `ms-s1-max` en multi-user explicite
+
+### `main`
+- host concret : `targets/hosts/main/`
+- composition Home Manager : `home/targets/main.nix`
+- identité user : `home/users/mikl.nix`
+- rôle réutilisable : `home/roles/desktop-hyprland.nix`
+
+`main` ne dépend plus du fallback `home/users/default.nix`.
 
 ## Darwin actuel
 
@@ -63,4 +77,5 @@ Le premier flux réel branché utilise `sops-nix` pour `ms-s1-max` :
 ## Legacy
 
 `home/users/default.nix` reste un fallback de compatibilité pour les anciens hosts NixOS.
-Ce n'est pas le chemin recommandé pour les nouveaux bindings, et cela ne joue aucun rôle dans le target Darwin `macmini`.
+Il ne couvre plus que `laptop` et `gaming`.
+Ce n'est plus le chemin de `main`, ni de `ms-s1-max`, et cela ne joue aucun rôle dans le target Darwin `macmini`.
