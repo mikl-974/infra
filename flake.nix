@@ -118,12 +118,17 @@
 
         laptop = mkHost {
           vars   = import ./targets/hosts/laptop/vars.nix;
-          modules = [ ./targets/hosts/laptop/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/laptop/default.nix ];
         };
 
         gaming = mkHost {
           vars   = import ./targets/hosts/gaming/vars.nix;
-          modules = [ ./targets/hosts/gaming/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/gaming/default.nix ];
+        };
+
+        openclaw-vm = mkHost {
+          vars   = import ./targets/hosts/openclaw-vm/vars.nix;
+          modules = [ disko.nixosModules.disko ./targets/hosts/openclaw-vm/default.nix ];
         };
 
         ms-s1-max = mkHost {

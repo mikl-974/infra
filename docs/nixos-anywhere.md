@@ -36,6 +36,9 @@ Ce qu'il ne change pas :
 - `disko.nix` reste attaché au host concret
 - le firmware, le réseau et l'hyperviseur restent des choix du target concret
 
+Cas concret désormais versionné :
+- `openclaw-vm` = host NixOS concret, dédié à OpenClaw, qui importe `modules/profiles/virtual-machine.nix`
+
 ## Préparer la configuration
 
 Les variables spécifiques à la machine sont centralisées dans `targets/hosts/<name>/vars.nix`.
@@ -86,6 +89,7 @@ nix run .#validate-install -- <host>
 ```
 
 Ce script vérifie que `vars.nix` est complet (`system`, `username`, `hostname`, `disk` si disko est présent, `timezone`, `locale`), que les fichiers critiques existent, qu'aucun placeholder ne reste, que le host est bien exposé dans `flake.nix`, et que les dotfiles activés existent réellement.
+Il vérifie aussi qu'un host avec `disko.nix` branche bien `disko.nixosModules.disko` dans `flake.nix`.
 
 ### 4. Afficher un résumé de la config effective
 
@@ -150,6 +154,11 @@ Pour un host mono-user explicite comme `main`, `laptop` ou `gaming`, la composit
 - `home/users/<user>.nix`
 - `home/roles/*.nix`
 
+Pour un host de service comme `openclaw-vm`, le repo garde un
+`home/targets/openclaw-vm.nix` explicite mais volontairement vide :
+- le modèle du flake reste homogène
+- aucun faux périmètre Home Manager desktop n'est forcé sur la VM
+
 Voir `docs/bootstrap.md` pour le workflow complet post-installation.
 
 ## Reconstruire la machine
@@ -174,6 +183,7 @@ modules/                modules Nix
 home/targets/<host>.nix composition Home Manager explicite par host
 home/users/<user>.nix   identité utilisateur normalisée
 dotfiles/               fichiers de configuration bruts
+stacks/openclaw/        socle de la stack OpenClaw pour `openclaw-vm`
 scripts/                init-host, show-config, doctor, validate-install, install-anywhere, install-manual, post-install-check
 templates/host-vars.nix template de vars.nix pour un nouveau host
 ```
@@ -184,6 +194,7 @@ Hosts NixOS structurellement prêts pour NixOS Anywhere :
 - `main`
 - `laptop`
 - `gaming`
+- `openclaw-vm`
 
 Condition opératoire restante pour chacun :
 - renseigner le vrai `disk` dans `targets/hosts/<host>/vars.nix` sur la machine cible concernée
@@ -191,14 +202,13 @@ Condition opératoire restante pour chacun :
 Host NixOS non prêt pour NixOS Anywhere à ce stade :
 - `ms-s1-max` (pas de `disko.nix`)
 
-Exemple d'usage sur un host VM concret :
+Exemple réel dans le repo :
 
 ```nix
 {
   imports = [
-    ../../../../modules/profiles/desktop-hyprland.nix
     ../../../../modules/profiles/virtual-machine.nix
-    ./user.nix
+    ../../../../stacks/openclaw/default.nix
   ];
 }
 ```

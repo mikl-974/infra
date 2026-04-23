@@ -52,6 +52,7 @@ Exemples réels :
 - `home/targets/main.nix` = composition finale de `main`
 - `home/targets/laptop.nix` = composition finale de `laptop`
 - `home/targets/gaming.nix` = composition finale de `gaming`
+- `home/targets/openclaw-vm.nix` = binding volontairement vide pour une VM de service
 - `home/targets/ms-s1-max.nix` = composition finale de `ms-s1-max`
 
 ### `dotfiles/`
@@ -61,3 +62,7 @@ Le choix de qui consomme quoi se fait dans `home/`.
 ### `stacks/`
 Contient les services et applications portés par le repo `infra`.
 Une stack peut être importée par un profil système, mais elle ne décide jamais quelle machine l'utilise.
+
+Exemples :
+- `stacks/ai-server/` = stack de service IA
+- `stacks/openclaw/` = socle applicatif OpenClaw

@@ -21,6 +21,7 @@ Une stack ne décide jamais :
 - `stacks/` = services/applications
 - `home/` = composition utilisateur
 
-## Stack actuelle
+## Stacks actuelles
 
 - `stacks/ai-server/` : service `ollama` porté par ce repo
+- `stacks/openclaw/` : socle de la future stack OpenClaw, sans logique machine ni faux runtime complet

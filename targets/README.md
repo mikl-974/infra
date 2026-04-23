@@ -40,6 +40,7 @@ Le même principe vaut pour les VMs :
 - `main`
 - `laptop`
 - `gaming`
+- `openclaw-vm`
 - `ms-s1-max`
 
 ### Darwin
@@ -53,6 +54,9 @@ Le même principe vaut pour les VMs :
 3. importer `modules/profiles/virtual-machine.nix` si ce host concret est une VM
 4. ajouter `disko.nix` si le host doit être installable via NixOS Anywhere
 5. exposer la machine dans `flake.nix`
+
+Exemple concret dans le repo :
+- `openclaw-vm` = host VM concret dédié à la future stack OpenClaw
 
 ### Darwin
 1. créer `targets/hosts/<name>/vars.nix`

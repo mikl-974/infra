@@ -17,12 +17,12 @@ Il porte maintenant ensemble :
 | Couche | Rôle | Exemple |
 |---|---|---|
 | `modules/` | briques réutilisables | profiles, security, darwin |
-| `targets/hosts/` | réalité machine | `main`, `ms-s1-max`, `macmini` |
+| `targets/hosts/` | réalité machine | `main`, `openclaw-vm`, `macmini` |
 | `home/users/` | identité d’un user | `mikl.nix`, `mfo.nix`, `dfo.nix`, `zfo.nix`, `lfo.nix` |
 | `home/roles/` | binding réutilisable par usage | `desktop-hyprland.nix`, `terminal-kitty.nix` |
-| `home/targets/` | composition finale par machine | `main.nix`, `ms-s1-max.nix` |
+| `home/targets/` | composition finale par machine | `main.nix`, `openclaw-vm.nix`, `ms-s1-max.nix` |
 | `dotfiles/` | contenu brut réutilisable | Hyprland, Kitty, GTK |
-| `stacks/` | services/applications | `ai-server/` |
+| `stacks/` | services/applications | `ai-server/`, `openclaw/` |
 | `secrets/` | source chiffrée | `secrets/hosts/ms-s1-max.yaml` |
 
 Le contexte "machine virtuelle" ne crée pas un nouveau type de target :
@@ -48,10 +48,11 @@ Il ne devient pas un faux host NixOS.
 
 ## NixOS moderne actuel
 
-Quatre targets NixOS réels valident maintenant le modèle moderne :
+Cinq targets NixOS réels valident maintenant le modèle moderne :
 - `main` en mono-user explicite
 - `laptop` en mono-user explicite
 - `gaming` en mono-user explicite
+- `openclaw-vm` en host VM de service explicite
 - `ms-s1-max` en multi-user explicite
 
 ### `main`
@@ -75,6 +76,14 @@ Quatre targets NixOS réels valident maintenant le modèle moderne :
 - rôles réutilisables : `home/roles/desktop-hyprland.nix`, `home/roles/gaming-steam.nix`
 - installation NixOS Anywhere : structure prête via `targets/hosts/gaming/disko.nix`, disque réel encore machine-dépendant
 
+### `openclaw-vm`
+- host concret : `targets/hosts/openclaw-vm/`
+- profil réutilisable : `modules/profiles/virtual-machine.nix`
+- stack portée : `stacks/openclaw/`
+- composition Home Manager : `home/targets/openclaw-vm.nix` volontairement vide
+- base système : VM de service minimale avec SSH et boot explicite
+- installation NixOS Anywhere : structure prête via `targets/hosts/openclaw-vm/disko.nix`, disque réel encore machine-dépendant
+
 `main`, `laptop` et `gaming` ne dépendent plus d'aucun fallback Home Manager.
 
 ## Users normalisés
@@ -87,6 +96,9 @@ Le repo expose maintenant des identités explicites dans `home/users/` :
 
 Définir un user dans `home/users/` ne l'active pas automatiquement.
 L'affectation réelle reste déclarée dans `home/targets/<host>.nix`.
+
+Un host de service comme `openclaw-vm` peut garder un binding Home Manager vide
+si aucune composition utilisateur n'est réellement utile.
 
 ## Darwin actuel
 
@@ -122,7 +134,7 @@ Le target Darwin `macmini` reste séparé de cette logique Home Manager NixOS.
 
 ## Parcours d'installation NixOS
 
-- `main`, `laptop` et `gaming` ont maintenant un `disko.nix` branché
+- `main`, `laptop`, `gaming` et `openclaw-vm` ont maintenant un `disko.nix` branché
 - leur parcours NixOS Anywhere est donc préparé structurellement
 - le dernier paramètre volontairement local reste `disk` dans `vars.nix`, à renseigner sur la machine cible
 - `ms-s1-max` reste sur un parcours manuel tant qu'aucun `disko.nix` n'est défini pour ce host
@@ -131,3 +143,12 @@ Le même principe vaut pour une VM :
 - le workflow NixOS Anywhere ou manuel reste celui du host concret
 - le profil VM ne remplace pas la nécessité de renseigner le bon disque
 - le choix firmware/réseau/hyperviseur reste un choix du target concret
+
+## OpenClaw : séparation des responsabilités
+
+- `openclaw-vm` = la machine concrète
+- `virtual-machine.nix` = le contexte VM réutilisable
+- `stacks/openclaw/` = le socle de la stack OpenClaw
+
+La machine décide qu'elle porte la stack.
+La stack ne devient pas un host.

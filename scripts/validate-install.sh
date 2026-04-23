@@ -252,6 +252,12 @@ if [[ "$HAS_DISKO" == true ]]; then
     fail "targets/hosts/$HOST/disko.nix n'utilise pas hostVars.disk"
   fi
 
+   if flake_host_uses_disko_module "$REPO_ROOT" "$HOST"; then
+     ok "flake.nix branche disko.nixosModules.disko pour $HOST"
+   else
+     fail "flake.nix n'ajoute pas disko.nixosModules.disko pour $HOST"
+   fi
+
   if [[ -f "$REPO_ROOT/scripts/install-anywhere.sh" ]]; then
     if [[ -n "$DISK" ]] && ! is_placeholder_value "$DISK"; then
       ok "parcours NixOS Anywhere disponible : scripts/install-anywhere.sh"

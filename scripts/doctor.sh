@@ -128,9 +128,15 @@ if [[ -n "$HOST" ]]; then
   fi
 
   if host_uses_disko "$REPO_ROOT" "$HOST"; then
+    if flake_host_uses_disko_module "$REPO_ROOT" "$HOST"; then
+      ok "disko branché dans flake.nix pour ce host"
+    else
+      fail "disko.nix présent, mais disko.nixosModules.disko n'est pas branché dans flake.nix pour ce host"
+    fi
+
     HOST_DISK="$(read_nix_string_var "$(host_vars_file "$REPO_ROOT" "$HOST")" "disk")"
     if [[ -n "$HOST_DISK" ]] && ! is_placeholder_value "$HOST_DISK"; then
-      ok "NixOS Anywhere possible pour ce host (disko.nix présent, disk renseigné)"
+      ok "NixOS Anywhere possible pour ce host (disko.nix présent, module disko branché, disk renseigné)"
     else
       warn "NixOS Anywhere structurellement prêt pour ce host, mais le vrai disk reste à renseigner dans vars.nix"
     fi

@@ -26,6 +26,7 @@ Le cas "machine virtuelle" est maintenant modélisé comme un profil réutilisab
 - `main`
 - `laptop`
 - `gaming`
+- `openclaw-vm`
 - `ms-s1-max`
 
 ### Darwin
@@ -99,11 +100,28 @@ Composition retenue pour cette passe :
 - dotfiles bruts actifs : Hyprland / foot / wofi / mako via `dotfiles/`
 - installation distante : `targets/hosts/gaming/disko.nix` branché, disque réel à renseigner dans `vars.nix`
 
+`openclaw-vm` introduit maintenant un vrai host concret VM dans le repo :
+- `targets/hosts/openclaw-vm/default.nix`
+- `targets/hosts/openclaw-vm/config/default.nix`
+- `targets/hosts/openclaw-vm/config/user.nix`
+- `targets/hosts/openclaw-vm/disko.nix`
+- `home/targets/openclaw-vm.nix`
+- `stacks/openclaw/default.nix`
+- `stacks/openclaw/README.md`
+
+Composition retenue pour cette passe :
+- target concret NixOS : `targets/hosts/openclaw-vm/`
+- contexte machine : VM explicite via `modules/profiles/virtual-machine.nix`
+- base système : VM de service minimale, pas de desktop
+- Home Manager : binding vide assumé dans `home/targets/openclaw-vm.nix`
+- stack portée : `stacks/openclaw/`
+- installation distante : `targets/hosts/openclaw-vm/disko.nix` branché, disque réel à renseigner dans `vars.nix`
+
 Tous les targets NixOS du repo utilisent maintenant un `home/targets/<host>.nix` explicite.
 Le fallback `home/users/default.nix` a été retiré.
 
 Parcours NixOS Anywhere réellement prêts en V1 :
-- structure et scripts : `main`, `laptop`, `gaming`
+- structure et scripts : `main`, `laptop`, `gaming`, `openclaw-vm`
 - prérequis opératoire restant : renseigner le vrai `disk` sur la machine cible avant installation
 - hors périmètre Anywhere actuel : `ms-s1-max` (pas de `disko.nix`)
 
@@ -113,7 +131,18 @@ Parcours NixOS Anywhere réellement prêts en V1 :
 - le fait "tourne dans une VM" se déclare via `modules/profiles/virtual-machine.nix`
 - le profil VM ne choisit ni `disk`, ni `disko.nix`, ni l'hyperviseur
 - les scripts montrent maintenant explicitement `bare-metal` vs `virtual-machine`
-- à ce stade, aucun host versionné n'importe encore ce profil : l'usage est documenté sans faire semblant qu'un target VM concret existe déjà
+- `openclaw-vm` est maintenant le premier host versionné qui importe explicitement ce profil
+
+## OpenClaw : frontière retenue
+
+- `targets/hosts/openclaw-vm/` = machine concrète dédiée à OpenClaw
+- `modules/profiles/virtual-machine.nix` = contexte VM réutilisable
+- `stacks/openclaw/` = socle de la stack OpenClaw
+
+La stack OpenClaw reste volontairement minimale dans cette passe :
+- activation explicite via `infra.stacks.openclaw.enable`
+- préparation des répertoires hôte attendus
+- pas encore de runtime/service complet tant que ses détails ne sont pas figés
 
 ## Users normalisés disponibles
 

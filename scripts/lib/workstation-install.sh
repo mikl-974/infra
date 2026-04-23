@@ -105,6 +105,17 @@ flake_exposes_app() {
   grep -qE "^[[:space:]]*${app_name}[[:space:]]*=[[:space:]]*mkApp" "$repo_root/flake.nix"
 }
 
+flake_host_uses_disko_module() {
+  local repo_root="$1"
+  local host="$2"
+
+  awk -v host="$host" '
+    $0 ~ "^[[:space:]]*" host "[[:space:]]*=[[:space:]]*mkHost[[:space:]]*\\{" { in_host = 1 }
+    in_host { print }
+    in_host && /^[[:space:]]*};[[:space:]]*$/ { exit }
+  ' "$repo_root/flake.nix" | grep -q 'disko\.nixosModules\.disko'
+}
+
 collect_active_dotfiles() {
   local home_file="$1"
 
