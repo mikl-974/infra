@@ -7,13 +7,13 @@ Le theming de la workstation est structure en deux couches :
 | Couche | Localisation | Role |
 |---|---|---|
 | Module systeme | `modules/theming/noctalia.nix` | packages GTK, env vars, activation |
-| Assets visuels | `dotfiles/noctalia/` | couleurs, wallpapers, CSS applicatifs |
+| Assets visuels | `dotfiles/themes/noctalia/` | couleurs, wallpapers, CSS applicatifs |
 
 Ces deux couches sont intentionnellement separees : le module Nix gere ce qui releve du systeme, les dotfiles gerent ce qui releve de la personnalisation visuelle brute.
 
 ## Activation
 
-Noctalia est active dans `profiles/desktop-hyprland.nix` :
+Noctalia est active dans `modules/profiles/desktop-hyprland.nix` :
 
 ```nix
 workstation.theming.noctalia.enable = true;
@@ -32,14 +32,14 @@ Ce module installe :
 Et configure :
 - `GTK_THEME=Adwaita:dark` (variable de session — peut etre surchargee par home-manager)
 
-## Dotfiles visuels (`dotfiles/noctalia/`)
+## Dotfiles visuels (`dotfiles/themes/noctalia/`)
 
-La palette de couleurs et les assets visuels vivent dans `dotfiles/noctalia/`.
+La palette de couleurs et les assets visuels vivent dans `dotfiles/themes/noctalia/`.
 
 Structure prevue :
 
 ```
-dotfiles/noctalia/
+dotfiles/themes/noctalia/
   colors.conf          palette de base (variables nommees)
   wallpaper/           fonds d'ecran
   gtk/                 surcharges CSS GTK
@@ -47,7 +47,7 @@ dotfiles/noctalia/
   foot/                snippet couleurs foot (inclus dans foot.ini)
 ```
 
-Les fichiers de ce dossier sont lies par Home Manager (`home/default.nix`).
+Les fichiers de ce dossier sont lies par Home Manager (`home/users/default.nix`).
 
 ## Etendre Noctalia
 
@@ -57,8 +57,8 @@ Dans `modules/theming/noctalia.nix`, section `environment.systemPackages`.
 
 ### Ajouter un fichier de theme applicatif
 
-1. Placer le fichier dans `dotfiles/noctalia/`
-2. L'enregistrer dans `home/default.nix` via `home.file`
+1. Placer le fichier dans `dotfiles/themes/noctalia/`
+2. L'enregistrer dans `home/users/default.nix` via `home.file`
 
 ### Changer le theme GTK
 

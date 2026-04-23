@@ -1,9 +1,10 @@
 { hostVars, ... }:
 {
   imports = [
-    ../../profiles/desktop-hyprland.nix
-    ../../profiles/gaming.nix
-    ../../profiles/networking.nix
+    ./disko.nix
+    ../../modules/profiles/desktop-hyprland.nix
+    ../../modules/profiles/dev.nix
+    ../../modules/profiles/networking.nix
   ];
 
   networking.hostName = hostVars.hostname;
@@ -11,12 +12,12 @@
   i18n.defaultLocale = hostVars.locale;
   system.stateVersion = "24.11";
 
-  # Boot: EFI systemd-boot — explicit for install/reinstall reliability.
+  # Boot: EFI systemd-boot — matches the disko ESP at /boot.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   users.users.${hostVars.username} = {
     isNormalUser = true;
-    extraGroups  = [ "wheel" "networkmanager" "video" "audio" ];
+    extraGroups  = [ "wheel" "docker" "networkmanager" "video" "audio" ];
   };
 }

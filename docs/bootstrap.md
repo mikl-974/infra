@@ -44,7 +44,7 @@ cd workstation
 
 ### 2. Configurer la machine
 
-Toutes les valeurs spécifiques à la machine sont dans `hosts/<name>/vars.nix`.
+Toutes les valeurs spécifiques à la machine sont dans `targets/<name>/vars.nix`.
 **C'est le seul fichier à renseigner.**
 
 ```bash
@@ -52,7 +52,7 @@ Toutes les valeurs spécifiques à la machine sont dans `hosts/<name>/vars.nix`.
 nix run .#init-host -- main
 ```
 
-Ou éditer directement `hosts/main/vars.nix` :
+Ou éditer directement `targets/main/vars.nix` :
 
 ```nix
 {
@@ -67,8 +67,8 @@ Ou éditer directement `hosts/main/vars.nix` :
 
 Ces valeurs sont lues automatiquement par :
 - `flake.nix` → système du host (`system`) + username pour Home Manager
-- `hosts/main/default.nix` → hostname, timezone, locale, définition utilisateur
-- `hosts/main/disko.nix` → disque cible
+- `targets/main/default.nix` → hostname, timezone, locale, définition utilisateur
+- `targets/main/disko.nix` → disque cible
 
 Aucun autre fichier n'est à modifier.
 
@@ -184,8 +184,8 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 
 ## Ajouter une nouvelle machine
 
-1. Créer `hosts/<name>/default.nix` (copier depuis un host existant et adapter)
-2. Créer `hosts/<name>/disko.nix` si le host utilise disko
+1. Créer `targets/<name>/default.nix` (copier depuis un host existant et adapter)
+2. Créer `targets/<name>/disko.nix` si le host utilise disko
 3. Initialiser la config :
    ```bash
    nix run .#init-host -- <name>
@@ -193,8 +193,8 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 4. Ajouter la configuration dans `flake.nix` :
    ```nix
    <name> = mkHost {
-     vars    = import ./hosts/<name>/vars.nix;
-     modules = [ disko.nixosModules.disko ./hosts/<name>/default.nix ];
+     vars    = import ./targets/<name>/vars.nix;
+     modules = [ disko.nixosModules.disko ./targets/<name>/default.nix ];
    };
    ```
 5. Valider : `nix run .#validate-install -- <name>`

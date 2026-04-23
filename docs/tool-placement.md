@@ -51,7 +51,7 @@ La bonne decision ici est donc :
 
 - implementation locale dans `workstation`
 - structure explicite via `modules/containers/podman.nix`
-- activation via `profiles/dev.nix`
+- activation via `modules/profiles/dev.nix`
 
 ## NordVPN : decision et limite volontaire
 
@@ -76,7 +76,7 @@ La decision est explicite :
 - application desktop dev -> `modules/apps/dev.nix`
 - editeur / IDE -> `modules/apps/editors.nix`
 - moteur de containers local -> `modules/containers/podman.nix`
-- profil d'assemblage dev -> `profiles/dev.nix`
+- profil d'assemblage dev -> `modules/profiles/dev.nix`
 
 ## Frontiere stricte
 

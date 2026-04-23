@@ -4,7 +4,7 @@
 
 La base desktop Hyprland est organisee ainsi :
 
-- profil : `profiles/desktop-hyprland.nix`
+- profil : `modules/profiles/desktop-hyprland.nix`
 - modules :
   - `modules/desktop/default.nix`
   - `modules/desktop/hyprland.nix`
@@ -15,11 +15,11 @@ La base desktop Hyprland est organisee ainsi :
   - `modules/desktop/warp.nix`
   - `modules/apps/daily.nix`
   - `modules/apps/utilities.nix`
-  - `home/default.nix`
-  - `dotfiles/hypr/hyprland.conf`
-  - `dotfiles/wofi/`
-  - `dotfiles/foot/`
-  - `dotfiles/mako/`
+  - `home/users/default.nix`
+  - `dotfiles/hyprland/hyprland.conf`
+  - `dotfiles/launchers/`
+  - `dotfiles/terminal/`
+  - `dotfiles/notifications/`
 - theming : `modules/theming/noctalia.nix`
 
 ## Composition actuelle
@@ -47,29 +47,29 @@ La base inclut :
 - historique clipboard actif via `cliphist` + `wl-paste --watch`
 - bindings de base pour terminal, launcher, navigateur, fichiers et clipboard history
 
-Tailscale est active via `profiles/networking.nix` (module `foundation`), pas depuis le profil desktop.
+Tailscale est active via `modules/profiles/networking.nix` (module `foundation`), pas depuis le profil desktop.
 
 ## Ce qui n'est volontairement pas inclus
 
 - logique utilisateur cachee
-- Tailscale (il vient de `foundation` via `profiles/networking.nix`)
+- Tailscale (il vient de `foundation` via `modules/profiles/networking.nix`)
 
 ## Noctalia
 
-Noctalia est active dans `profiles/desktop-hyprland.nix` via :
+Noctalia est active dans `modules/profiles/desktop-hyprland.nix` via :
 
 ```nix
 workstation.theming.noctalia.enable = true;
 ```
 
 Le module systeme (`modules/theming/noctalia.nix`) installe les packages GTK/curseur et definit les variables d'environnement.
-La personnalisation visuelle (couleurs, CSS, wallpapers) vit dans `dotfiles/noctalia/`.
+La personnalisation visuelle (couleurs, CSS, wallpapers) vit dans `dotfiles/themes/noctalia/`.
 
 Voir `docs/theming.md` pour les details.
 
 ## Cloudflare WARP
 
-WARP est gere dans `modules/desktop/warp.nix` et active via `profiles/desktop-hyprland.nix`.
+WARP est gere dans `modules/desktop/warp.nix` et active via `modules/profiles/desktop-hyprland.nix`.
 
 Il reste dans `workstation` parce que c'est un client VPN desktop (interface utilisateur), pas une primitive reseau serveur. Le module `foundation.networking.cloudflared` (tunnel daemon) est une brique differente et distincte.
 
@@ -111,11 +111,11 @@ Repartition retenue :
 |---|---|
 | `modules/desktop/hyprland.nix` | active Hyprland et les paquets Wayland de base |
 | `modules/apps/daily.nix` | installe `mako` et `cliphist` comme apps desktop |
-| `home/default.nix` | lie les fichiers utilisateur actifs |
-| `dotfiles/hypr/hyprland.conf` | autostart et bindings Hyprland |
-| `dotfiles/wofi/` | comportement et style du launcher |
-| `dotfiles/foot/` | configuration du terminal |
-| `dotfiles/mako/` | configuration du daemon de notifications |
+| `home/users/default.nix` | lie les fichiers utilisateur actifs |
+| `dotfiles/hyprland/hyprland.conf` | autostart et bindings Hyprland |
+| `dotfiles/launchers/` | comportement et style du launcher |
+| `dotfiles/terminal/` | configuration du terminal |
+| `dotfiles/notifications/` | configuration du daemon de notifications |
 
 Ainsi :
 
@@ -127,9 +127,9 @@ Ainsi :
 
 - ajouter la logique desktop commune dans `modules/desktop/`
 - garder les applications quotidiennes dans `modules/apps/daily.nix`
-- garder l'autostart et les bindings utilisateur dans `dotfiles/hypr/hyprland.conf`
+- garder l'autostart et les bindings utilisateur dans `dotfiles/hyprland/hyprland.conf`
 - garder les fichiers applicatifs bruts dans `dotfiles/`
-- garder les choix machine-specifiques dans `hosts/`
+- garder les choix machine-specifiques dans `targets/`
 - deplacer la personnalisation utilisateur dans `dotfiles/` + `home/`
-- garder Tailscale dans `profiles/networking.nix`
+- garder Tailscale dans `modules/profiles/networking.nix`
 - garder la connectivite locale desktop (Wi-Fi/Bluetooth/Solaar) dans `modules/desktop/`

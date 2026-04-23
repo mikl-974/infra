@@ -10,7 +10,7 @@ resolve_repo_root() {
 }
 
 list_hosts() {
-  local hosts_dir="$1/hosts"
+  local hosts_dir="$1/targets"
   if [[ ! -d "$hosts_dir" ]]; then
     return 0
   fi
@@ -41,21 +41,21 @@ read_nix_string_var() {
 }
 
 host_vars_file() {
-  printf '%s/hosts/%s/vars.nix\n' "$1" "$2"
+  printf '%s/targets/%s/vars.nix\n' "$1" "$2"
 }
 
 host_default_file() {
-  printf '%s/hosts/%s/default.nix\n' "$1" "$2"
+  printf '%s/targets/%s/default.nix\n' "$1" "$2"
 }
 
 host_disko_file() {
-  printf '%s/hosts/%s/disko.nix\n' "$1" "$2"
+  printf '%s/targets/%s/disko.nix\n' "$1" "$2"
 }
 
 host_exists() {
   local repo_root="$1"
   local host="$2"
-  [[ -d "$repo_root/hosts/$host" ]]
+  [[ -d "$repo_root/targets/$host" ]]
 }
 
 host_has_profile() {
@@ -65,7 +65,7 @@ host_has_profile() {
   local default_file
   default_file="$(host_default_file "$repo_root" "$host")"
 
-  [[ -f "$default_file" ]] && grep -q "../../profiles/${profile}\.nix" "$default_file"
+  [[ -f "$default_file" ]] && grep -q "../../modules/profiles/${profile}\.nix" "$default_file"
 }
 
 host_uses_disko() {

@@ -1,9 +1,9 @@
 { hostVars, ... }:
 {
   imports = [
-    ../../profiles/desktop-hyprland.nix
-    ../../profiles/dev.nix
-    ../../profiles/networking.nix
+    ../../modules/profiles/desktop-hyprland.nix
+    ../../modules/profiles/gaming.nix
+    ../../modules/profiles/networking.nix
   ];
 
   networking.hostName = hostVars.hostname;
@@ -17,6 +17,6 @@
 
   users.users.${hostVars.username} = {
     isNormalUser = true;
-    extraGroups  = [ "wheel" "docker" "networkmanager" "video" "audio" ];
+    extraGroups  = [ "wheel" "networkmanager" "video" "audio" ];
   };
 }

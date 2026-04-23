@@ -12,7 +12,7 @@ in
   #   - provides the activation point for all future Noctalia theming work
   #
   # Dotfiles (Hyprland colors, waybar CSS, foot theme, etc.) live in dotfiles/noctalia/
-  # and are managed through Home Manager (home/default.nix).
+  # and are managed through Home Manager (home/users/default.nix).
   options.workstation.theming.noctalia.enable =
     lib.mkEnableOption "Noctalia personal theme and color scheme";
 

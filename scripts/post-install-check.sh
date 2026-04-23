@@ -49,11 +49,11 @@ EXPECT_DESKTOP=false
 EXPECT_NETWORKING=false
 HOME_FILE=""
 
-if [[ -n "$REPO_ROOT" && -f "$REPO_ROOT/flake.nix" && -f "$REPO_ROOT/hosts/$HOST_NAME/vars.nix" ]]; then
+if [[ -n "$REPO_ROOT" && -f "$REPO_ROOT/flake.nix" && -f "$REPO_ROOT/targets/$HOST_NAME/vars.nix" ]]; then
   HOST_CONTEXT_AVAILABLE=true
-  HOST_VARS_FILE="$REPO_ROOT/hosts/$HOST_NAME/vars.nix"
-  HOST_DEFAULT_FILE="$REPO_ROOT/hosts/$HOST_NAME/default.nix"
-  HOME_FILE="$REPO_ROOT/home/default.nix"
+  HOST_VARS_FILE="$REPO_ROOT/targets/$HOST_NAME/vars.nix"
+  HOST_DEFAULT_FILE="$REPO_ROOT/targets/$HOST_NAME/default.nix"
+  HOME_FILE="$REPO_ROOT/home/users/default.nix"
   EXPECTED_USER="$(read_nix_string_var "$HOST_VARS_FILE" "username")"
   host_has_profile "$REPO_ROOT" "$HOST_NAME" "desktop-hyprland" && EXPECT_DESKTOP=true
   host_has_profile "$REPO_ROOT" "$HOST_NAME" "networking" && EXPECT_NETWORKING=true
@@ -135,7 +135,7 @@ echo -e "${BLD}── Host attendu et utilisateur${RST}"
 echo ""
 if [[ "$HOST_CONTEXT_AVAILABLE" == true ]]; then
   ok "Contexte repo détecté pour le host '$HOST_NAME'"
-  ok "vars.nix lu depuis hosts/$HOST_NAME/vars.nix"
+  ok "vars.nix lu depuis targets/$HOST_NAME/vars.nix"
 else
   warn "Contexte repo indisponible pour '$HOST_NAME' — vérifications alignées sur le code limitées"
 fi
@@ -187,7 +187,7 @@ if [[ -n "$EXPECTED_USER_HOME" && -f "$HOME_FILE" ]]; then
     check_dotfile "$EXPECTED_USER_HOME" "$destination" "$source_rel"
   done < <(collect_home_file_mappings "$HOME_FILE")
 else
-  warn "Impossible de vérifier les dotfiles actifs contre home/default.nix"
+  warn "Impossible de vérifier les dotfiles actifs contre home/users/default.nix"
 fi
 
 echo ""

@@ -39,12 +39,12 @@ Briques conservees dans `workstation` :
 
 | Couche | Localisation | Ce qu'elle contient |
 |---|---|---|
-| Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi, daily apps, UX de session |
+| Base desktop | `modules/profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi, daily apps, UX de session |
 | Daily apps | `modules/apps/daily.nix` | Firefox, Chromium, Zathura, imv, Thunar, File Roller, LocalSend, cliphist, mako |
 | Utilities desktop | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` | Solaar, nm-applet, Blueman, pavucontrol, brightnessctl, playerctl, nm-connection-editor |
-| Dev utilisateur | `profiles/dev.nix` | IDE / editeurs / apps dev (VS Code, Rider, WebStorm, Neovim, GitKraken), outils CLI dev systeme, Podman local |
-| Gaming | `profiles/gaming.nix` | Steam, Proton, Lutris, Bottles, mangohud, gamescope, gamemode |
-| AI local | `profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
+| Dev utilisateur | `modules/profiles/dev.nix` | IDE / editeurs / apps dev (VS Code, Rider, WebStorm, Neovim, GitKraken), outils CLI dev systeme, Podman local |
+| Gaming | `modules/profiles/gaming.nix` | Steam, Proton, Lutris, Bottles, mangohud, gamescope, gamemode |
+| AI local | `modules/profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
 | Shell dev | `devshells/dotnet.nix` | SDK .NET, Docker CLI, playwright, outils CLI |
 
 Les editeurs / IDE sont des applications desktop installes en tant que paquets systeme.
@@ -53,8 +53,8 @@ Le devShell fournit les runtimes et outils CLI avec lesquels les editeurs travai
 
 ## Modele de composition
 
-1. `hosts/` decrit une machine reelle
-2. chaque host importe un ou plusieurs `profiles/`
+1. `targets/` decrit une machine reelle
+2. chaque target importe un ou plusieurs `modules/profiles/`
 3. les profils assemblent des `modules/roles/` (composition apps + config systeme)
 4. les roles importent des `modules/apps/` (paquets) et configurent les options systeme
 5. les dotfiles restent decouples dans `dotfiles/`
@@ -75,19 +75,25 @@ Le devShell fournit les runtimes et outils CLI avec lesquels les editeurs travai
 
 ```
 flake.nix             point d'entree, inputs, nixosConfigurations, devShells
-hosts/                machines concretes
+targets/              machines concretes
   main/
-    default.nix       configuration host (profils, hostname, boot)
+    default.nix       configuration machine (profils, hostname, boot)
     disko.nix         layout disque (GPT + EFI + btrfs)
+    vars.nix          valeurs de la machine (username, disk, timezone…)
   laptop/
   gaming/
-profiles/             assemblages de roles reutilisables
-  desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP, connectivite locale, daily apps, utilities)
-  dev.nix               outils dev utilisateur (IDE, CLI systeme)
-  networking.nix        reseau (Tailscale)
-  gaming.nix            profil gaming (Steam, Lutris, gamemode)
-  ai.nix                profil AI local (ollama, llama-cpp, Flatpak)
-modules/              logique Nix isolee par domaine
+  README.md
+modules/              logique Nix reutilisable par domaine
+  modules/profiles/  assemblages reutilisables
+    desktop-hyprland.nix  base graphique (Hyprland, Noctalia, WARP, daily apps)
+    dev.nix               outils dev utilisateur (IDE, CLI systeme)
+    networking.nix        reseau (Tailscale)
+    gaming.nix            profil gaming (Steam, Lutris, gamemode)
+    ai.nix                profil AI local (ollama, llama-cpp, Flatpak)
+  devshells/          environnements de dev CLI locaux
+    dotnet.nix        shell .NET (SDK, Docker CLI, playwright)
+  templates/          templates de configuration
+    host-vars.nix     template vars.nix pour nouvelle machine
   desktop/            Hyprland, audio, connectivity, portals, fonts, WARP
   theming/            Noctalia et theming systeme
   apps/
@@ -98,33 +104,43 @@ modules/              logique Nix isolee par domaine
     editors.nix       editeurs / IDE (Neovim, VS Code, Rider, WebStorm)
     gaming.nix        apps gaming (Lutris, Bottles, mangohud, gamescope, wine)
     ai.nix            apps AI local (ollama, llama-cpp)
-  containers/        moteurs de containers locaux de dev
-    podman.nix        podman local avec compatibilite Docker pour le profil dev
+  containers/         moteurs de containers locaux de dev
+    podman.nix        podman local avec compatibilite Docker
   roles/
     gaming.nix        role gaming (programs.steam, programs.gamemode + apps/gaming)
     ai.nix            role AI local (Flatpak + apps/ai)
   shell/              configuration shell systeme
-devshells/            environnements de dev CLI locaux
-  dotnet.nix          shell .NET (SDK, Docker CLI, playwright)
-home/                 configuration Home Manager (utilisateur)
-  default.nix         liens vers les dotfiles actifs
-dotfiles/             configurations applicatives brutes
-  hypr/               Hyprland
-  foot/               terminal
-  wofi/               launcher
-  mako/               notifications
+  README.md
+stacks/               services et applications (placeholder — stacks serveur dans homelab)
+  README.md
+secrets/              secrets chiffres (placeholder)
+  README.md
+home/                 composition utilisateur
+  users/
+    default.nix       configuration Home Manager de l'utilisateur principal
+  roles/              compositions de roles HM reutilisables (placeholder)
+  targets/            overrides HM par machine (placeholder)
+  README.md
+dotfiles/             bibliotheque de configs applicatives par app/domaine
+  hyprland/           Hyprland
+  terminal/           Foot (terminal)
+  launchers/          Wofi (lanceur)
+  notifications/      Mako (notifications)
+  themes/
+    noctalia/         theme Noctalia (palette, assets)
   shell/              shell
-  noctalia/           theme Noctalia (palette, assets)
   editors/            editeurs (VS Code, Rider)
+  README.md
 docs/                 documentation
+scripts/              orchestration, validation, installation
 ```
 
 ## Evolution multi-machines
 
 La structure est prete pour `main`, `laptop`, `gaming` sans changer le layout :
 
-- ajouter un host = nouveau dossier dans `hosts/<name>/`
-- factoriser ce qui est commun en `profiles/`
+- ajouter un target = nouveau dossier dans `targets/<name>/`
+- factoriser ce qui est commun en `modules/profiles/`
 - isoler la logique technique reutilisable dans `modules/`
 
 ## Quand une brique doit rester dans `workstation`
@@ -145,20 +161,20 @@ Une brique passe dans `foundation` si elle est :
 ## Extension propre
 
 - ajouter des modules petits et cibles dans `modules/`
-- pour un nouveau role : creer `modules/apps/<role>.nix` + `modules/roles/<role>.nix` + `profiles/<role>.nix`
-- factoriser les comportements communs en `profiles/`
+- pour un nouveau role : creer `modules/apps/<role>.nix` + `modules/roles/<role>.nix` + `modules/profiles/<role>.nix`
+- factoriser les comportements communs en `modules/profiles/`
 - consommer `foundation` via l'input flake, pas via copie locale
 - documenter chaque nouvelle brique fonctionnelle dans `docs/`
 
 ## Couche roles (modules/roles/)
 
-La couche `modules/roles/` est intermediaire entre `modules/apps/` et `profiles/` :
+La couche `modules/roles/` est intermediaire entre `modules/apps/` et `modules/profiles/` :
 
 - `modules/apps/<role>.nix` : paquets et applications uniquement
 - `modules/roles/<role>.nix` : composition (imports apps + configuration systeme liee a l'usage)
-- `profiles/<role>.nix` : point d'entree simple pour les hosts
+- `modules/profiles/<role>.nix` : point d'entree simple pour les targets
 
-Un host importe des profils. Un profil importe un ou plusieurs roles. Un role importe des apps et configure le systeme.
+Un target importe des profils. Un profil importe un ou plusieurs roles. Un role importe des apps et configure le systeme.
 
 ## Utilities desktop et connectivite locale
 
@@ -191,8 +207,10 @@ Frontieres retenues :
 Regle retenue :
 
 - `modules/` -> paquets, services, options systeme, activation des briques desktop
-- `home/default.nix` -> declaration explicite des fichiers utilisateur actifs
-- `dotfiles/` -> contenu brut des applications (`hyprland.conf`, `foot.ini`, `wofi`, `mako`, ...)
+- `home/users/default.nix` -> declaration explicite des fichiers utilisateur actifs
+- `dotfiles/` -> bibliotheque de configs applicatives par app/domaine (hyprland, terminal, launchers, notifications, themes…)
+- `home/roles/` -> compositions de roles Home Manager reutilisables (placeholder)
+- `home/targets/` -> overrides Home Manager par machine (placeholder)
 - `scripts/` -> orchestration, diagnostic, validation et vérification ; jamais source de vérité
 
 ## Frontiere Cockpit / virtualisation
@@ -210,8 +228,8 @@ La decision detaillee est documentee dans `docs/tool-placement.md`.
 Exemple concret :
 
 - `modules/apps/daily.nix` installe `mako` et `cliphist`
-- `dotfiles/hypr/hyprland.conf` definit l'autostart et les bindings
-- `dotfiles/mako/config` definit le comportement du daemon de notifications
+- `dotfiles/hyprland/hyprland.conf` definit l'autostart et les bindings
+- `dotfiles/notifications/config` definit le comportement du daemon de notifications
 - `home/default.nix` lie ces fichiers dans `~/.config/`
 
 ## Distinction workstation/ai vs homelab/ai-server

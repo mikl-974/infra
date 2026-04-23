@@ -23,11 +23,11 @@ if [[ $# -lt 1 ]]; then
 fi
 
 HOST="$1"
-HOST_DIR="$REPO_ROOT/hosts/$HOST"
+HOST_DIR="$REPO_ROOT/targets/$HOST"
 VARS_FILE="$(host_vars_file "$REPO_ROOT" "$HOST")"
 
 if [[ ! -d "$HOST_DIR" ]]; then
-  echo -e "${RED}Erreur : hosts/$HOST/ introuvable.${RST}"
+  echo -e "${RED}Erreur : targets/$HOST/ introuvable.${RST}"
   echo "Hosts disponibles : $(list_hosts "$REPO_ROOT")"
   exit 1
 fi
@@ -49,10 +49,10 @@ show_field() {
   fi
 }
 
-echo -e "${BLD}── vars.nix${RST}  (hosts/$HOST/vars.nix)"
+echo -e "${BLD}── vars.nix${RST}  (targets/$HOST/vars.nix)"
 echo ""
 if [[ ! -f "$VARS_FILE" ]]; then
-  echo -e "  ${RED}✘  hosts/$HOST/vars.nix introuvable.${RST}"
+  echo -e "  ${RED}✘  targets/$HOST/vars.nix introuvable.${RST}"
   echo ""
   echo "  Initialiser avec :"
   echo "    nix run .#init-host -- $HOST"
@@ -94,7 +94,7 @@ DEFAULT_NIX="$(host_default_file "$REPO_ROOT" "$HOST")"
 if [[ -f "$DEFAULT_NIX" ]]; then
   echo -e "${BLD}── Profils importés${RST}"
   echo ""
-  sed -nE 's#^[[:space:]]*\.\./\.\./profiles/([^[:space:]]+)\.nix.*#  ·  \1#p' "$DEFAULT_NIX"
+  sed -nE 's#^[[:space:]]*\.\./\.\./modules/profiles/([^[:space:]]+)\.nix.*#  ·  \1#p' "$DEFAULT_NIX"
   echo ""
 fi
 
@@ -117,7 +117,7 @@ if [[ $UNDEFINED -eq 0 ]]; then
   echo "    nix run .#doctor -- --host $HOST"
   echo "    nix run .#validate-install -- $HOST"
 else
-  echo -e "  ${YLW}⚠  $UNDEFINED champ(s) à définir dans hosts/$HOST/vars.nix.${RST}"
+  echo -e "  ${YLW}⚠  $UNDEFINED champ(s) à définir dans targets/$HOST/vars.nix.${RST}"
   echo ""
   echo "  Compléter avec :"
   echo "    nix run .#init-host -- $HOST"

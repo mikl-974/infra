@@ -6,8 +6,8 @@
   # Scope: personal, local use only. No shared services, no server exposure.
   # See docs/ai.md for details and the distinction with homelab/ai-server.
   #
-  # Requires: profiles/desktop-hyprland.nix (hardware.graphics for GPU inference)
+  # Requires: modules/profiles/desktop-hyprland.nix (hardware.graphics for GPU inference)
   imports = [
-    ../modules/roles/ai.nix
+    ../roles/ai.nix
   ];
 }

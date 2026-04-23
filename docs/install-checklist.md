@@ -10,12 +10,12 @@ Pour les détails, voir `docs/manual-install.md` ou `docs/nixos-anywhere.md`.
 ### Machine cible
 
 - [ ] Hostname confirmé (`main`, `laptop`, ou `gaming`)
-- [ ] `hosts/<hostname>/default.nix` existe
-- [ ] `hosts/<hostname>/disko.nix` existe (requis pour NixOS Anywhere et recommandé en manuel)
+- [ ] `targets/<hostname>/default.nix` existe
+- [ ] `targets/<hostname>/disko.nix` existe (requis pour NixOS Anywhere et recommandé en manuel)
 
 ### Configuration machine (vars.nix)
 
-- [ ] `hosts/<hostname>/vars.nix` existe — initialiser avec `nix run .#init-host -- <hostname>` si absent
+- [ ] `targets/<hostname>/vars.nix` existe — initialiser avec `nix run .#init-host -- <hostname>` si absent
 - [ ] `system` défini (`x86_64-linux` ou `aarch64-linux`)
 - [ ] `username` défini (identifiant Unix valide)
 - [ ] `hostname` défini (correspond à la clé nixosConfigurations dans flake.nix)
@@ -98,8 +98,8 @@ Pour les détails, voir `docs/manual-install.md` ou `docs/nixos-anywhere.md`.
 
 | Symptôme | Piste |
 |---|---|
-| Champ DEFINE_ restant | Compléter `hosts/<hostname>/vars.nix`, relancer `nix run .#validate-install -- <hostname>` |
-| Rebuild échoue | Vérifier les erreurs Nix, corriger `hosts/<hostname>/vars.nix` ou `hosts/` |
+| Champ DEFINE_ restant | Compléter `targets/<hostname>/vars.nix`, relancer `nix run .#validate-install -- <hostname>` |
+| Rebuild échoue | Vérifier les erreurs Nix, corriger `targets/<hostname>/vars.nix` ou `targets/` |
 | Home Manager non appliqué | Vérifier que le username dans `vars.nix` correspond à l'utilisateur système |
 | Dotfiles absents | Vérifier `home/default.nix` — les entrées doivent pointer vers des fichiers existants |
-| Service manquant | Vérifier que le profil correspondant est importé dans `hosts/<hostname>/default.nix` |
+| Service manquant | Vérifier que le profil correspondant est importé dans `targets/<hostname>/default.nix` |

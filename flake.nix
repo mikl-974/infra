@@ -10,7 +10,7 @@
     };
 
     # Declarative disk partitioning — required for NixOS Anywhere installations.
-    # See docs/nixos-anywhere.md and hosts/main/disko.nix.
+    # See docs/nixos-anywhere.md and targets/main/disko.nix.
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,7 +30,7 @@
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
       # Foundation NixOS modules consumed by all workstation hosts.
-      # Home Manager user binding is per-host (username lives in hosts/<name>/vars.nix).
+      # Home Manager user binding is per-host (username lives in targets/<name>/vars.nix).
       sharedModules = [
         foundation.nixosModules.networkingTailscale
         home-manager.nixosModules.home-manager
@@ -43,7 +43,7 @@
       ];
 
       # Build a NixOS host from its vars.nix and host-specific modules.
-      # vars   — attrset imported from hosts/<name>/vars.nix
+      # vars   — attrset imported from targets/<name>/vars.nix
       # modules — list of NixOS modules specific to the host
       mkHost = { vars, modules }:
         lib.nixosSystem {
@@ -52,40 +52,40 @@
           specialArgs = { hostVars = vars; };
           modules = sharedModules ++ [
             # Bind the Home Manager config to the username declared in vars.nix.
-            { home-manager.users.${vars.username} = import ./home/default.nix; }
+            { home-manager.users.${vars.username} = import ./home/users/default.nix; }
           ] ++ modules;
         };
     in
     {
       nixosConfigurations = {
         main = mkHost {
-          vars   = import ./hosts/main/vars.nix;
-          modules = [ disko.nixosModules.disko ./hosts/main/default.nix ];
+          vars   = import ./targets/main/vars.nix;
+          modules = [ disko.nixosModules.disko ./targets/main/default.nix ];
         };
 
         laptop = mkHost {
-          vars   = import ./hosts/laptop/vars.nix;
-          modules = [ ./hosts/laptop/default.nix ];
+          vars   = import ./targets/laptop/vars.nix;
+          modules = [ ./targets/laptop/default.nix ];
         };
 
         gaming = mkHost {
-          vars   = import ./hosts/gaming/vars.nix;
-          modules = [ ./hosts/gaming/default.nix ];
+          vars   = import ./targets/gaming/vars.nix;
+          modules = [ ./targets/gaming/default.nix ];
         };
       };
 
       # .NET devShell is defined locally — this is a workstation-specific dev
-      # environment, not a generic shared primitive. See devshells/dotnet.nix.
+      # environment, not a generic shared primitive. See modules/devshells/dotnet.nix.
       devShells = lib.genAttrs systems (system:
         let pkgs = import nixpkgs { inherit system; };
         in {
-          dotnet = import ./devshells/dotnet.nix { inherit pkgs; };
+          dotnet = import ./modules/devshells/dotnet.nix { inherit pkgs; };
         }
       );
 
       # Installation and validation scripts exposed as nix run .#<name> apps.
       # These scripts orchestrate, verify, and guide — they do not redefine
-      # the configuration, which remains in flake.nix, hosts/, profiles/, and modules/.
+      # the configuration, which remains in flake.nix, targets/, modules/profiles/, and modules/.
       apps = lib.genAttrs systems (system:
         let pkgs = import nixpkgs { inherit system; };
             mkApp = script: {

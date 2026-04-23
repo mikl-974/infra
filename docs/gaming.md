@@ -6,7 +6,7 @@ Le rôle `gaming` prépare un environnement de bureau orienté jeu sur une machi
 
 Ce rôle est :
 - réservé aux postes de travail (desktop), pas aux serveurs
-- dépendant d'un environnement graphique (`profiles/desktop-hyprland.nix`)
+- dépendant d'un environnement graphique (`modules/profiles/desktop-hyprland.nix`)
 - composable avec d'autres profils sur le même host
 
 ## Contenu
@@ -32,7 +32,7 @@ Configuration système composée :
 - `programs.steam.gamescopeSession.enable = true` — session Steam dans gamescope
 - `programs.gamemode.enable = true` — gouverneur de performance à la demande
 
-### `profiles/gaming.nix`
+### `modules/profiles/gaming.nix`
 
 Point d'entrée profil : importe `modules/roles/gaming.nix`.
 
@@ -41,11 +41,11 @@ Point d'entrée profil : importe `modules/roles/gaming.nix`.
 Dans un host :
 
 ```nix
-# hosts/<name>/default.nix
+# targets/<name>/default.nix
 imports = [
-  ../../profiles/desktop-hyprland.nix
-  ../../profiles/gaming.nix
-  ../../profiles/networking.nix
+  ../../modules/profiles/desktop-hyprland.nix
+  ../../modules/profiles/gaming.nix
+  ../../modules/profiles/networking.nix
 ];
 ```
 
@@ -87,10 +87,10 @@ Pour ajouter des outils gaming supplémentaires :
 
 1. Ajouter les paquets dans `modules/apps/gaming.nix`
 2. Ajouter la configuration système dans `modules/roles/gaming.nix` si nécessaire
-3. Ne pas mettre de logique gaming directement dans `profiles/gaming.nix` ou dans un host
+3. Ne pas mettre de logique gaming directement dans `modules/profiles/gaming.nix` ou dans un host
 
 ## Relation avec le host `gaming`
 
-Le host `hosts/gaming/` est la machine physique dédiée au jeu.
-Il importe `profiles/gaming.nix` parmi ses profils.
-La configuration machine (username, hostname, disque) reste dans `hosts/gaming/vars.nix`.
+Le target `targets/gaming/` est la machine physique dédiée au jeu.
+Il importe `modules/profiles/gaming.nix` parmi ses profils.
+La configuration machine (username, hostname, disque) reste dans `targets/gaming/vars.nix`.

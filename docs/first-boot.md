@@ -22,7 +22,7 @@ Le but n'est pas de ricer le desktop, mais de confirmer que la workstation est e
 
 Ordre officiel :
 
-1. se connecter avec l'utilisateur défini dans `hosts/<host>/vars.nix`
+1. se connecter avec l'utilisateur défini dans `targets/<host>/vars.nix`
 2. si nécessaire : `sudo nixos-rebuild switch --flake .#<host>`
 3. lancer : `nix run .#post-install-check -- --host <host>`
 4. relire les warnings éventuels

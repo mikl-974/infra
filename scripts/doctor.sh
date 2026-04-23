@@ -44,7 +44,7 @@ echo ""
 echo -e "${BLD}── Repo et fichiers critiques${RST}"
 for path in \
   "$REPO_ROOT/flake.nix|flake.nix" \
-  "$REPO_ROOT/home/default.nix|home/default.nix" \
+  "$REPO_ROOT/home/users/default.nix|home/users/default.nix" \
   "$REPO_ROOT/scripts/init-host.sh|scripts/init-host.sh" \
   "$REPO_ROOT/scripts/validate-install.sh|scripts/validate-install.sh" \
   "$REPO_ROOT/scripts/doctor.sh|scripts/doctor.sh" \
@@ -104,14 +104,14 @@ if [[ -n "$HOST" ]]; then
   echo ""
   echo -e "${BLD}── Readiness du host '${HOST}'${RST}"
   if host_exists "$REPO_ROOT" "$HOST"; then
-    ok "hosts/$HOST existe"
+    ok "targets/$HOST existe"
   else
-    fail "hosts/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
+    fail "targets/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
   fi
 
   for path in \
-    "$(host_vars_file "$REPO_ROOT" "$HOST")|hosts/$HOST/vars.nix" \
-    "$(host_default_file "$REPO_ROOT" "$HOST")|hosts/$HOST/default.nix"; do
+    "$(host_vars_file "$REPO_ROOT" "$HOST")|targets/$HOST/vars.nix" \
+    "$(host_default_file "$REPO_ROOT" "$HOST")|targets/$HOST/default.nix"; do
     file="${path%%|*}"
     label="${path##*|}"
     if [[ -f "$file" ]]; then

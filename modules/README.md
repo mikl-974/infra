@@ -1,0 +1,31 @@
+# modules/
+
+Briques Nix réutilisables composées dans les targets et profils.
+
+## Règle
+
+Ce dossier contient uniquement :
+- modules NixOS réutilisables
+- profils réutilisables
+- devshells
+- templates
+- helpers et lib
+
+Il ne contient jamais :
+- de machine concrète
+- de stack applicative
+- de logique d'installation spécifique à une machine
+
+## Structure
+
+| Dossier | Rôle |
+|---|---|
+| `modules/apps/` | Paquets et applications desktop |
+| `modules/containers/` | Moteurs de containers locaux |
+| `modules/desktop/` | Base système desktop (Hyprland, audio, connectivité) |
+| `modules/devshells/` | Environnements de développement CLI |
+| `modules/profiles/` | Assemblages réutilisables (composés dans les targets) |
+| `modules/roles/` | Composition d'apps + config système pour un usage |
+| `modules/shell/` | Configuration shell système |
+| `modules/theming/` | Theming et identité visuelle |
+| `modules/templates/` | Templates de configuration |

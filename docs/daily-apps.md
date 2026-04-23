@@ -21,7 +21,7 @@ La couche vit dans :
 Elle est composee automatiquement dans la base desktop via :
 
 - `modules/apps/default.nix`
-- `profiles/desktop-hyprland.nix`
+- `modules/profiles/desktop-hyprland.nix`
 
 ## Contenu actuel
 
@@ -80,7 +80,7 @@ La composition retenue est :
 2. `modules/apps/daily.nix` -> apps quotidiennes
 3. `modules/apps/utilities.nix` -> helpers techniques
 4. `modules/apps/editors.nix` -> outils dev desktop optionnels
-5. `profiles/desktop-hyprland.nix` -> point d'entree simple pour les hosts
+5. `modules/profiles/desktop-hyprland.nix` -> point d'entree simple pour les hosts
 
 Les hosts n'ont rien a assembler manuellement de plus.
 

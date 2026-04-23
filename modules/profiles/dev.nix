@@ -1,9 +1,9 @@
 { pkgs, ... }:
 {
   imports = [
-    ../modules/apps/editors.nix
-    ../modules/apps/dev.nix
-    ../modules/containers/podman.nix
+    ../apps/editors.nix
+    ../apps/dev.nix
+    ../containers/podman.nix
   ];
 
   workstation.containers.podman.enable = true;

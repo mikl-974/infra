@@ -36,7 +36,7 @@ Configuration système composée :
 - Import de `modules/apps/ai.nix`
 - `services.flatpak.enable = true` — requis pour AnythingLLM Desktop (non disponible dans nixpkgs)
 
-### `profiles/ai.nix`
+### `modules/profiles/ai.nix`
 
 Point d'entrée profil : importe `modules/roles/ai.nix`.
 
@@ -45,11 +45,11 @@ Point d'entrée profil : importe `modules/roles/ai.nix`.
 Dans un host :
 
 ```nix
-# hosts/<name>/default.nix
+# targets/<name>/default.nix
 imports = [
-  ../../profiles/desktop-hyprland.nix
-  ../../profiles/ai.nix
-  ../../profiles/networking.nix
+  ../../modules/profiles/desktop-hyprland.nix
+  ../../modules/profiles/ai.nix
+  ../../modules/profiles/networking.nix
 ];
 ```
 
@@ -105,7 +105,7 @@ AnythingLLM Desktop peut se connecter au serveur ollama local (localhost:11434).
 
 ## Accélération GPU
 
-L'accélération GPU pour l'inférence locale repose sur `hardware.graphics.enable = true`, déjà activé par `profiles/desktop-hyprland.nix` via `modules/desktop/default.nix`.
+L'accélération GPU pour l'inférence locale repose sur `hardware.graphics.enable = true`, déjà activé par `modules/profiles/desktop-hyprland.nix` via `modules/desktop/default.nix`.
 
 Aucune configuration supplémentaire n'est requise dans le rôle `ai`.
 

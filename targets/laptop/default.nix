@@ -1,10 +1,9 @@
 { hostVars, ... }:
 {
   imports = [
-    ./disko.nix
-    ../../profiles/desktop-hyprland.nix
-    ../../profiles/dev.nix
-    ../../profiles/networking.nix
+    ../../modules/profiles/desktop-hyprland.nix
+    ../../modules/profiles/dev.nix
+    ../../modules/profiles/networking.nix
   ];
 
   networking.hostName = hostVars.hostname;
@@ -12,7 +11,7 @@
   i18n.defaultLocale = hostVars.locale;
   system.stateVersion = "24.11";
 
-  # Boot: EFI systemd-boot — matches the disko ESP at /boot.
+  # Boot: EFI systemd-boot — explicit for install/reinstall reliability.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

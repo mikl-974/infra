@@ -44,26 +44,32 @@ Le shell `.NET` fournit les runtimes et outils CLI avec lesquels ces editeurs tr
 
 ## Structure
 
-- `hosts/` : definition des machines concretes (`main`, `laptop`, `gaming`) — chaque machine a un `vars.nix`
-- `profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `ai`, `networking`)
-- `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `roles/`, `shell/`)
-- `modules/containers/` : moteurs de containers locaux de dev
-- `devshells/` : environnements de developpement CLI locaux (specifiques au poste)
-- `home/` : configuration Home Manager utilisateur (dotfiles, programmes)
-- `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `mako/`, `noctalia/`, `editors/`)
+- `targets/` : machines concretes (`main`, `laptop`, `gaming`) — chaque machine a un `vars.nix`
+- `modules/` : modules Nix cibles par domaine, profils, devshells, templates
+  - `modules/profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `ai`, `networking`)
+  - `modules/devshells/` : environnements de developpement CLI locaux
+  - `modules/templates/` : templates de configuration (host-vars.nix)
+  - `modules/containers/` : moteurs de containers locaux de dev
+- `home/` : composition de la configuration utilisateur (Home Manager)
+  - `home/users/` : configuration par utilisateur
+  - `home/roles/` : compositions de roles reutilisables (placeholder)
+  - `home/targets/` : overrides par machine (placeholder)
+- `dotfiles/` : bibliotheque de configurations applicatives, organisee par app/domaine
+  - `hyprland/`, `terminal/`, `launchers/`, `notifications/`, `themes/`, `shell/`, `editors/`
+- `stacks/` : services et applications (placeholder — les stacks serveur vivent dans `homelab`)
+- `secrets/` : secrets chiffres (placeholder)
 - `docs/` : documentation d'architecture et d'usage
-- `scripts/` : orchestration, validation, vérification (ne redefinissent pas la configuration)
-- `templates/` : templates de configuration (host-vars.nix)
+- `scripts/` : orchestration, validation, verification (ne redefinissent pas la configuration)
 - `flake.nix` : point d'entree unique
 
 ## Configuration machine (vars.nix)
 
-Chaque machine est configurée via `hosts/<name>/vars.nix`.
+Chaque machine est configurée via `targets/<name>/vars.nix`.
 **C'est le seul fichier à éditer pour configurer une machine.**
 Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs valeurs depuis ce fichier.
 
 ```nix
-# hosts/main/vars.nix
+# targets/main/vars.nix
 {
   system   = "x86_64-linux";
   username = "mikl";
@@ -76,8 +82,8 @@ Les fichiers structurants (`flake.nix`, `default.nix`, `disko.nix`) lisent leurs
 
 ## Separation des responsabilites
 
-- **host** : identite machine + combinaison de profils
-- **vars.nix** : valeurs spécifiques à l'instance machine (username, disk, timezone…)
+- **target** : machine concrete + combinaison de profils
+- **vars.nix** : valeurs spécifiques à l'instance machine, dans `targets/<name>/vars.nix`
 - **profile** : composition de rôles et de briques fonctionnelles
 - **role** : composition d'apps + configuration système liée à un usage (gaming, ai)
 - **module** : logique Nix isolee et reutilisable (apps, desktop, theming, shell)
@@ -109,7 +115,7 @@ Les daily apps restent distinctes des utilities : elles couvrent l'usage utilisa
 Noctalia est le schema de couleurs et l'identite visuelle de cette workstation.
 
 Le module systeme est dans `modules/theming/noctalia.nix`.
-Les assets visuels (palette, CSS, wallpapers) vivent dans `dotfiles/noctalia/`.
+Les assets visuels (palette, CSS, wallpapers) vivent dans `dotfiles/themes/noctalia/`.
 
 Voir `docs/theming.md`.
 
@@ -129,6 +135,19 @@ Voir `docs/devshells.md`.
 
 Voir aussi `docs/daily-apps.md`, `docs/utilities.md`, `docs/profiles.md`, `docs/devshells.md`, `docs/tool-placement.md` et `docs/update-workflow.md`.
 
+## Structure monorepo progressive
+
+Ce repo est progressivement reorganise en monorepo avec un decoupage interne :
+
+- `targets/` : machines concretes (ne contient pas de briques generiques)
+- `modules/` : tout ce qui est reutilisable (profils, devshells, templates, modules techniques)
+- `home/` : composition utilisateur / roles / cibles
+- `dotfiles/` : bibliotheque de configs applicatives par app/domaine
+- `stacks/` : placeholder — les services serveur vivent dans `homelab`
+- `secrets/` : placeholder pour la gestion declarative de secrets future
+
+Voir `docs/architecture.md` et les `README.md` de chaque dossier pour les regles detaillees.
+
 ## Placement des nouvelles briques
 
 La decision architecturale pour les briques Cockpit / apps / containers est documentee dans :
@@ -145,7 +164,7 @@ Dans cette passe `workstation`, les integrations locales effectivement branchees
 - `Chromium` et `LocalSend` dans `modules/apps/daily.nix`
 - `Neovim` dans `modules/apps/editors.nix`
 - `GitKraken` dans `modules/apps/dev.nix`
-- `Podman` dans `modules/containers/podman.nix` via `profiles/dev.nix`
+- `Podman` dans `modules/containers/podman.nix` via `modules/profiles/dev.nix`
 
 `NordVPN` reste documente mais non implemente ici faute de module/package officiel stable dans la base Nix disponible pour cette passe.
 
@@ -155,7 +174,7 @@ La base desktop ne se limite plus a installer Hyprland et des paquets :
 
 - `mako` est demarre explicitement dans la session Hyprland
 - `cliphist` est branche via `wl-paste --watch`
-- les dotfiles `hypr`, `foot`, `wofi` et `mako` sont lies par Home Manager
+- les dotfiles `hyprland`, `terminal`, `launchers` et `notifications` sont lies par Home Manager
 - la session a des bindings de base utiles des le premier login
 
 Voir `docs/first-boot.md` et `docs/hyprland.md`.
@@ -165,15 +184,15 @@ Voir `docs/first-boot.md` et `docs/hyprland.md`.
 ### 1. Initialiser la configuration machine
 
 ```bash
-# Crée hosts/main/vars.nix interactivement
+# Crée targets/main/vars.nix interactivement
 nix run .#init-host -- main
 ```
 
 Ou copier le template et éditer directement :
 
 ```bash
-cp templates/host-vars.nix hosts/main/vars.nix
-# éditer hosts/main/vars.nix
+cp modules/templates/host-vars.nix targets/main/vars.nix
+# éditer targets/main/vars.nix
 ```
 
 ### 2. Diagnostiquer le repo et le host

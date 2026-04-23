@@ -1,10 +1,10 @@
 { ... }:
 {
   imports = [
-    ../modules/desktop/default.nix
-    ../modules/apps/default.nix
-    ../modules/shell/default.nix
-    ../modules/theming/default.nix
+    ../desktop/default.nix
+    ../apps/default.nix
+    ../shell/default.nix
+    ../theming/default.nix
   ];
 
   # Cloudflare WARP: desktop-only VPN client. Kept in workstation because

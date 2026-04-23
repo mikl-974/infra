@@ -18,18 +18,18 @@ Ordre logique :
 
 1. `modules/apps/` -> paquets
 2. `modules/roles/` -> composition d'un usage (gaming, ai)
-3. `profiles/` -> point d'entree simple pour les hosts
-4. `hosts/` -> machine concrete
+3. `modules/profiles/` -> point d'entree simple pour les targets
+4. `targets/` -> machine concrete
 
 ## Profils existants
 
 | Profil | Rôle |
 |---|---|
-| `profiles/desktop-hyprland.nix` | base desktop commune |
-| `profiles/dev.nix` | environnement dev utilisateur + containers locaux |
-| `profiles/gaming.nix` | role gaming |
-| `profiles/ai.nix` | role AI local |
-| `profiles/networking.nix` | briques reseau partagees via `foundation` |
+| `modules/profiles/desktop-hyprland.nix` | base desktop commune |
+| `modules/profiles/dev.nix` | environnement dev utilisateur + containers locaux |
+| `modules/profiles/gaming.nix` | role gaming |
+| `modules/profiles/ai.nix` | role AI local |
+| `modules/profiles/networking.nix` | briques reseau partagees via `foundation` |
 
 ## Profil `desktop-hyprland`
 
@@ -81,4 +81,4 @@ Le bon niveau est donc :
 - apps quotidiennes -> `modules/apps/daily.nix`
 - paquets -> `modules/apps/utilities.nix`
 - systeme desktop -> `modules/desktop/connectivity.nix`
-- activation -> `profiles/desktop-hyprland.nix`
+- activation -> `modules/profiles/desktop-hyprland.nix`

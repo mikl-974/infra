@@ -22,7 +22,7 @@ Sur la machine cible :
 
 ## Préparer la configuration
 
-Les variables spécifiques à la machine sont centralisées dans `hosts/<name>/vars.nix`.
+Les variables spécifiques à la machine sont centralisées dans `targets/<name>/vars.nix`.
 **C'est le seul fichier à éditer avant d'installer.**
 
 ### 1. Initialiser la config machine
@@ -31,7 +31,7 @@ Les variables spécifiques à la machine sont centralisées dans `hosts/<name>/v
 nix run .#init-host -- main
 ```
 
-Ce script interactif crée `hosts/main/vars.nix` avec :
+Ce script interactif crée `targets/main/vars.nix` avec :
 - system (plateforme NixOS du host)
 - username (identifiant Unix de l'utilisateur)
 - hostname (doit correspondre à la clé dans flake.nix)
@@ -39,7 +39,7 @@ Ce script interactif crée `hosts/main/vars.nix` avec :
 - timezone
 - locale
 
-Ou éditer directement `hosts/main/vars.nix` :
+Ou éditer directement `targets/main/vars.nix` :
 
 ```nix
 {
@@ -134,11 +134,11 @@ sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
 ## Structure des fichiers pertinents
 
 ```
-hosts/main/vars.nix     variables machine (username, disk, timezone…) — seul fichier à éditer
+targets/main/vars.nix     variables machine (username, disk, timezone…) — seul fichier à éditer
 flake.nix               inputs disko + home-manager, nixosConfigurations.main, apps
-hosts/main/default.nix  configuration du host (boot, hostname, profils, utilisateur)
-hosts/main/disko.nix    layout disque (GPT + EFI + btrfs) — lit le disque depuis vars.nix
-profiles/               profils assemblés par le host
+targets/main/default.nix  configuration du host (boot, hostname, profils, utilisateur)
+targets/main/disko.nix    layout disque (GPT + EFI + btrfs) — lit le disque depuis vars.nix
+modules/profiles/       profils assembles par les targets (desktop-hyprland, dev, networking, gaming, ai)
 modules/                modules Nix
 home/default.nix        configuration Home Manager (dotfiles, programmes)
 dotfiles/               fichiers de configuration bruts

@@ -81,7 +81,7 @@ Exemples typiques :
 
 - ajouter/modifier un paquet dans `modules/apps/`
 - ajuster un module dans `modules/desktop/`
-- changer un profil dans `profiles/`
+- changer un profil dans `modules/profiles/`
 - ajouter un dotfile dans `dotfiles/` + `home/default.nix`
 - mettre a jour la documentation dans `docs/`
 

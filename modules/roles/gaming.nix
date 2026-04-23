@@ -4,11 +4,11 @@
   #
   # This role is:
   #   - for user workstations, NOT servers
-  #   - dependent on a desktop environment (profiles/desktop-hyprland.nix)
+  #   - dependent on a desktop environment (modules/profiles/desktop-hyprland.nix)
   #   - not suitable for headless or server contexts
   #
-  # Compose this role via profiles/gaming.nix in a host that already imports
-  # profiles/desktop-hyprland.nix.
+  # Compose this role via modules/profiles/gaming.nix in a host that already imports
+  # modules/profiles/desktop-hyprland.nix.
 
   imports = [
     ../apps/gaming.nix

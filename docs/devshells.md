@@ -15,9 +15,9 @@ Les editeurs et IDE sont des applications desktop — ils ne vivent pas dans un 
 
 | Couche | Ce qu'elle contient | Localisation |
 |---|---|---|
-| devShell `.NET` | SDK, Docker CLI, outils CLI | `devshells/dotnet.nix` |
+| devShell `.NET` | SDK, Docker CLI, outils CLI | `modules/devshells/dotnet.nix` |
 | Applications dev | VS Code, Rider, WebStorm, Neovim, GitKraken | `modules/apps/editors.nix` + `modules/apps/dev.nix` |
-| Containers locaux de dev | Podman + compatibilite Docker locale | `modules/containers/podman.nix` via `profiles/dev.nix` |
+| Containers locaux de dev | Podman + compatibilite Docker locale | `modules/containers/podman.nix` via `modules/profiles/dev.nix` |
 
 Les editeurs sont des applications desktop. Ils sont installes via le profil `dev`
 et disponibles a tout moment sur le poste. Le shell fournit l'environnement dans
@@ -31,7 +31,7 @@ Commande :
 nix develop .#dotnet
 ```
 
-Definition : `devshells/dotnet.nix`.
+Definition : `modules/devshells/dotnet.nix`.
 
 Ce shell est **local a `workstation`**. Il n'est pas consomme depuis `foundation` et ne doit pas y migrer.
 
@@ -55,7 +55,7 @@ Les mettre dans un devShell signifiait les telecharger a chaque `nix develop`,
 les rendre indisponibles hors du shell, et melanger deux niveaux differents.
 
 Ils vivent desormais dans `modules/apps/editors.nix` et `modules/apps/dev.nix`
-et sont installes en tant que paquets systeme via `profiles/dev.nix`.
+et sont installes en tant que paquets systeme via `modules/profiles/dev.nix`.
 Ils sont toujours disponibles, independamment de l'entree dans un shell de dev.
 
 ## Pourquoi ce shell est local a `workstation`
@@ -79,7 +79,7 @@ But :
 
 ## Etendre le shell
 
-Ajouter des outils dans `devshells/dotnet.nix`, section `packages`.
+Ajouter des outils dans `modules/devshells/dotnet.nix`, section `packages`.
 
 Exemples d'extensions :
 
@@ -105,7 +105,7 @@ jetbrains.goland
 
 ## Ajouter un nouveau devShell
 
-1. Creer `devshells/<nom>.nix`
+1. Creer `modules/devshells/<nom>.nix`
 2. L'exposer dans `flake.nix` via `devShells.<system>.<nom>`
 3. Documenter son usage dans ce fichier
 
