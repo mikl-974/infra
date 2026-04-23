@@ -1,4 +1,4 @@
-# infra (repo Git: `workstation`)
+# infra
 
 Ce repo est traité comme un monorepo `infra` :
 une seule base pour les briques Nix réutilisables, les machines concrètes,
