@@ -21,6 +21,16 @@ Dans `targets/hosts/ms-s1-max/default.nix` :
 - `users.users.mfo.hashedPasswordFile`
 - `users.users.dfo.hashedPasswordFile`
 
+## OpenClaw
+
+La stack `stacks/openclaw/` prépare un point d’intégration `sops-nix` pour un
+dotenv chiffré OpenClaw, mais aucun secret OpenClaw réel n’est encore commité.
+
+Principe retenu :
+- la stack locale peut déclarer un fichier secret via `infra.stacks.openclaw.secrets.sopsFile`
+- ce secret alimente le service upstream `openclaw-gateway` comme `EnvironmentFile`
+- tant que les besoins secrets exacts ne sont pas stabilisés, aucun faux secret n’est versionné
+
 ## Comment reproduire
 
 ### 1. Préparer l'identité Age

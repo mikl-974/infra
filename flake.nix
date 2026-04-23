@@ -29,6 +29,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,7 +54,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, foundation, disko, home-manager, sops-nix, nix-darwin, nix-homebrew, ... }:
+  outputs = inputs@{ self, nixpkgs, foundation, disko, home-manager, sops-nix, nix-openclaw, nix-darwin, nix-homebrew, ... }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
@@ -84,6 +90,7 @@
           specialArgs = {
             hostVars = vars;
             flakeSelf = self;
+            flakeInputs = inputs;
           };
           modules = sharedModules ++ [
             {
@@ -105,6 +112,7 @@
           specialArgs = {
             hostVars = vars;
             flakeSelf = self;
+            flakeInputs = inputs;
           };
           modules = sharedDarwinModules ++ modules;
         };

@@ -65,4 +65,4 @@ Une stack peut être importée par un profil système, mais elle ne décide jama
 
 Exemples :
 - `stacks/ai-server/` = stack de service IA
-- `stacks/openclaw/` = socle applicatif OpenClaw
+- `stacks/openclaw/` = adaptateur local vers `nix-openclaw` pour la VM `openclaw-vm`

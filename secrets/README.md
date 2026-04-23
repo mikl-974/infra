@@ -33,3 +33,12 @@ Le même fichier chiffré contient aussi les bootstrap passwords root-only :
 4. rebuild le host
 
 Voir `docs/secrets.md`.
+
+## OpenClaw
+
+Le repo prépare aussi un point d’entrée secrets pour `stacks/openclaw/`, mais
+aucun secret OpenClaw réel n’est versionné à ce stade.
+
+Quand le contrat runtime OpenClaw sera figé, la stack pourra consommer un
+dotenv chiffré via `infra.stacks.openclaw.secrets.sopsFile`, sans réimplémenter
+le packaging upstream.

@@ -1,27 +1,49 @@
 # stacks/openclaw/
 
-Stack applicative OpenClaw portée par ce repo `infra`.
+Stack applicative OpenClaw intégrée localement par ce repo `infra`.
 
 ## Rôle
 
-Cette stack décrit le socle applicatif OpenClaw :
-- point d’activation NixOS : `infra.stacks.openclaw.enable`
-- répertoires hôte attendus pour la suite :
-  - `/etc/openclaw`
-  - `/var/lib/openclaw`
-  - `/var/log/openclaw`
+Cette stack ne repackage pas OpenClaw.
+Elle sert d’adaptateur local vers l’upstream officiel :
+- input flake : `nix-openclaw`
+- module NixOS consommé : `nix-openclaw.nixosModules.openclaw-gateway`
+- package consommé : `nix-openclaw.packages.<system>.openclaw-gateway`
 
-À ce stade, la stack ne prétend pas définir tout le runtime OpenClaw.
-Elle prépare proprement le terrain sans simuler un service complet non encore
-spécifié.
+Point d’activation repo-local :
+- `infra.stacks.openclaw.enable`
+
+Ce que la couche locale prépare :
+- `/etc/openclaw/openclaw.json` via le module upstream
+- `/etc/openclaw/public.env` pour les variables publiques non secrètes
+- `/var/lib/openclaw`
+- `/var/log/openclaw`
+- port du gateway
+- point d’entrée optionnel pour secrets via `sops-nix`
 
 ## Frontière
 
 - `targets/hosts/openclaw-vm/` = machine concrète dédiée à OpenClaw
 - `modules/profiles/virtual-machine.nix` = contexte VM réutilisable
-- `stacks/openclaw/` = socle de la stack OpenClaw
+- `stacks/openclaw/` = assemblage local du repo
+- `nix-openclaw` = upstream officiel
 
 La stack ne décide jamais :
 - quelle machine la porte
 - si cette machine est bare metal ou VM
 - quel layout disque ou quel firmware utiliser
+
+## Ce qui est réellement branché
+
+- import du module upstream `openclaw-gateway`
+- activation du service systemd NixOS via la stack locale
+- fichier checked-in `env/public.env` pour les variables publiques
+- interface locale `infra.stacks.openclaw.*`
+- option `infra.stacks.openclaw.secrets.sopsFile` pour raccorder un dotenv chiffré plus tard
+
+## Ce qui reste volontairement pour la suite
+
+- secrets réels OpenClaw versionnés
+- configuration bot/provider complète
+- choix précis des plugins/outils OpenClaw
+- exposition réseau au-delà du port minimal déclaré

@@ -38,6 +38,7 @@ Ce qu'il ne change pas :
 
 Cas concret désormais versionné :
 - `openclaw-vm` = host NixOS concret, dédié à OpenClaw, qui importe `modules/profiles/virtual-machine.nix`
+- `openclaw-vm` consomme `stacks/openclaw/default.nix`, qui lui-même importe le module upstream `nix-openclaw.nixosModules.openclaw-gateway`
 
 ## Préparer la configuration
 
@@ -159,6 +160,11 @@ Pour un host de service comme `openclaw-vm`, le repo garde un
 - le modèle du flake reste homogène
 - aucun faux périmètre Home Manager desktop n'est forcé sur la VM
 
+Pour OpenClaw :
+- le host reste responsable du fait "je porte OpenClaw"
+- la stack locale reste responsable du câblage repo-local
+- le runtime OpenClaw lui-même vient de `nix-openclaw`
+
 Voir `docs/bootstrap.md` pour le workflow complet post-installation.
 
 ## Reconstruire la machine
@@ -184,6 +190,7 @@ home/targets/<host>.nix composition Home Manager explicite par host
 home/users/<user>.nix   identité utilisateur normalisée
 dotfiles/               fichiers de configuration bruts
 stacks/openclaw/        socle de la stack OpenClaw pour `openclaw-vm`
+stacks/openclaw/env/public.env environnement public non secret pour la stack OpenClaw
 scripts/                init-host, show-config, doctor, validate-install, install-anywhere, install-manual, post-install-check
 templates/host-vars.nix template de vars.nix pour un nouveau host
 ```

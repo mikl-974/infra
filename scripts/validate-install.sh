@@ -232,6 +232,25 @@ else
 fi
 
 echo ""
+echo -e "${BLD}── Stacks portées par le host${RST}"
+HOST_STACKS=0
+while IFS= read -r stack_name; do
+  [[ -z "$stack_name" ]] && continue
+  HOST_STACKS=$(( HOST_STACKS + 1 ))
+  if [[ -f "$REPO_ROOT/stacks/$stack_name/default.nix" ]]; then
+    ok "stacks/$stack_name/default.nix importé par le host"
+  else
+    fail "stack '$stack_name' importée par le host mais introuvable dans stacks/$stack_name/default.nix"
+  fi
+done < <(grep -RhoE 'stacks/[^[:space:]]+/default\.nix' "$HOST_DIR" \
+  | sed -E 's#.*stacks/([^/]+)/default\.nix#\1#' \
+  | sort -u || true)
+
+if [[ $HOST_STACKS -eq 0 ]]; then
+  ok "aucune stack importée explicitement par ce host"
+fi
+
+echo ""
 echo -e "${BLD}── Parcours d'installation réellement possible${RST}"
 if [[ -f "$REPO_ROOT/scripts/install-manual.sh" ]]; then
   ok "fallback manuel disponible : scripts/install-manual.sh"

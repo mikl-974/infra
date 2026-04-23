@@ -80,6 +80,7 @@ Cinq targets NixOS réels valident maintenant le modèle moderne :
 - host concret : `targets/hosts/openclaw-vm/`
 - profil réutilisable : `modules/profiles/virtual-machine.nix`
 - stack portée : `stacks/openclaw/`
+- module upstream consommé : `nix-openclaw.nixosModules.openclaw-gateway`
 - composition Home Manager : `home/targets/openclaw-vm.nix` volontairement vide
 - base système : VM de service minimale avec SSH et boot explicite
 - installation NixOS Anywhere : structure prête via `targets/hosts/openclaw-vm/disko.nix`, disque réel encore machine-dépendant
@@ -148,7 +149,14 @@ Le même principe vaut pour une VM :
 
 - `openclaw-vm` = la machine concrète
 - `virtual-machine.nix` = le contexte VM réutilisable
-- `stacks/openclaw/` = le socle de la stack OpenClaw
+- `stacks/openclaw/` = l’adaptateur local du repo
+- `nix-openclaw` = le packaging et le module officiels upstream
 
 La machine décide qu'elle porte la stack.
 La stack ne devient pas un host.
+
+Le rôle de `stacks/openclaw/default.nix` est volontairement mince :
+- importer le bon module upstream
+- mapper l’interface locale `infra.stacks.openclaw.*`
+- préparer port, config, données, logs, `public.env` et point d’entrée secrets
+- éviter toute réimplémentation maison d’OpenClaw

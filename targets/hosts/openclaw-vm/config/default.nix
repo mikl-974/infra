@@ -24,5 +24,12 @@
     };
   };
 
-  infra.stacks.openclaw.enable = true;
+  infra.stacks.openclaw = {
+    enable = true;
+    config = {
+      gateway = {
+        mode = "local";
+      };
+    };
+  };
 }

@@ -107,6 +107,7 @@ Composition retenue pour cette passe :
 - `targets/hosts/openclaw-vm/disko.nix`
 - `home/targets/openclaw-vm.nix`
 - `stacks/openclaw/default.nix`
+- `stacks/openclaw/env/public.env`
 - `stacks/openclaw/README.md`
 
 Composition retenue pour cette passe :
@@ -114,7 +115,8 @@ Composition retenue pour cette passe :
 - contexte machine : VM explicite via `modules/profiles/virtual-machine.nix`
 - base système : VM de service minimale, pas de desktop
 - Home Manager : binding vide assumé dans `home/targets/openclaw-vm.nix`
-- stack portée : `stacks/openclaw/`
+- stack portée : `stacks/openclaw/` comme couche locale mince
+- upstream officiel : `nix-openclaw`
 - installation distante : `targets/hosts/openclaw-vm/disko.nix` branché, disque réel à renseigner dans `vars.nix`
 
 Tous les targets NixOS du repo utilisent maintenant un `home/targets/<host>.nix` explicite.
@@ -137,12 +139,20 @@ Parcours NixOS Anywhere réellement prêts en V1 :
 
 - `targets/hosts/openclaw-vm/` = machine concrète dédiée à OpenClaw
 - `modules/profiles/virtual-machine.nix` = contexte VM réutilisable
-- `stacks/openclaw/` = socle de la stack OpenClaw
+- `stacks/openclaw/` = couche locale mince d’intégration
+- `nix-openclaw` = packaging/module officiel upstream
 
-La stack OpenClaw reste volontairement minimale dans cette passe :
-- activation explicite via `infra.stacks.openclaw.enable`
-- préparation des répertoires hôte attendus
-- pas encore de runtime/service complet tant que ses détails ne sont pas figés
+Ce qui est réellement branché :
+- input flake `nix-openclaw`
+- module upstream `nixosModules.openclaw-gateway`
+- package upstream `packages.<system>.openclaw-gateway`
+- interface locale `infra.stacks.openclaw.*`
+- répertoires hôte, port, fichier `public.env`, point d’entrée secrets `sops`
+
+Ce qui reste volontairement hors scope :
+- secrets réels versionnés pour OpenClaw
+- config Telegram/providers complète
+- choix runtime/plugins enrichis au-delà du minimum d’intégration
 
 ## Users normalisés disponibles
 

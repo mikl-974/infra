@@ -149,6 +149,18 @@ if [[ -n "$HOST" ]]; then
   else
     fail "Aucune composition Home Manager trouvée pour '$HOST'"
   fi
+
+  HOST_STACKS="$(grep -RhoE 'stacks/[^[:space:]]+/default\.nix' "$REPO_ROOT/targets/hosts/$HOST" \
+    | sed -E 's#.*stacks/([^/]+)/default\.nix#\1#' \
+    | sort -u || true)"
+  if [[ -n "$HOST_STACKS" ]]; then
+    while IFS= read -r stack_name; do
+      [[ -z "$stack_name" ]] && continue
+      ok "Stack locale détectée : $stack_name"
+    done <<< "$HOST_STACKS"
+  else
+    ok "Aucune stack locale importée explicitement par ce host"
+  fi
 fi
 
 echo ""

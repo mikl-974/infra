@@ -119,6 +119,20 @@ if [[ -d "$HOST_DIR" ]]; then
   echo ""
 fi
 
+if [[ -d "$HOST_DIR" ]]; then
+  echo -e "${BLD}── Stacks importées${RST}"
+  echo ""
+  STACKS="$(grep -RhoE 'stacks/[^[:space:]]+/default\.nix' "$HOST_DIR" \
+    | sed -E 's#.*stacks/([^/]+)/default\.nix#  ·  \1#' \
+    | sort -u || true)"
+  if [[ -n "$STACKS" ]]; then
+    echo "$STACKS"
+  else
+    echo -e "  ${DIM}—${RST}  aucune stack importée explicitement"
+  fi
+  echo ""
+fi
+
 echo -e "${BLD}── Statut${RST}"
 echo ""
 UNDEFINED=0

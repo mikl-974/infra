@@ -24,4 +24,4 @@ Une stack ne décide jamais :
 ## Stacks actuelles
 
 - `stacks/ai-server/` : service `ollama` porté par ce repo
-- `stacks/openclaw/` : socle de la future stack OpenClaw, sans logique machine ni faux runtime complet
+- `stacks/openclaw/` : intégration locale mince vers `nix-openclaw`, sans duplication du packaging upstream
