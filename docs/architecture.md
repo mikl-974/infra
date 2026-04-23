@@ -161,7 +161,8 @@ Le repo `infra` contient un target `macmini` qui est un **Darwin** (`darwinConfi
 Tant que ce conflit de nom n'est pas tranché :
 
 - `topology.nix` ne déclare **pas** de target `macmini` côté `nixosHost` — le seul `macmini` du repo reste le Darwin, et il n'est volontairement pas dans le modèle de stacks ;
-- les stacks à vocation LAN (`immich`, `n8n`, `pihole`, `openwebui`, `opencode`) ont un contrat valide mais aucune affectation aujourd'hui (cf. `docs/stack-classification.md`) ;
+- les stacks à vocation LAN qui n'ont pas d'autre host candidat aujourd'hui (`immich`, `n8n`, `pihole`, `openwebui`, `opencode`, `rustdesk`) ont un contrat valide mais aucune affectation (cf. `docs/stack-classification.md`) ;
+- `ai-server` fait exception : il est consommé directement par `ms-s1-max` via `modules/profiles/ai-server.nix` et l'inventory l'assigne en conséquence (`ai-server-ms-s1-max`) ;
 - ces stacks sont prêtes à être assignées dès qu'un host NixOS LAN compatible existera dans `topology.nix` (par exemple un futur `macmini-nixos` ou un autre nom non ambigu).
 
 Cette séparation évite deux erreurs :

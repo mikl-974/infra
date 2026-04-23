@@ -19,7 +19,7 @@ Toute affectation décrite dans `deployments/inventory.nix` doit respecter cette
 | `pihole` | singleton | nixosHost | non assigné | DNS local du LAN — attendre un host LAN dédié |
 | `openwebui` | singleton | nixosHost | non assigné | front AI — proximité usage quotidien |
 | `opencode` | singleton | nixosHost | non assigné | service interne |
-| `ai-server` | singleton | nixosHost | non assigné | service `ollama` natif `infra` (gardé pour future GPU box) |
+| `ai-server` | singleton | nixosHost | `ms-s1-max` | service `ollama` natif `infra` consommé directement par le host via `modules/profiles/ai-server.nix` |
 | `openclaw` | singleton | nixosHost | `openclaw-vm` | gateway opérée comme stack `infra` native |
 
 ## Points d'attention

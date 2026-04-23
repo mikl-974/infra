@@ -5,14 +5,16 @@
 # - a cloud target provisioned via OpenTofu (`kind = "azureContainerApps"`,
 #   `gcpCloudRun`, `cloudflareContainers`).
 #
-# Workstations (`main`, `laptop`, `gaming`) are listed but currently host no
-# stack: they remain pure NixOS workstations. They are kept in the topology so
+# `main`, `laptop` and `gaming` are listed but currently host no stack:
+# they remain pure NixOS workstations. They are kept in the topology so
 # the validation can also detect mistakes in their inventory entries.
+#
+# `ms-s1-max` is a workstation that additionally hosts the local AI server
+# stack (`ai-server`). `openclaw-vm` is a service VM hosting the `openclaw`
+# gateway. `contabo` is a server-class VPS operated via Dokploy.
 #
 # The Darwin host `macmini` is intentionally NOT modeled here: it is not a
 # stack-bearing target in this repo.
-#
-# `contabo` and the cloud targets land in subsequent migration lots (C3/C4).
 {
   targets = {
     main = {

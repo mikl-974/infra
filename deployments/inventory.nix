@@ -9,8 +9,9 @@
 # - if `role` is provided, it must be declared by the stack contract;
 # - instance names must be unique within a target.
 #
-# The empty lists for workstations are intentional: those hosts currently
-# carry no service stack — they remain pure NixOS workstations.
+# Empty lists are intentional: `main`, `laptop` and `gaming` are pure NixOS
+# workstations with no service stack. The cloud workspaces `cloudflare-ext` and
+# `gcp-ext` are provisioned but currently host no stack instance.
 let
   topology = import ./topology.nix;
 in
@@ -21,7 +22,10 @@ in
     main = [ ];
     laptop = [ ];
     gaming = [ ];
-    ms-s1-max = [ ];
+
+    ms-s1-max = [
+      { stack = "ai-server"; instance = "ai-server-ms-s1-max"; role = "ollama"; }
+    ];
 
     openclaw-vm = [
       { stack = "openclaw"; instance = "openclaw-main"; role = "gateway"; }
