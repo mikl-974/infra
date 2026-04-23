@@ -60,9 +60,9 @@ print_disk_status() {
   local value="$1"
 
   if [[ -z "$value" ]]; then
-    warn "vars.nix : disk absent — disko est branché, mais NixOS Anywhere reste bloqué tant que le disque réel n'est pas renseigné"
+    fail "vars.nix : disk absent — disko est branché, mais NixOS Anywhere reste bloqué tant que le disque réel n'est pas renseigné"
   elif is_placeholder_value "$value"; then
-    warn "vars.nix : disk non défini ('$value') — remplacer par le vrai disque cible avant NixOS Anywhere"
+    fail "vars.nix : disk non défini ('$value') — remplacer par le vrai disque cible avant NixOS Anywhere (lsblk sur la machine cible)"
   else
     ok "disk : ${value}"
     if [[ "$value" == /dev/* ]]; then

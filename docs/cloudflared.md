@@ -10,7 +10,7 @@ Aucun host n'utilise `cloudflared` aujourd'hui dans ce repo.
 
 Le module générique correspondant existait dans l'ancien flake `foundation` (`foundation.networking.cloudflared.*`). Il **n'a pas été vendoré** dans `infra` au lot A1 parce qu'aucun host ne le consomme actuellement : vendoriser un module mort introduit du code à entretenir sans contrepartie.
 
-Le seul host qui utilisait `cloudflared` historiquement est `macmini` côté `homelab`. Or `macmini` dans ce repo est un Darwin (cf. `docs/architecture.md` § "Conflit de nom `macmini`"), pas un NixOS, et `services.cloudflared` est un service NixOS.
+Le seul host qui utilisait `cloudflared` historiquement est `mac-mini` côté `homelab`. Or `mac-mini` dans ce repo est un Darwin (cf. `docs/architecture.md` § "Conflit de nom `mac-mini`"), pas un NixOS, et `services.cloudflared` est un service NixOS.
 
 ## Quand le brancher
 

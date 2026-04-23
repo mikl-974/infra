@@ -44,7 +44,7 @@ Le même principe vaut pour les VMs :
 - `ms-s1-max`
 
 ### Darwin
-- `macmini`
+- `mac-mini`
 
 ## Ajouter une machine
 

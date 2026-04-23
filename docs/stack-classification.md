@@ -25,4 +25,4 @@ Toute affectation décrite dans `deployments/inventory.nix` doit respecter cette
 ## Points d'attention
 
 - Les stacks marquées « non assigné » ont un contrat valide mais aucune ligne dans `inventory.nix` aujourd'hui. Elles sont prêtes à recevoir un placement quand un host compatible existera dans `topology.nix`.
-- L'hôte historique `macmini` du repo `homelab` (kind `nixosHost`) **n'existe pas** dans `infra` aujourd'hui : le seul `macmini` du repo est un Darwin (cf. `docs/architecture.md` § "Conflit de nom `macmini`"). Tant que ce conflit n'est pas tranché, les stacks à vocation LAN restent non assignées plutôt que d'être collées à un host inexistant.
+- L'hôte historique `mac-mini` du repo `homelab` (kind `nixosHost`) **n'existe pas** dans `infra` aujourd'hui : le seul `mac-mini` du repo est un Darwin (cf. `docs/architecture.md` § "Conflit de nom `mac-mini`"). Tant que ce conflit n'est pas tranché, les stacks à vocation LAN restent non assignées plutôt que d'être collées à un host inexistant.

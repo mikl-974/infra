@@ -39,6 +39,8 @@ in
       { stack = "nextcloud"; instance = "nextcloud-qtalk"; role = "main"; }
     ];
 
+    mac-mini = [ ];
+
     azure-ext = [
       { stack = "uptime-kuma"; instance = "uptime-kuma-public"; }
     ];

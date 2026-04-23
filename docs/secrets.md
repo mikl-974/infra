@@ -1,5 +1,51 @@
 # Flux secrets `sops-nix`
 
+## Clé Age privée — stockage, backup et récupération
+
+### Identité Age active
+
+La clé publique Age déclarée dans `.sops.yaml` est :
+```
+age1j9nearzgw8k859r0re0r4uzejxr67sg5glfhnhrzuu5e5f63pyesyvdche
+```
+Elle est dérivée de la clé SSH Ed25519 du compte `mikl-974`.
+
+### Où stocker la clé privée
+
+Sur chaque machine qui doit déchiffrer des secrets, la clé privée doit être présente à :
+```
+/var/lib/sops-nix/key.txt   (chmod 600, propriétaire root)
+```
+Ce chemin est déclaré dans `modules/security/sops.nix` via `ageKeyFile`.
+
+### Premier provisionnement (ou après perte)
+
+```bash
+# Dériver la clé Age depuis la clé SSH Ed25519 (à lancer une seule fois)
+ssh-to-age -private-key -i ~/.ssh/id_ed25519 > /tmp/age.key
+
+# Installer sur la machine cible (ou localement)
+sudo mkdir -p /var/lib/sops-nix
+sudo install -m 600 -o root -g root /tmp/age.key /var/lib/sops-nix/key.txt
+rm /tmp/age.key
+```
+
+### Backup de la clé
+
+La clé Age dérive de la clé SSH. Tant que la clé SSH Ed25519 est sauvegardée (gestionnaire de mots de passe, coffre-fort chiffré, etc.), la clé Age peut être régénérée à la demande via `ssh-to-age`.
+
+**Règle :** ne pas stocker la clé Age elle-même dans ce repo — elle se reconstruit depuis la clé SSH.
+
+### Rotation de la clé
+
+1. Générer une nouvelle paire SSH (ou utiliser une autre clé existante)
+2. Dériver la nouvelle clé Age : `ssh-to-age -private-key -i ~/.ssh/new_key > new_age.key`
+3. Extraire la clé publique : `age-keygen -y new_age.key`
+4. Ajouter le nouveau recipient dans `.sops.yaml`
+5. Re-chiffrer tous les fichiers secrets : `sops updatekeys secrets/hosts/ms-s1-max.yaml` (etc.)
+6. Retirer l'ancien recipient de `.sops.yaml` si rotation complète
+7. Supprimer l'ancienne clé privée sur les machines concernées
+
 ## Flux réellement branché
 
 Host : `ms-s1-max`

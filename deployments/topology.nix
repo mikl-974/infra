@@ -2,6 +2,7 @@
 #
 # A target listed here is one of:
 # - a NixOS host that can host stack instances (`kind = "nixosHost"`);
+# - a Darwin host managed via nix-darwin (`kind = "darwinHost"`);
 # - a cloud target provisioned via OpenTofu (`kind = "azureContainerApps"`,
 #   `gcpCloudRun`, `cloudflareContainers`).
 #
@@ -13,8 +14,8 @@
 # stack (`ai-server`). `openclaw-vm` is a service VM hosting the `openclaw`
 # gateway. `contabo` is a server-class VPS operated via Dokploy.
 #
-# The Darwin host `macmini` is intentionally NOT modeled here: it is not a
-# stack-bearing target in this repo.
+# `mac-mini` is the Darwin workstation managed via nix-darwin. It currently
+# hosts no stack but is modeled here for completeness and future assignments.
 {
   targets = {
     main = {
@@ -57,6 +58,13 @@
       runtime = "dokploy";
       address = "contabo";
       region = "eu-central";
+    };
+
+    mac-mini = {
+      kind = "darwinHost";
+      runtime = "nix-darwin";
+      address = "mac-mini";
+      region = "home-lan";
     };
 
     azure-ext = {

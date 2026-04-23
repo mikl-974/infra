@@ -4,8 +4,11 @@ set -euo pipefail
 # Strict validation of the deployments inventory against the topology and
 # stack contracts. Exits non-zero (with the validation error list) if any
 # rule from `deployments/validation.nix` is violated.
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo_root"
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./lib/workstation-install.sh
+source "$_SCRIPT_DIR/lib/workstation-install.sh"
+REPO_ROOT="$(resolve_repo_root "$_SCRIPT_DIR")"
+cd "$REPO_ROOT"
 
 # Print human-readable summary on success; throw on failure.
 nix-instantiate --eval --strict --json \

@@ -138,7 +138,7 @@ if [[ -n "$HOST" ]]; then
     if [[ -n "$HOST_DISK" ]] && ! is_placeholder_value "$HOST_DISK"; then
       ok "NixOS Anywhere possible pour ce host (disko.nix présent, module disko branché, disk renseigné)"
     else
-      warn "NixOS Anywhere structurellement prêt pour ce host, mais le vrai disk reste à renseigner dans vars.nix"
+      fail "NixOS Anywhere bloqué : le vrai disk reste à renseigner dans vars.nix (lsblk sur la machine cible)"
     fi
   else
     warn "NixOS Anywhere indisponible pour ce host (pas de disko.nix)"

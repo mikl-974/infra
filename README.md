@@ -33,22 +33,22 @@ Le cas "machine virtuelle" est maintenant modélisé comme un profil réutilisab
 - `contabo` (server VPS, headless, déployé via Colmena — voir `docs/colmena.md`)
 
 ### Darwin
-- `macmini`
+- `mac-mini`
 
-`macmini` reste le nom retenu à ce stade :
-- c'est déjà l'entrée fonctionnelle connue pour `darwin-rebuild --flake .#macmini`
+`mac-mini` reste le nom retenu à ce stade :
+- c'est déjà l'entrée fonctionnelle connue pour `darwin-rebuild --flake .#mac-mini`
 - aucun signal plus durable n'existe encore dans le repo pour justifier un renommage propre
 - le refactor avance donc sans régression inutile
 
 ## Darwin : structure désormais retenue
 
 Le target Darwin est maintenant explicite dans le repo :
-- `targets/hosts/macmini/vars.nix`
-- `targets/hosts/macmini/default.nix`
-- `targets/hosts/macmini/config/default.nix`
-- `targets/hosts/macmini/config/user.nix`
-- `targets/hosts/macmini/config/apps.nix`
-- `targets/hosts/macmini/config/networking.nix`
+- `targets/hosts/mac-mini/vars.nix`
+- `targets/hosts/mac-mini/default.nix`
+- `targets/hosts/mac-mini/config/default.nix`
+- `targets/hosts/mac-mini/config/user.nix`
+- `targets/hosts/mac-mini/config/apps.nix`
+- `targets/hosts/mac-mini/config/networking.nix`
 
 Briques Darwin réutilisables :
 - `modules/darwin/base.nix`
@@ -56,7 +56,7 @@ Briques Darwin réutilisables :
 
 Le `flake.nix` expose maintenant :
 - `nixosConfigurations.*`
-- `darwinConfigurations.macmini`
+- `darwinConfigurations.mac-mini`
 
 ## Migration moderne des targets NixOS
 
@@ -174,7 +174,7 @@ affectées à une machine. L'affectation réelle reste faite dans
 
 ## Rôle de Nix / Homebrew / MAS sur Darwin
 
-Pour `macmini` :
+Pour `mac-mini` :
 - Nix = paquets disponibles proprement via nixpkgs (`vim`, `neovim`, `alacritty`, `vscode`, JetBrains Mono)
 - Homebrew casks = apps GUI macOS adaptées à Homebrew (`moonlight`, `omniwm`)
 - MAS = apps mieux consommées via l'App Store (`NordVPN`, `Tailscale`)

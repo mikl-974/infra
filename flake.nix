@@ -9,12 +9,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Noctalia requires nixpkgs-unstable (latest Quickshell dependency).
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Declarative disk partitioning — required for NixOS Anywhere installations.
@@ -53,22 +50,11 @@
     };
 
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/master";
+      url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-
-    # Kept available for future Darwin tap pinning if/when the repo needs it.
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
   };
 
   outputs = inputs@{ self, nixpkgs, disko, home-manager, sops-nix, nix-openclaw, nix-darwin, nix-homebrew, noctalia, colmena, ... }:
@@ -173,11 +159,9 @@
       };
 
       darwinConfigurations = {
-        # Retained as-is for now: it is already the working flake entrypoint and
-        # there is no stronger durable naming signal in the repo yet.
-        macmini = mkDarwinHost {
-          vars = import ./targets/hosts/macmini/vars.nix;
-          modules = [ ./targets/hosts/macmini/default.nix ];
+        mac-mini = mkDarwinHost {
+          vars = import ./targets/hosts/mac-mini/vars.nix;
+          modules = [ ./targets/hosts/mac-mini/default.nix ];
         };
       };
 
@@ -195,35 +179,45 @@
       # the configuration, which remains in flake.nix, targets/hosts/, home/, stacks/, and modules/.
       apps = lib.genAttrs systems (system:
         let pkgs = import nixpkgs { inherit system; };
-            # writeTextFile preserves the original shebang (#!/usr/bin/env bash),
-            # unlike writeShellScript which prepends #!/bin/sh and breaks BASH_SOURCE.
-            mkApp = script: {
+
+            # Bundle all scripts + lib/ into a single store path so that
+            # `source "$_SCRIPT_DIR/lib/workstation-install.sh"` resolves
+            # correctly when the script runs from /nix/store.
+            scriptsDrv = pkgs.runCommand "infra-scripts" {} ''
+              mkdir -p $out/scripts/lib
+              cp ${./scripts}/*.sh $out/scripts/
+              cp ${./scripts}/lib/*.sh $out/scripts/lib/
+              chmod +x $out/scripts/*.sh
+            '';
+
+            # Wrap a script with declared runtime dependencies in PATH.
+            # writeShellApplication uses bash, adds runtimeInputs to PATH,
+            # and enables shellcheck during build.
+            mkApp = runtimeInputs: scriptBase: {
               type = "app";
-              # Preserve the original shebang so BASH_SOURCE/path resolution
-              # inside the script body keeps behaving like the checked-in file.
-              program = "${pkgs.writeTextFile {
-                name = builtins.baseNameOf script;
-                text = builtins.readFile script;
-                executable = true;
-              }}";
+              program = "${pkgs.writeShellApplication {
+                name = lib.removeSuffix ".sh" scriptBase;
+                runtimeInputs = runtimeInputs;
+                text = ''exec "${scriptsDrv}/scripts/${scriptBase}" "$@"'';
+              }}/bin/${lib.removeSuffix ".sh" scriptBase}";
             };
         in {
-          init-host          = mkApp ./scripts/init-host.sh;
-          show-config        = mkApp ./scripts/show-config.sh;
-          validate-install   = mkApp ./scripts/validate-install.sh;
-          doctor             = mkApp ./scripts/doctor.sh;
-          install-anywhere   = mkApp ./scripts/install-anywhere.sh;
-          install-manual     = mkApp ./scripts/install-manual.sh;
-          post-install-check = mkApp ./scripts/post-install-check.sh;
-          validate-inventory = mkApp ./scripts/validate-inventory.sh;
-          deploy-contabo     = mkApp ./scripts/deploy-contabo.sh;
-          deploy-all-hosts   = mkApp ./scripts/deploy-all-hosts.sh;
-          plan-azure-ext         = mkApp ./scripts/plan-azure-ext.sh;
-          deploy-azure-ext       = mkApp ./scripts/deploy-azure-ext.sh;
-          plan-cloudflare-ext    = mkApp ./scripts/plan-cloudflare-ext.sh;
-          deploy-cloudflare-ext  = mkApp ./scripts/deploy-cloudflare-ext.sh;
-          plan-gcp-ext           = mkApp ./scripts/plan-gcp-ext.sh;
-          deploy-gcp-ext         = mkApp ./scripts/deploy-gcp-ext.sh;
+          init-host          = mkApp [ pkgs.bash ] "init-host.sh";
+          show-config        = mkApp [ pkgs.bash pkgs.nix ] "show-config.sh";
+          validate-install   = mkApp [ pkgs.bash pkgs.nix ] "validate-install.sh";
+          doctor             = mkApp [ pkgs.bash pkgs.nix ] "doctor.sh";
+          install-anywhere   = mkApp [ pkgs.bash pkgs.nix pkgs.openssh ] "install-anywhere.sh";
+          install-manual     = mkApp [ pkgs.bash ] "install-manual.sh";
+          post-install-check = mkApp [ pkgs.bash pkgs.nix pkgs.openssh ] "post-install-check.sh";
+          validate-inventory = mkApp [ pkgs.bash pkgs.nix ] "validate-inventory.sh";
+          deploy-contabo     = mkApp [ pkgs.bash pkgs.colmena ] "deploy-contabo.sh";
+          deploy-all-hosts   = mkApp [ pkgs.bash pkgs.colmena ] "deploy-all-hosts.sh";
+          plan-azure-ext         = mkApp [ pkgs.bash pkgs.opentofu ] "plan-azure-ext.sh";
+          deploy-azure-ext       = mkApp [ pkgs.bash pkgs.opentofu ] "deploy-azure-ext.sh";
+          plan-cloudflare-ext    = mkApp [ pkgs.bash pkgs.opentofu ] "plan-cloudflare-ext.sh";
+          deploy-cloudflare-ext  = mkApp [ pkgs.bash pkgs.opentofu ] "deploy-cloudflare-ext.sh";
+          plan-gcp-ext           = mkApp [ pkgs.bash pkgs.opentofu ] "plan-gcp-ext.sh";
+          deploy-gcp-ext         = mkApp [ pkgs.bash pkgs.opentofu ] "deploy-gcp-ext.sh";
         }
       );
 
@@ -231,10 +225,23 @@
       # `inventoryValidation` throws when the inventory violates any contract;
       # downstream consumers (CI, scripts, agents) can rely on `inventory`,
       # `topology`, and `stacks` only after this evaluation has succeeded.
+      # Imported once and reused to avoid redundant evaluations.
       inventoryValidation = import ./deployments/validation.nix;
       inventory = (import ./deployments/validation.nix).inventory;
       topology = (import ./deployments/validation.nix).topology;
       stacks = (import ./deployments/validation.nix).stacks;
+
+      # Expose inventory validation as a flake check so `nix flake check`
+      # catches any contract violation at evaluation time.
+      checks = lib.genAttrs systems (system:
+        let pkgs = import nixpkgs { inherit system; };
+            _validated = import ./deployments/validation.nix;
+        in {
+          inventory-validation = pkgs.runCommand "inventory-validation-check" {} ''
+            echo 'targets: ${toString _validated.summary.targetCount}, stacks: ${toString _validated.summary.stackCount}, assignments: ${toString _validated.summary.assignmentCount}' > $out
+          '';
+        }
+      );
 
       # Colmena hive — server-class NixOS hosts pushed via `colmena apply`.
       # Workstations are NOT in the hive: they are installed via NixOS Anywhere

@@ -17,7 +17,7 @@ Il porte maintenant ensemble :
 | Couche | Rôle | Exemple |
 |---|---|---|
 | `modules/` | briques réutilisables | profiles, security, darwin |
-| `targets/hosts/` | réalité machine | `main`, `openclaw-vm`, `macmini` |
+| `targets/hosts/` | réalité machine | `main`, `openclaw-vm`, `mac-mini` |
 | `home/users/` | identité d’un user | `mikl.nix`, `mfo.nix`, `dfo.nix`, `zfo.nix`, `lfo.nix` |
 | `home/roles/` | binding réutilisable par usage | `desktop-hyprland.nix`, `terminal-kitty.nix` |
 | `home/targets/` | composition finale par machine | `main.nix`, `openclaw-vm.nix`, `ms-s1-max.nix` |
@@ -103,16 +103,16 @@ si aucune composition utilisateur n'est réellement utile.
 
 ## Darwin actuel
 
-Le premier target Darwin modélisé est `macmini`.
+Le premier target Darwin modélisé est `mac-mini`.
 
 ### Base réutilisable
 - `modules/darwin/base.nix` : base commune Darwin (`allowUnfree`, flakes, revision, stateVersion, hostPlatform)
 - `modules/darwin/homebrew.nix` : activation Homebrew / nix-homebrew commune
 
 ### Spécifique machine
-- `targets/hosts/macmini/config/user.nix` : user principal Darwin
-- `targets/hosts/macmini/config/apps.nix` : paquets Nix + casks Homebrew
-- `targets/hosts/macmini/config/networking.nix` : apps MAS réseau/VPN
+- `targets/hosts/mac-mini/config/user.nix` : user principal Darwin
+- `targets/hosts/mac-mini/config/apps.nix` : paquets Nix + casks Homebrew
+- `targets/hosts/mac-mini/config/networking.nix` : apps MAS réseau/VPN
 
 ### Principe d'installation
 - Nix quand le package est proprement disponible sur Darwin
@@ -131,7 +131,7 @@ Le premier flux réel branché utilise `sops-nix` pour `ms-s1-max` :
 
 Le fallback `home/users/default.nix` a été retiré.
 Les hosts NixOS utilisent maintenant tous un binding explicite dans `home/targets/`.
-Le target Darwin `macmini` reste séparé de cette logique Home Manager NixOS.
+Le target Darwin `mac-mini` reste séparé de cette logique Home Manager NixOS.
 
 ## Modèle target → stack instances
 
@@ -154,16 +154,16 @@ Le `runtime` d'un target précise **comment** il est opéré (`nixos-systemd`, `
 
 Voir aussi `deployments/README.md`, `docs/stack-classification.md`, `docs/colmena.md`, `docs/opentofu.md`.
 
-## Conflit de nom `macmini`
+## Conflit de nom `mac-mini`
 
-Le repo `infra` contient un target `macmini` qui est un **Darwin** (`darwinConfigurations.macmini`, cf. `targets/hosts/macmini/`). Le repo historique `homelab` contenait un target `macmini` qui était un **NixOS** server-class portant une partie des stacks LAN (`immich`, `n8n`, `pihole`, `openwebui`, `opencode`, `tsdproxy`, `kopia`, agent `beszel`).
+Le repo `infra` contient un target `mac-mini` qui est un **Darwin** (`darwinConfigurations.mac-mini`, cf. `targets/hosts/mac-mini/`). Le repo historique `homelab` contenait un target `mac-mini` qui était un **NixOS** server-class portant une partie des stacks LAN (`immich`, `n8n`, `pihole`, `openwebui`, `opencode`, `tsdproxy`, `kopia`, agent `beszel`).
 
 Tant que ce conflit de nom n'est pas tranché :
 
-- `topology.nix` ne déclare **pas** de target `macmini` côté `nixosHost` — le seul `macmini` du repo reste le Darwin, et il n'est volontairement pas dans le modèle de stacks ;
+- `topology.nix` ne déclare **pas** de target `mac-mini` côté `nixosHost` — le seul `mac-mini` du repo reste le Darwin, et il n'est volontairement pas dans le modèle de stacks ;
 - les stacks à vocation LAN qui n'ont pas d'autre host candidat aujourd'hui (`immich`, `n8n`, `pihole`, `openwebui`, `opencode`, `rustdesk`) ont un contrat valide mais aucune affectation (cf. `docs/stack-classification.md`) ;
 - `ai-server` fait exception : il est consommé directement par `ms-s1-max` via `modules/profiles/ai-server.nix` et l'inventory l'assigne en conséquence (`ai-server-ms-s1-max`) ;
-- ces stacks sont prêtes à être assignées dès qu'un host NixOS LAN compatible existera dans `topology.nix` (par exemple un futur `macmini-nixos` ou un autre nom non ambigu).
+- ces stacks sont prêtes à être assignées dès qu'un host NixOS LAN compatible existera dans `topology.nix` (par exemple un futur `mac-mini-nixos` ou un autre nom non ambigu).
 
 Cette séparation évite deux erreurs :
 
