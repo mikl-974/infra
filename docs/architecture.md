@@ -47,18 +47,21 @@ Quatre targets NixOS réels valident maintenant le modèle moderne :
 - composition Home Manager : `home/targets/main.nix`
 - identité user : `home/users/mikl.nix`
 - rôle réutilisable : `home/roles/desktop-hyprland.nix`
+- installation NixOS Anywhere : structure prête via `targets/hosts/main/disko.nix`, disque réel encore machine-dépendant
 
 ### `laptop`
 - host concret : `targets/hosts/laptop/`
 - composition Home Manager : `home/targets/laptop.nix`
 - identité user : `home/users/mikl.nix`
 - rôle réutilisable : `home/roles/desktop-hyprland.nix`
+- installation NixOS Anywhere : structure prête via `targets/hosts/laptop/disko.nix`, disque réel encore machine-dépendant
 
 ### `gaming`
 - host concret : `targets/hosts/gaming/`
 - composition Home Manager : `home/targets/gaming.nix`
 - identité user : `home/users/mikl.nix`
 - rôles réutilisables : `home/roles/desktop-hyprland.nix`, `home/roles/gaming-steam.nix`
+- installation NixOS Anywhere : structure prête via `targets/hosts/gaming/disko.nix`, disque réel encore machine-dépendant
 
 `main`, `laptop` et `gaming` ne dépendent plus d'aucun fallback Home Manager.
 
@@ -104,3 +107,10 @@ Le premier flux réel branché utilise `sops-nix` pour `ms-s1-max` :
 Le fallback `home/users/default.nix` a été retiré.
 Les hosts NixOS utilisent maintenant tous un binding explicite dans `home/targets/`.
 Le target Darwin `macmini` reste séparé de cette logique Home Manager NixOS.
+
+## Parcours d'installation NixOS
+
+- `main`, `laptop` et `gaming` ont maintenant un `disko.nix` branché
+- leur parcours NixOS Anywhere est donc préparé structurellement
+- le dernier paramètre volontairement local reste `disk` dans `vars.nix`, à renseigner sur la machine cible
+- `ms-s1-max` reste sur un parcours manuel tant qu'aucun `disko.nix` n'est défini pour ce host

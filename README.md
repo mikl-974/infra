@@ -64,6 +64,7 @@ Composition retenue pour cette passe :
 - identité user : `home/users/mikl.nix`
 - rôle réutilisable : `home/roles/desktop-hyprland.nix`
 - dotfiles bruts actifs : Hyprland / foot / wofi / mako via `dotfiles/`
+- installation distante : `targets/hosts/main/disko.nix` branché, disque réel encore à renseigner dans `vars.nix`
 
 `laptop` rejoint maintenant le même modèle :
 - `targets/hosts/laptop/default.nix`
@@ -77,6 +78,7 @@ Composition retenue pour cette passe :
 - identité user : `home/users/mikl.nix`
 - rôle réutilisable : `home/roles/desktop-hyprland.nix`
 - dotfiles bruts actifs : Hyprland / foot / wofi / mako via `dotfiles/`
+- installation distante : `targets/hosts/laptop/disko.nix` branché, disque réel à renseigner dans `vars.nix`
 
 `gaming` rejoint maintenant le même modèle :
 - `targets/hosts/gaming/default.nix`
@@ -90,9 +92,15 @@ Composition retenue pour cette passe :
 - identité user : `home/users/mikl.nix`
 - rôles réutilisables : `home/roles/desktop-hyprland.nix`, `home/roles/gaming-steam.nix`
 - dotfiles bruts actifs : Hyprland / foot / wofi / mako via `dotfiles/`
+- installation distante : `targets/hosts/gaming/disko.nix` branché, disque réel à renseigner dans `vars.nix`
 
 Tous les targets NixOS du repo utilisent maintenant un `home/targets/<host>.nix` explicite.
 Le fallback `home/users/default.nix` a été retiré.
+
+Parcours NixOS Anywhere réellement prêts en V1 :
+- structure et scripts : `main`, `laptop`, `gaming`
+- prérequis opératoire restant : renseigner le vrai `disk` sur la machine cible avant installation
+- hors périmètre Anywhere actuel : `ms-s1-max` (pas de `disko.nix`)
 
 ## Users normalisés disponibles
 

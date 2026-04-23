@@ -44,7 +44,7 @@ Le target Darwin reste une machine concrète, pas un faux target NixOS.
 ### NixOS
 1. créer `targets/hosts/<name>/vars.nix`
 2. créer `targets/hosts/<name>/default.nix`
-3. ajouter `disko.nix` si nécessaire
+3. ajouter `disko.nix` si le host doit être installable via NixOS Anywhere
 4. exposer la machine dans `flake.nix`
 
 ### Darwin

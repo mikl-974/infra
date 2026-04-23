@@ -69,6 +69,14 @@ if ! host_uses_disko "$REPO_ROOT" "$HOST"; then
   exit 1
 fi
 
+if [[ -z "$DISK" ]] || is_placeholder_value "$DISK"; then
+  echo ""
+  echo -e "${RED}✘ Le host '$HOST' a bien un disko.nix, mais le vrai disque cible n'est pas encore renseigné dans targets/hosts/$HOST/vars.nix.${RST}"
+  echo "  Vérifie le disque réel sur la machine cible avec 'lsblk', renseigne le champ 'disk', puis relance :"
+  echo "    nix run .#validate-install -- $HOST"
+  exit 1
+fi
+
 echo ""
 echo -e "${BLD}── Étape 3/6 : Prérequis locaux${RST}"
 check_cmd "nix" "Nix avec flakes est requis"

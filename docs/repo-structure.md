@@ -32,7 +32,7 @@ Contient la réalité des machines :
 - un host concret dans `targets/hosts/<name>/`
 - ses variables machine
 - sa config NixOS ou Darwin
-- éventuellement son layout disque côté NixOS
+- éventuellement son layout disque côté NixOS (`disko.nix`) quand le host doit être installable via NixOS Anywhere
 
 ### `home/`
 Contient la composition utilisateur :

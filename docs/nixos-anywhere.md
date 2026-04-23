@@ -1,6 +1,6 @@
 # Installation via NixOS Anywhere
 
-Ce document décrit comment installer la machine `main` (ou toute autre machine NixOS de ce repo) via [NixOS Anywhere](https://github.com/nix-community/nixos-anywhere).
+Ce document décrit comment installer un host NixOS de ce repo via [NixOS Anywhere](https://github.com/nix-community/nixos-anywhere).
 
 NixOS Anywhere permet de provisionner une machine NixOS à distance (ou en live ISO) en une seule commande, en utilisant la configuration déclarée dans ce flake.
 
@@ -28,10 +28,10 @@ Les variables spécifiques à la machine sont centralisées dans `targets/hosts/
 ### 1. Initialiser la config machine
 
 ```bash
-nix run .#init-host -- main
+nix run .#init-host -- <host>
 ```
 
-Ce script interactif crée `targets/hosts/main/vars.nix` avec :
+Ce script interactif crée `targets/hosts/<host>/vars.nix` avec :
 - system (plateforme NixOS du host)
 - username (identifiant Unix de l'utilisateur)
 - hostname (doit correspondre à la clé dans flake.nix)
@@ -39,13 +39,13 @@ Ce script interactif crée `targets/hosts/main/vars.nix` avec :
 - timezone
 - locale
 
-Ou éditer directement `targets/hosts/main/vars.nix` :
+Ou éditer directement `targets/hosts/<host>/vars.nix` :
 
 ```nix
 {
   system   = "x86_64-linux";
   username = "mikl";
-  hostname = "main";
+  hostname = "<host>";
   disk     = "/dev/nvme0n1";  # identifier avec lsblk sur la machine cible
   timezone = "Europe/Paris";
   locale   = "fr_FR.UTF-8";
@@ -55,7 +55,7 @@ Ou éditer directement `targets/hosts/main/vars.nix` :
 ### 2. Vérifier la configuration
 
 ```bash
-nix run .#doctor -- --host main
+nix run .#doctor -- --host <host>
 ```
 
 Ce diagnostic vérifie la disponibilité des outils locaux, la structure du repo et l'exposition des commandes flake.
@@ -63,7 +63,7 @@ Ce diagnostic vérifie la disponibilité des outils locaux, la structure du repo
 ### 3. Valider la configuration
 
 ```bash
-nix run .#validate-install -- main
+nix run .#validate-install -- <host>
 ```
 
 Ce script vérifie que `vars.nix` est complet (`system`, `username`, `hostname`, `disk` si disko est présent, `timezone`, `locale`), que les fichiers critiques existent, qu'aucun placeholder ne reste, que le host est bien exposé dans `flake.nix`, et que les dotfiles activés existent réellement.
@@ -71,7 +71,7 @@ Ce script vérifie que `vars.nix` est complet (`system`, `username`, `hostname`,
 ### 4. Afficher un résumé de la config effective
 
 ```bash
-nix run .#show-config -- main
+nix run .#show-config -- <host>
 ```
 
 ## Lancer l'installation
@@ -79,7 +79,7 @@ nix run .#show-config -- main
 ### Avec le script d'orchestration (recommandé)
 
 ```bash
-nix run .#install-anywhere -- main <IP-MACHINE-CIBLE>
+nix run .#install-anywhere -- <host> <IP-MACHINE-CIBLE>
 ```
 
 Ce script :
@@ -95,7 +95,7 @@ Ce script :
 
 ```bash
 nix run nixpkgs#nixos-anywhere -- \
-  --flake .#main \
+  --flake .#<host> \
   root@<IP-MACHINE-CIBLE>
 ```
 
@@ -112,45 +112,57 @@ Après le premier boot :
 
 ```bash
 # Vérifier l'installation
-nix run .#post-install-check -- --host main
+nix run .#post-install-check -- --host <host>
 
 # Rebuilder si nécessaire
-sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
+sudo nixos-rebuild switch --flake github:mikl-974/workstation#<host>
 ```
 
 Home Manager est intégré dans le système NixOS via `home-manager.nixosModules.home-manager`.
 Il s'applique automatiquement lors de `nixos-rebuild switch` — les dotfiles sont symlinqués dans `~/.config/`.
 
-Pour `main`, la composition active passe désormais explicitement par :
-- `home/targets/main.nix`
-- `home/users/mikl.nix`
-- `home/roles/desktop-hyprland.nix`
+Pour un host mono-user explicite comme `main`, `laptop` ou `gaming`, la composition active passe désormais explicitement par :
+- `home/targets/<host>.nix`
+- `home/users/<user>.nix`
+- `home/roles/*.nix`
 
 Voir `docs/bootstrap.md` pour le workflow complet post-installation.
 
 ## Reconstruire la machine
 
 ```bash
-sudo nixos-rebuild switch --flake .#main
+sudo nixos-rebuild switch --flake .#<host>
 # ou depuis n'importe où avec le flake GitHub :
-sudo nixos-rebuild switch --flake github:mikl-974/workstation#main
+sudo nixos-rebuild switch --flake github:mikl-974/workstation#<host>
 ```
 
 ## Structure des fichiers pertinents
 
 ```
-targets/hosts/main/vars.nix     variables machine (username, disk, timezone…) — seul fichier à éditer
-flake.nix               inputs disko + home-manager, nixosConfigurations.main, apps
-targets/hosts/main/default.nix  entrée du host `main`
-targets/hosts/main/config/default.nix configuration du host (boot, hostname, profils)
-targets/hosts/main/config/user.nix    utilisateur système du host
-targets/hosts/main/disko.nix    layout disque (GPT + EFI + btrfs) — lit le disque depuis vars.nix
+targets/hosts/<host>/vars.nix     variables machine (username, disk, timezone…) — seul fichier à éditer
+flake.nix               inputs disko + home-manager, nixosConfigurations.<host>, apps
+targets/hosts/<host>/default.nix  entrée du host
+targets/hosts/<host>/config/default.nix configuration du host (boot, hostname, profils) quand le host est structuré en config/
+targets/hosts/<host>/config/user.nix    utilisateur système du host quand ce découpage existe
+targets/hosts/<host>/disko.nix    layout disque (GPT + EFI + btrfs) — lit le disque depuis vars.nix quand le host est Anywhere-ready
 modules/profiles/       profils assembles par les targets (desktop-hyprland, dev, networking, gaming, ai)
 modules/                modules Nix
-home/targets/main.nix   composition Home Manager de `main`
-home/users/mikl.nix     identité utilisateur de `main`
 home/targets/<host>.nix composition Home Manager explicite par host
+home/users/<user>.nix   identité utilisateur normalisée
 dotfiles/               fichiers de configuration bruts
 scripts/                init-host, show-config, doctor, validate-install, install-anywhere, install-manual, post-install-check
 templates/host-vars.nix template de vars.nix pour un nouveau host
 ```
+
+## État réel du repo
+
+Hosts NixOS structurellement prêts pour NixOS Anywhere :
+- `main`
+- `laptop`
+- `gaming`
+
+Condition opératoire restante pour chacun :
+- renseigner le vrai `disk` dans `targets/hosts/<host>/vars.nix` sur la machine cible concernée
+
+Host NixOS non prêt pour NixOS Anywhere à ce stade :
+- `ms-s1-max` (pas de `disko.nix`)

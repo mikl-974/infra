@@ -121,7 +121,12 @@ if [[ -n "$HOST" ]]; then
   done
 
   if host_uses_disko "$REPO_ROOT" "$HOST"; then
-    ok "NixOS Anywhere possible pour ce host (disko.nix présent)"
+    HOST_DISK="$(read_nix_string_var "$(host_vars_file "$REPO_ROOT" "$HOST")" "disk")"
+    if [[ -n "$HOST_DISK" ]] && ! is_placeholder_value "$HOST_DISK"; then
+      ok "NixOS Anywhere possible pour ce host (disko.nix présent, disk renseigné)"
+    else
+      warn "NixOS Anywhere structurellement prêt pour ce host, mais le vrai disk reste à renseigner dans vars.nix"
+    fi
   else
     warn "NixOS Anywhere indisponible pour ce host (pas de disko.nix)"
   fi

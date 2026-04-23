@@ -55,6 +55,23 @@ print_field_status() {
   fi
 }
 
+print_disk_status() {
+  local value="$1"
+
+  if [[ -z "$value" ]]; then
+    warn "vars.nix : disk absent — disko est branché, mais NixOS Anywhere reste bloqué tant que le disque réel n'est pas renseigné"
+  elif is_placeholder_value "$value"; then
+    warn "vars.nix : disk non défini ('$value') — remplacer par le vrai disque cible avant NixOS Anywhere"
+  else
+    ok "disk : ${value}"
+    if [[ "$value" == /dev/* ]]; then
+      ok "disk au bon format (/dev/...)"
+    else
+      fail "vars.nix : disk='$value' invalide (attendu : /dev/...)"
+    fi
+  fi
+}
+
 echo ""
 echo -e "${BLD}=== Validation pré-installation : host '$HOST' ===${RST}"
 echo ""
@@ -141,14 +158,7 @@ if [[ -f "$VARS_FILE" ]]; then
   fi
 
   if [[ "$HAS_DISKO" == true ]]; then
-    print_field_status "disk" "$DISK" " — requis quand disko.nix est présent"
-    if [[ -n "$DISK" ]] && ! is_placeholder_value "$DISK"; then
-      if [[ "$DISK" == /dev/* ]]; then
-        ok "disk au bon format (/dev/...)"
-      else
-        fail "vars.nix : disk='$DISK' invalide (attendu : /dev/...)"
-      fi
-    fi
+    print_disk_status "$DISK"
   elif [[ -n "$DISK" ]] && ! is_placeholder_value "$DISK"; then
     ok "disk renseigné (utile pour une future migration vers disko)"
   fi
@@ -182,12 +192,16 @@ for file in \
   rel="${file#"$REPO_ROOT/"}"
   while IFS= read -r match; do
     [[ -z "$match" ]] && continue
-    fail "Placeholder dans $rel : $match"
-    FOUND_PLACEHOLDERS=$(( FOUND_PLACEHOLDERS + 1 ))
+    if [[ "$match" == *"/dev/DEFINE_DISK"* && "$file" == "$VARS_FILE" ]]; then
+      warn "Placeholder disque restant dans $rel : $match"
+    else
+      fail "Placeholder dans $rel : $match"
+      FOUND_PLACEHOLDERS=$(( FOUND_PLACEHOLDERS + 1 ))
+    fi
   done < <(grep -nE 'DEFINE_|CHANGEME' "$file" || true)
 done
 if [[ $FOUND_PLACEHOLDERS -eq 0 ]]; then
-  ok "Aucun placeholder dans les fichiers structurants"
+  ok "Aucun placeholder bloquant dans les fichiers structurants"
 fi
 
 echo ""
@@ -230,7 +244,11 @@ if [[ "$HAS_DISKO" == true ]]; then
   fi
 
   if [[ -f "$REPO_ROOT/scripts/install-anywhere.sh" ]]; then
-    ok "parcours NixOS Anywhere disponible : scripts/install-anywhere.sh"
+    if [[ -n "$DISK" ]] && ! is_placeholder_value "$DISK"; then
+      ok "parcours NixOS Anywhere disponible : scripts/install-anywhere.sh"
+    else
+      warn "parcours NixOS Anywhere branché, mais disque réel encore non renseigné dans vars.nix"
+    fi
   else
     fail "scripts/install-anywhere.sh manquant"
   fi

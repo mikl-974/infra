@@ -39,7 +39,7 @@ Ordre officiel :
 Commande de base :
 
 ```bash
-nix run .#post-install-check -- --host main
+nix run .#post-install-check -- --host <host>
 ```
 
 ## Ce qui est integre
@@ -141,13 +141,13 @@ Concretement :
 Apres rebuild :
 
 ```bash
-nix run .#post-install-check -- --host main
+nix run .#post-install-check -- --host <host>
 ```
 
 Si un point critique manque :
 
-- relancer `sudo nixos-rebuild switch --flake .#main`
-- relancer `nix run .#post-install-check -- --host main`
+- relancer `sudo nixos-rebuild switch --flake .#<host>`
+- relancer `nix run .#post-install-check -- --host <host>`
 - vérifier la composition Home Manager active (`home/targets/<host>.nix`) et les dotfiles réellement référencés
 - vérifier que le host importe bien les profils attendus
 
