@@ -1,19 +1,26 @@
 # stacks/
 
-Services et applications groupés par stack.
+Services et applications portés par ce repo `infra`.
 
 ## Règle
 
-Ce dossier contient uniquement :
-- des stacks de services (ex: immich, nextcloud, kopia)
-- leurs fichiers de configuration, compose, etc.
-- leurs contrats de données (backup, restore)
+Une stack décrit :
+- un service ou une application
+- sa configuration applicative
+- ses dépendances de service si nécessaire
 
-Il ne contient jamais :
-- de logique système générique
-- de composition de host NixOS
+Une stack ne décide jamais :
+- quelle machine l’embarque
+- quel user la consomme
+- quelle logique système générique réutilisable doit vivre dans `modules/`
 
-## État actuel
+## Frontière
 
-Aucune stack dans ce repo — les stacks serveur vivent dans `homelab`.
-Ce dossier est un placeholder pour les services desktop futurs.
+- `modules/` = briques système réutilisables
+- `targets/hosts/` = machines concrètes
+- `stacks/` = services/applications
+- `home/` = composition utilisateur
+
+## Stack actuelle
+
+- `stacks/ai-server/` : service `ollama` porté par ce repo

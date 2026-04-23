@@ -104,14 +104,14 @@ if [[ -n "$HOST" ]]; then
   echo ""
   echo -e "${BLD}── Readiness du host '${HOST}'${RST}"
   if host_exists "$REPO_ROOT" "$HOST"; then
-    ok "targets/$HOST existe"
+    ok "targets/hosts/$HOST existe"
   else
-    fail "targets/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
+    fail "targets/hosts/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
   fi
 
   for path in \
-    "$(host_vars_file "$REPO_ROOT" "$HOST")|targets/$HOST/vars.nix" \
-    "$(host_default_file "$REPO_ROOT" "$HOST")|targets/$HOST/default.nix"; do
+    "$(host_vars_file "$REPO_ROOT" "$HOST")|targets/hosts/$HOST/vars.nix" \
+    "$(host_default_file "$REPO_ROOT" "$HOST")|targets/hosts/$HOST/default.nix"; do
     file="${path%%|*}"
     label="${path##*|}"
     if [[ -f "$file" ]]; then

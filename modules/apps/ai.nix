@@ -7,7 +7,7 @@
   # services exposed to other machines on the network.
   #
   # For shared AI services (multi-machine access, GPU server), see ai-server
-  # in the homelab repository. The separation is intentional and non-negotiable.
+  # in the same infra repository. The separation is intentional and non-negotiable.
   environment.systemPackages = with pkgs; [
     # Local LLM inference runtime — run language models fully offline
     # Usage: `ollama pull llama3` then `ollama run llama3`

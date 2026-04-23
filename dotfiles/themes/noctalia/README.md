@@ -1,7 +1,7 @@
 # Noctalia theme assets
 #
 # This directory contains the raw color scheme and theme assets for Noctalia.
-# It is the single source of truth for all visual theming on this workstation.
+# It is the single source of truth for all visual theming on this infra repo.
 #
 # Structure:
 #   colors.conf          — base Noctalia palette (hex values, named variables)

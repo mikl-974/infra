@@ -1,6 +1,6 @@
 # Disk layout for the main workstation — used by NixOS Anywhere.
 #
-# The target disk is read from targets/main/vars.nix (field: disk).
+# The target disk is read from targets/hosts/main/vars.nix (field: disk).
 # Run `lsblk` on the target machine to identify the correct device.
 # Examples: /dev/nvme0n1, /dev/sda, /dev/vda
 #
@@ -20,7 +20,7 @@
     disk = {
       main = {
         type = "disk";
-        # Disk device read from targets/main/vars.nix — set the `disk` field there.
+        # Disk device read from targets/hosts/main/vars.nix — set the `disk` field there.
         device = hostVars.disk;
         content = {
           type = "gpt";

@@ -30,7 +30,7 @@ if [[ $# -lt 1 ]]; then
 fi
 
 HOST="$1"
-HOST_DIR="$REPO_ROOT/targets/$HOST"
+HOST_DIR="$REPO_ROOT/targets/hosts/$HOST"
 VARS_FILE="$(host_vars_file "$REPO_ROOT" "$HOST")"
 DEFAULT_FILE="$(host_default_file "$REPO_ROOT" "$HOST")"
 DISKO_FILE="$(host_disko_file "$REPO_ROOT" "$HOST")"
@@ -63,9 +63,9 @@ echo ""
 
 echo -e "${BLD}── Existence du host${RST}"
 if host_exists "$REPO_ROOT" "$HOST"; then
-  ok "targets/$HOST/ existe"
+  ok "targets/hosts/$HOST/ existe"
 else
-  fail "targets/$HOST/ introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
+  fail "targets/hosts/$HOST/ introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
   echo ""
   echo -e "${RED}Validation interrompue : host introuvable.${RST}"
   exit 1
@@ -73,7 +73,7 @@ fi
 
 echo ""
 echo -e "${BLD}── Fichiers critiques du host${RST}"
-for path in "$VARS_FILE|targets/$HOST/vars.nix" "$DEFAULT_FILE|targets/$HOST/default.nix"; do
+for path in "$VARS_FILE|targets/hosts/$HOST/vars.nix" "$DEFAULT_FILE|targets/hosts/$HOST/default.nix"; do
   file="${path%%|*}"
   label="${path##*|}"
   if [[ -f "$file" ]]; then
@@ -84,10 +84,10 @@ for path in "$VARS_FILE|targets/$HOST/vars.nix" "$DEFAULT_FILE|targets/$HOST/def
 done
 
 if host_uses_disko "$REPO_ROOT" "$HOST"; then
-  ok "targets/$HOST/disko.nix existe"
+  ok "targets/hosts/$HOST/disko.nix existe"
   HAS_DISKO=true
 else
-  warn "targets/$HOST/disko.nix absent — NixOS Anywhere n'est pas disponible pour ce host"
+  warn "targets/hosts/$HOST/disko.nix absent — NixOS Anywhere n'est pas disponible pour ce host"
   HAS_DISKO=false
 fi
 
@@ -227,7 +227,7 @@ if [[ "$HAS_DISKO" == true ]]; then
   if grep -q 'hostVars.disk' "$DISKO_FILE"; then
     ok "disko.nix lit bien le disque depuis hostVars.disk"
   else
-    fail "targets/$HOST/disko.nix n'utilise pas hostVars.disk"
+    fail "targets/hosts/$HOST/disko.nix n'utilise pas hostVars.disk"
   fi
 
   if [[ -f "$REPO_ROOT/scripts/install-anywhere.sh" ]]; then

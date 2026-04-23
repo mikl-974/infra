@@ -22,7 +22,7 @@ Le but n'est pas de ricer le desktop, mais de confirmer que la workstation est e
 
 Ordre officiel :
 
-1. se connecter avec l'utilisateur défini dans `targets/<host>/vars.nix`
+1. se connecter avec l'utilisateur défini dans `targets/hosts/<host>/vars.nix`
 2. si nécessaire : `sudo nixos-rebuild switch --flake .#<host>`
 3. lancer : `nix run .#post-install-check -- --host <host>`
 4. relire les warnings éventuels
@@ -91,7 +91,7 @@ Les dotfiles effectivement branches par Home Manager sont :
 
 Ils sont lies depuis :
 
-- `home/default.nix`
+- `home/users/default.nix`
 
 ## Parcours premier login
 
@@ -127,13 +127,13 @@ which thunar
 Regle stricte :
 
 - `modules/` -> installation et activation systeme
-- `home/default.nix` -> fichiers utilisateur actifs
+- `home/users/default.nix` -> fichiers utilisateur actifs
 - `dotfiles/` -> contenu applicatif brut
 
 Concretement :
 
 - ne pas mettre les bindings Hyprland dans un module Nix
-- ne pas mettre le contenu d'un fichier `config` dans `home/default.nix`
+- ne pas mettre le contenu d'un fichier `config` dans `home/users/default.nix`
 - ne pas utiliser `dotfiles/` pour de la logique systeme
 
 ## Verification et remediation
@@ -148,7 +148,7 @@ Si un point critique manque :
 
 - relancer `sudo nixos-rebuild switch --flake .#main`
 - relancer `nix run .#post-install-check -- --host main`
-- vérifier `home/default.nix` et les dotfiles réellement référencés
+- vérifier `home/users/default.nix` et les dotfiles réellement référencés
 - vérifier que le host importe bien les profils attendus
 
 ## Etendre proprement
@@ -157,7 +157,7 @@ Si la couche UX doit evoluer :
 
 1. installer les nouvelles apps dans le bon module
 2. ajouter leur config brute dans `dotfiles/<app>/`
-3. lier explicitement le fichier dans `home/default.nix`
+3. lier explicitement le fichier dans `home/users/default.nix`
 4. documenter l'integration
 
 Ne pas :

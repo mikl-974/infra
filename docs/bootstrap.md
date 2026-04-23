@@ -44,7 +44,7 @@ cd workstation
 
 ### 2. Configurer la machine
 
-Toutes les valeurs spécifiques à la machine sont dans `targets/<name>/vars.nix`.
+Toutes les valeurs spécifiques à la machine sont dans `targets/hosts/<name>/vars.nix`.
 **C'est le seul fichier à renseigner.**
 
 ```bash
@@ -52,7 +52,7 @@ Toutes les valeurs spécifiques à la machine sont dans `targets/<name>/vars.nix
 nix run .#init-host -- main
 ```
 
-Ou éditer directement `targets/main/vars.nix` :
+Ou éditer directement `targets/hosts/main/vars.nix` :
 
 ```nix
 {
@@ -67,8 +67,8 @@ Ou éditer directement `targets/main/vars.nix` :
 
 Ces valeurs sont lues automatiquement par :
 - `flake.nix` → système du host (`system`) + username pour Home Manager
-- `targets/main/default.nix` → hostname, timezone, locale, définition utilisateur
-- `targets/main/disko.nix` → disque cible
+- `targets/hosts/main/default.nix` → hostname, timezone, locale, définition utilisateur
+- `targets/hosts/main/disko.nix` → disque cible
 
 Aucun autre fichier n'est à modifier.
 
@@ -90,7 +90,7 @@ Vérifications effectuées :
 - Aucun placeholder `DEFINE_` dans les fichiers structurants
 - Fichiers critiques présents (`default.nix`, `disko.nix`)
 - `flake.nix` expose bien le host
-- `home/default.nix` présent
+- `home/users/default.nix` présent
 
 ### 3a. Installer via NixOS Anywhere
 
@@ -117,7 +117,7 @@ Les dotfiles sont gérés par Home Manager, intégré dans le système NixOS.
 
 Ajouter un dotfile :
 1. Placer le fichier dans `dotfiles/<app>/`
-2. L'enregistrer dans `home/default.nix` :
+2. L'enregistrer dans `home/users/default.nix` :
    ```nix
    home.file.".config/foot/foot.ini".source = ../dotfiles/foot/foot.ini;
    ```
@@ -184,8 +184,8 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 
 ## Ajouter une nouvelle machine
 
-1. Créer `targets/<name>/default.nix` (copier depuis un host existant et adapter)
-2. Créer `targets/<name>/disko.nix` si le host utilise disko
+1. Créer `targets/hosts/<name>/default.nix` (copier depuis un host existant et adapter)
+2. Créer `targets/hosts/<name>/disko.nix` si le host utilise disko
 3. Initialiser la config :
    ```bash
    nix run .#init-host -- <name>
@@ -193,8 +193,8 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 4. Ajouter la configuration dans `flake.nix` :
    ```nix
    <name> = mkHost {
-     vars    = import ./targets/<name>/vars.nix;
-     modules = [ disko.nixosModules.disko ./targets/<name>/default.nix ];
+     vars    = import ./targets/hosts/<name>/vars.nix;
+     modules = [ disko.nixosModules.disko ./targets/hosts/<name>/default.nix ];
    };
    ```
 5. Valider : `nix run .#validate-install -- <name>`

@@ -1,11 +1,11 @@
-# Template de configuration machine — targets/<name>/vars.nix
+# Template de configuration machine — targets/hosts/<name>/vars.nix
 #
 # Ce fichier est le seul à éditer pour configurer une nouvelle machine.
-# Copier ce template dans targets/<name>/vars.nix et remplir les valeurs.
+# Copier ce template dans targets/hosts/<name>/vars.nix et remplir les valeurs.
 #
 # Usage :
-#   cp modules/templates/host-vars.nix targets/<name>/vars.nix
-#   # éditer targets/<name>/vars.nix
+#   cp modules/templates/host-vars.nix targets/hosts/<name>/vars.nix
+#   # éditer targets/hosts/<name>/vars.nix
 #   nix run .#validate-install -- <name>
 #
 # Ou utiliser le script d'initialisation :

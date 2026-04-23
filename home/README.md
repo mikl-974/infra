@@ -1,28 +1,31 @@
 # home/
 
-Composition de la configuration utilisateur.
+Composition Home Manager des users, rôles et targets.
 
 ## Rôle
 
-Ce dossier orchestre le binding entre :
-- users (profil Home Manager d'un utilisateur concret)
-- roles (jeux d'options pour un usage ou un rôle)
-- targets (overrides spécifiques à une machine)
+`home/` est l’endroit où l’on décide :
+- quels users existent côté Home Manager
+- quels rôles leur sont appliqués
+- comment cela varie selon la machine
+- quels dotfiles sont liés
 
 ## Structure
 
 | Dossier | Rôle |
 |---|---|
-| `home/users/` | Configuration Home Manager par utilisateur |
-| `home/roles/` | Compositions de rôles réutilisables (placeholder) |
-| `home/targets/` | Overrides spécifiques à une machine (placeholder) |
+| `home/users/` | identité d’un user (`base.nix`, `mfo.nix`, `dfo.nix`) |
+| `home/roles/` | rôles composables (`desktop-hyprland`, `desktop-gnome`, `browser-*`, `gaming-*`, `terminal-kitty`) |
+| `home/targets/` | composition finale par target (`ms-s1-max.nix`) |
 
-## Extension
+## Règle
 
-Pour ajouter un second utilisateur :
-1. Créer `home/users/<username>.nix`
-2. Le référencer dans `flake.nix` via `home-manager.users.<username>`
+- `home/users/` ne décide pas seul de la machine
+- `home/roles/` ne contient pas de dotfiles machine-spécifiques cachés
+- `home/targets/` est le binding explicite user/role/target
 
-Pour ajouter des overrides par target :
-1. Créer `home/targets/<name>.nix`
-2. L'importer conditionnellement depuis le host via `specialArgs`
+## Exemple
+
+`home/targets/ms-s1-max.nix` compose :
+- `mfo` avec Hyprland + Steam + Chromium
+- `dfo` avec GNOME + Lutris + Steam + Firefox + Kitty

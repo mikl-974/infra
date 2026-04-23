@@ -68,8 +68,8 @@ Depuis la machine hôte : `ssh root@<IP-CIBLE>`
 
 ### Option A — Utiliser disko (recommandé si disko.nix est disponible)
 
-La machine `main` dispose d'un `targets/main/disko.nix` qui déclare le layout disque complet.
-Le disque cible est lu depuis `targets/main/vars.nix` (champ `disk`).
+La machine `main` dispose d'un `targets/hosts/main/disko.nix` qui déclare le layout disque complet.
+Le disque cible est lu depuis `targets/hosts/main/vars.nix` (champ `disk`).
 
 - Partition EFI 512 MiB
 - Partition btrfs couvrant le reste, avec subvolumes :
@@ -83,7 +83,7 @@ Le disque cible est lu depuis `targets/main/vars.nix` (champ `disk`).
 Lancer disko :
 
 ```bash
-nix run github:nix-community/disko -- --mode disko targets/main/disko.nix
+nix run github:nix-community/disko -- --mode disko targets/hosts/main/disko.nix
 ```
 
 disko partitionne, formate et monte automatiquement.
@@ -168,7 +168,7 @@ cd /root/workstation
 
 ## 6. Préparer la configuration machine
 
-**C'est le seul fichier à éditer.** Toutes les valeurs spécifiques à la machine sont centralisées dans `targets/<name>/vars.nix`.
+**C'est le seul fichier à éditer.** Toutes les valeurs spécifiques à la machine sont centralisées dans `targets/hosts/<name>/vars.nix`.
 
 ### Option A — Initialisation interactive
 
@@ -176,11 +176,11 @@ cd /root/workstation
 nix run .#init-host -- main
 ```
 
-Ce script pose les questions et génère `targets/main/vars.nix`.
+Ce script pose les questions et génère `targets/hosts/main/vars.nix`.
 
 ### Option B — Édition directe
 
-Ouvrir `targets/main/vars.nix` et renseigner les valeurs :
+Ouvrir `targets/hosts/main/vars.nix` et renseigner les valeurs :
 
 ```nix
 {
@@ -222,7 +222,7 @@ Si la configuration hardware est nécessaire, la générer d'abord :
 ```bash
 nixos-generate-config --root /mnt
 # Vérifier /mnt/etc/nixos/hardware-configuration.nix
-# L'intégrer dans targets/main/default.nix si des détecteurs matériels sont nécessaires
+# L'intégrer dans targets/hosts/main/default.nix si des détecteurs matériels sont nécessaires
 ```
 
 ---
@@ -259,12 +259,12 @@ nix run .#post-install-check -- --host main
 
 ## 10. Dotfiles
 
-Les dotfiles sont gérés par Home Manager via `home/default.nix`.
+Les dotfiles sont gérés par Home Manager via `home/users/default.nix`.
 
 Pour activer un dotfile :
 
 1. Placer le fichier dans `dotfiles/<app>/`
-2. L'enregistrer dans `home/default.nix` :
+2. L'enregistrer dans `home/users/default.nix` :
 
    ```nix
    home.file.".config/hypr/hyprland.conf".source = ../dotfiles/hypr/hyprland.conf;
@@ -340,7 +340,7 @@ nixos-rebuild switch --flake github:mikl-974/workstation#main \
 | Disques | `lsblk` |
 | Initialiser vars.nix | `nix run .#init-host -- main` |
 | Doctor | `nix run .#doctor -- --host main` |
-| Partitionnement disko | `nix run github:nix-community/disko -- --mode disko targets/main/disko.nix` |
+| Partitionnement disko | `nix run github:nix-community/disko -- --mode disko targets/hosts/main/disko.nix` |
 | Clone repo | `git clone https://github.com/mikl-974/workstation` |
 | Validation pré-install | `nix run .#validate-install -- main` |
 | Installation | `nixos-install --flake /root/workstation#main --root /mnt` |

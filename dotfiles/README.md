@@ -1,33 +1,31 @@
 # dotfiles/
 
-Bibliothèque de configurations applicatives réutilisables.
+Bibliothèque réutilisable de configurations applicatives.
 
 ## Règle
 
-Ce dossier est organisé par application ou domaine, pas par machine ou utilisateur.
+Ce dossier contient uniquement du contenu brut applicatif.
+Il n’exprime jamais quel user ou quelle machine consomme un fichier.
 
-Les dotfiles ici peuvent être utilisés par :
-- plusieurs utilisateurs
-- plusieurs targets
-- plusieurs rôles
+Le binding se fait dans `home/` :
+- `home/roles/` pour les ensembles réutilisables
+- `home/targets/` pour la composition finale par machine
 
-Le binding concret (quel utilisateur utilise quel dotfile) est dans `home/users/`.
+## Structure actuelle
 
-## Structure
-
-| Dossier | Application |
+| Dossier | Rôle |
 |---|---|
-| `dotfiles/hyprland/` | Hyprland (compositeur Wayland) |
-| `dotfiles/terminal/` | Foot (terminal) |
-| `dotfiles/launchers/` | Wofi (lanceur d'applications) |
-| `dotfiles/notifications/` | Mako (daemon de notifications) |
-| `dotfiles/themes/noctalia/` | Noctalia (schéma de couleurs et thème) |
-| `dotfiles/shell/` | Configuration shell |
-| `dotfiles/editors/` | Éditeurs (VS Code, Rider, etc.) |
+| `dotfiles/hyprland/` | config Hyprland |
+| `dotfiles/terminal/` | configs terminal (`foot.ini`, `kitty.conf`) |
+| `dotfiles/launchers/` | launcher |
+| `dotfiles/notifications/` | notifications |
+| `dotfiles/themes/noctalia/` | assets de thème |
+| `dotfiles/shell/` | shell |
+| `dotfiles/editors/` | éditeurs |
 
-## Étendre
+## Multi-user / multi-target
 
-Pour ajouter un nouveau dotfile :
-1. Créer le fichier dans le bon sous-dossier (ex: `dotfiles/launchers/`)
-2. Le lier depuis `home/users/default.nix` via `home.file`
-3. Documenter ici si nécessaire
+La flexibilité vient de la séparation suivante :
+- dotfiles = contenu brut
+- roles HM = ensembles réutilisables
+- targets HM = affectation finale par machine

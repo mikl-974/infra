@@ -1,6 +1,6 @@
 # foot terminal configuration
 #
-# Files in this directory are managed by Home Manager (home/default.nix).
+# Files in this directory are managed by Home Manager (home/users/default.nix).
 # They are symlinked to ~/.config/foot/ on the active machine.
 #
 # Active contents:

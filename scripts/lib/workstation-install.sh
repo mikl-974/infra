@@ -10,7 +10,7 @@ resolve_repo_root() {
 }
 
 list_hosts() {
-  local hosts_dir="$1/targets"
+  local hosts_dir="$1/targets/hosts"
   if [[ ! -d "$hosts_dir" ]]; then
     return 0
   fi
@@ -41,21 +41,21 @@ read_nix_string_var() {
 }
 
 host_vars_file() {
-  printf '%s/targets/%s/vars.nix\n' "$1" "$2"
+  printf '%s/targets/hosts/%s/vars.nix\n' "$1" "$2"
 }
 
 host_default_file() {
-  printf '%s/targets/%s/default.nix\n' "$1" "$2"
+  printf '%s/targets/hosts/%s/default.nix\n' "$1" "$2"
 }
 
 host_disko_file() {
-  printf '%s/targets/%s/disko.nix\n' "$1" "$2"
+  printf '%s/targets/hosts/%s/disko.nix\n' "$1" "$2"
 }
 
 host_exists() {
   local repo_root="$1"
   local host="$2"
-  [[ -d "$repo_root/targets/$host" ]]
+  [[ -d "$repo_root/targets/hosts/$host" ]]
 }
 
 host_has_profile() {
@@ -93,7 +93,7 @@ collect_active_dotfiles() {
     return 0
   fi
 
-  sed -nE 's/^[[:space:]]*".*"[.]source[[:space:]]*=[[:space:]]*\.\.\/dotfiles\/([^;[:space:]]+);[[:space:]]*$/\1/p' "$home_file"
+  sed -nE 's/^[[:space:]]*".*"[.]source[[:space:]]*=[[:space:]]*(\.\.\/)+dotfiles\/([^;[:space:]]+);[[:space:]]*$/\2/p' "$home_file"
 }
 
 collect_home_file_mappings() {
@@ -103,7 +103,7 @@ collect_home_file_mappings() {
     return 0
   fi
 
-  sed -nE 's/^[[:space:]]*"([^"]+)"[.]source[[:space:]]*=[[:space:]]*\.\.\/dotfiles\/([^;[:space:]]+);[[:space:]]*$/\1|\2/p' "$home_file"
+  sed -nE 's/^[[:space:]]*"([^"]+)"[.]source[[:space:]]*=[[:space:]]*(\.\.\/)+dotfiles\/([^;[:space:]]+);[[:space:]]*$/\1|\3/p' "$home_file"
 }
 
 is_placeholder_value() {

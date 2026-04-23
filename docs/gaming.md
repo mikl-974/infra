@@ -41,7 +41,7 @@ Point d'entrée profil : importe `modules/roles/gaming.nix`.
 Dans un host :
 
 ```nix
-# targets/<name>/default.nix
+# targets/hosts/<name>/default.nix
 imports = [
   ../../modules/profiles/desktop-hyprland.nix
   ../../modules/profiles/gaming.nix
@@ -91,6 +91,6 @@ Pour ajouter des outils gaming supplémentaires :
 
 ## Relation avec le host `gaming`
 
-Le target `targets/gaming/` est la machine physique dédiée au jeu.
+Le target `targets/hosts/gaming/` est la machine physique dédiée au jeu.
 Il importe `modules/profiles/gaming.nix` parmi ses profils.
-La configuration machine (username, hostname, disque) reste dans `targets/gaming/vars.nix`.
+La configuration machine (username, hostname, disque) reste dans `targets/hosts/gaming/vars.nix`.

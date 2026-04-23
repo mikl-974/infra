@@ -42,9 +42,9 @@ if [[ -z "$HOST" ]]; then
   read -rp "Host cible : " HOST
 fi
 
-HOST_DIR="$REPO_ROOT/targets/$HOST"
+HOST_DIR="$REPO_ROOT/targets/hosts/$HOST"
 if [[ ! -d "$HOST_DIR" ]]; then
-  echo -e "${RED}Erreur : targets/$HOST/ introuvable.${RST}"
+  echo -e "${RED}Erreur : targets/hosts/$HOST/ introuvable.${RST}"
   exit 1
 fi
 
@@ -113,7 +113,7 @@ if host_uses_disko "$REPO_ROOT" "$HOST"; then
   echo "  Disque configuré : ${DISK:-NON DÉFINI}"
   echo ""
   echo "  Option A — déclarative (recommandée) :"
-  echo "      nix run github:nix-community/disko -- --mode disko targets/$HOST/disko.nix"
+  echo "      nix run github:nix-community/disko -- --mode disko targets/hosts/$HOST/disko.nix"
   echo ""
 fi
 echo "  Option B — manuelle :"

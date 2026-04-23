@@ -1,5 +1,15 @@
 # home/roles/
 
-Compositions de rôles Home Manager réutilisables.
+Rôles Home Manager réellement utilisés.
 
-Placeholder — à enrichir lors de l'introduction de profils Home Manager distincts (ex: rôle dev, rôle graphiste).
+## Rôles actuels
+
+- `desktop-hyprland.nix`
+- `desktop-gnome.nix`
+- `gaming-steam.nix`
+- `gaming-lutris.nix`
+- `browser-chromium.nix`
+- `browser-firefox.nix`
+- `terminal-kitty.nix`
+
+Ces rôles sont composés depuis `home/targets/`.

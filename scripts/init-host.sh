@@ -22,11 +22,11 @@ if [[ $# -lt 1 ]]; then
 fi
 
 HOST="$1"
-HOST_DIR="$REPO_ROOT/targets/$HOST"
+HOST_DIR="$REPO_ROOT/targets/hosts/$HOST"
 VARS_FILE="$HOST_DIR/vars.nix"
 
 if [[ ! -d "$HOST_DIR" ]]; then
-  echo -e "${RED}Erreur : targets/$HOST/ introuvable.${RST}"
+  echo -e "${RED}Erreur : targets/hosts/$HOST/ introuvable.${RST}"
   echo "Hosts disponibles : $(list_hosts "$REPO_ROOT")"
   exit 1
 fi
@@ -34,13 +34,13 @@ fi
 echo ""
 echo -e "${BLD}${CYN}=== Initialisation de la config machine : host '$HOST' ===${RST}"
 echo ""
-echo "  Ce script génère targets/$HOST/vars.nix."
+echo "  Ce script génère targets/hosts/$HOST/vars.nix."
 echo "  Seul ce fichier contient les valeurs spécifiques à la machine."
 echo "  Aucun autre fichier n'est modifié."
 echo ""
 
 if [[ -f "$VARS_FILE" ]]; then
-  echo -e "${YLW}⚠  targets/$HOST/vars.nix existe déjà.${RST}"
+  echo -e "${YLW}⚠  targets/hosts/$HOST/vars.nix existe déjà.${RST}"
   echo ""
   read -rp "  Écraser le fichier existant ? [oui/NON] " OVERWRITE
   if [[ "${OVERWRITE,,}" != "oui" ]]; then
@@ -98,7 +98,7 @@ read -rp "  locale [fr_FR.UTF-8] : " LOCALE_INPUT
 LOCALE_VAL="${LOCALE_INPUT:-fr_FR.UTF-8}"
 
 echo ""
-echo -e "${BLD}── Génération de targets/$HOST/vars.nix${RST}"
+echo -e "${BLD}── Génération de targets/hosts/$HOST/vars.nix${RST}"
 echo ""
 
 cat > "$VARS_FILE" <<EOF2
@@ -126,7 +126,7 @@ cat >> "$VARS_FILE" <<EOF2
 }
 EOF2
 
-echo -e "  ${GRN}✔${RST}  targets/$HOST/vars.nix créé"
+echo -e "  ${GRN}✔${RST}  targets/hosts/$HOST/vars.nix créé"
 echo ""
 echo -e "${BLD}── Récapitulatif${RST}"
 echo ""

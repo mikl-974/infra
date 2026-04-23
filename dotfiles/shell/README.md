@@ -1,6 +1,6 @@
 # Shell configuration
 #
-# Files in this directory are managed by Home Manager (home/default.nix).
+# Files in this directory are managed by Home Manager (home/users/default.nix).
 # They are symlinked to the appropriate paths on the active machine.
 #
 # Typical contents:

@@ -8,9 +8,9 @@
   #   - no shared network services, no multi-machine exposure
   #   - user-managed processes, not system daemons
   #
-  # Distinction from homelab ai-server:
+  # Distinction from infra ai-server stack:
   #   workstation/ai  — tools the user runs locally on their own machine
-  #   homelab/ai-server — shared inference service exposed to other machines
+  #   stacks/ai-server — shared inference service exposed to other machines
   #
   # The ollama CLI is available after enabling this role. Start it manually:
   #   ollama serve          (starts local API on localhost:11434)
