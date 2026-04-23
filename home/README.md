@@ -12,11 +12,11 @@ Composition Home Manager des users, rôles et targets.
 
 ## Users normalisés disponibles
 
-### Famille Folio
-- `home/users/mfo.nix` → Mickaël Folio
-- `home/users/dfo.nix` → Delphine Folio
-- `home/users/zfo.nix` → Zoé Folio
-- `home/users/lfo.nix` → Léna Folio
+### Famille
+- `home/users/mfo.nix`
+- `home/users/dfo.nix`
+- `home/users/zfo.nix`
+- `home/users/lfo.nix`
 
 Ces fichiers définissent seulement l'identité utilisateur.
 Ils ne rendent pas un user actif sur une machine.
