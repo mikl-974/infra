@@ -92,6 +92,7 @@ step() {
 step "1/9" "Boot sur l'ISO NixOS"
 echo "  • Télécharger l'ISO NixOS minimal : https://nixos.org/download/"
 echo "  • Écrire sur une clé USB : dd if=nixos-minimal.iso of=/dev/sdX bs=4M status=progress conv=fsync"
+echo "    (`conv=fsync` force la synchronisation finale pour éviter une clé incomplètement écrite)"
 echo "  • Booter la machine cible sur la clé USB"
 echo "  • Vérifier : uname -a"
 pause

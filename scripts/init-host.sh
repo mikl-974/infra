@@ -101,7 +101,7 @@ echo ""
 echo -e "${BLD}── Génération de targets/hosts/$HOST/vars.nix${RST}"
 echo ""
 
-cat > "$VARS_FILE" <<EOF2
+cat > "$VARS_FILE" <<VARS_CONTENT
 # Machine-specific variables for host '$HOST'.
 #
 # Edit this file to configure this machine.
@@ -114,17 +114,17 @@ cat > "$VARS_FILE" <<EOF2
   system   = "$SYSTEM_VAL"; # NixOS platform: x86_64-linux or aarch64-linux
   username = "$USERNAME"; # system username
   hostname = "$HOSTNAME_VAL"; # hostname — matches nixosConfigurations key in flake.nix
-EOF2
+VARS_CONTENT
 
 if [[ -n "$DISK_VAL" ]]; then
   echo "  disk     = \"$DISK_VAL\"; # target disk — run \\`lsblk\\` on target" >> "$VARS_FILE"
 fi
 
-cat >> "$VARS_FILE" <<EOF2
+cat >> "$VARS_FILE" <<VARS_CONTENT
   timezone = "$TIMEZONE_VAL"; # see: timedatectl list-timezones
   locale   = "$LOCALE_VAL"; # system locale
 }
-EOF2
+VARS_CONTENT
 
 echo -e "  ${GRN}✔${RST}  targets/hosts/$HOST/vars.nix créé"
 echo ""

@@ -110,6 +110,9 @@
         let pkgs = import nixpkgs { inherit system; };
             mkApp = script: {
               type = "app";
+              # writeShellScript rewrites the shebang into the Nix store path.
+              # Our shell scripts resolve the repo root accordingly when run from
+              # the store, so BASH_SOURCE-based sourcing remains functional.
               program = "${pkgs.writeShellScript (builtins.baseNameOf script) (builtins.readFile script)}";
             };
         in {
