@@ -26,7 +26,7 @@ Ordre logique :
 | Profil | Rôle |
 |---|---|
 | `profiles/desktop-hyprland.nix` | base desktop commune |
-| `profiles/dev.nix` | environnement dev utilisateur |
+| `profiles/dev.nix` | environnement dev utilisateur + containers locaux |
 | `profiles/gaming.nix` | role gaming |
 | `profiles/ai.nix` | role AI local |
 | `profiles/networking.nix` | briques reseau partagees via `foundation` |
@@ -49,6 +49,22 @@ Effets notables :
 - utilitaires desktop (`modules/apps/utilities.nix`)
 - WARP
 - Noctalia
+
+## Profil `dev`
+
+Ce profil assemble la couche developpeur locale :
+
+- `modules/apps/editors.nix`
+- `modules/apps/dev.nix`
+- `modules/containers/podman.nix`
+
+Effets notables :
+
+- VS Code, Rider, WebStorm
+- Neovim
+- GitKraken
+- outils CLI de base (`git`, `curl`, `jq`)
+- Podman local avec compatibilite CLI/socket Docker pour l'usage dev
 
 ## Pourquoi pas un profil `utilities`
 

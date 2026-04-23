@@ -28,10 +28,11 @@ Briques conservees dans `workstation` :
 - devShell `.NET` : environnement CLI de dev personnel (Docker, playwright) — pas une brique generique
 - Hyprland et la couche UX de premier login : specifique machines utilisateur
 - Cloudflare WARP : client VPN desktop, pas une primitive infra
+- Podman (usage profil dev local) : moteur de containers de poste utilisateur, pas modele ici comme primitive infra partagee
 - Solaar / Bluetooth / Wi-Fi desktop : integration locale des peripheriques et applets utilisateur
 - Daily apps desktop : applications quotidiennes de base (web, PDF, images, fichiers)
 - Noctalia : theme et identite visuelle du poste
-- Editeurs / IDE (VS Code, Rider, WebStorm) : applications desktop dev
+- Editeurs / IDE / apps dev desktop (VS Code, Rider, WebStorm, Neovim, GitKraken) : applications desktop dev
 - theming, dotfiles, profils desktop, configuration utilisateur
 
 ## Separation desktop / daily / utilities / dev / gaming / ai / shell
@@ -39,9 +40,9 @@ Briques conservees dans `workstation` :
 | Couche | Localisation | Ce qu'elle contient |
 |---|---|---|
 | Base desktop | `profiles/desktop-hyprland.nix` | Hyprland, terminal, launcher, audio, Noctalia, WARP, Bluetooth, Wi-Fi, daily apps, UX de session |
-| Daily apps | `modules/apps/daily.nix` | Firefox, Zathura, imv, Thunar, File Roller, cliphist, mako |
+| Daily apps | `modules/apps/daily.nix` | Firefox, Chromium, Zathura, imv, Thunar, File Roller, LocalSend, cliphist, mako |
 | Utilities desktop | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` | Solaar, nm-applet, Blueman, pavucontrol, brightnessctl, playerctl, nm-connection-editor |
-| Dev utilisateur | `profiles/dev.nix` | IDE (VS Code, Rider, WebStorm), outils CLI dev systeme |
+| Dev utilisateur | `profiles/dev.nix` | IDE / editeurs / apps dev (VS Code, Rider, WebStorm, Neovim, GitKraken), outils CLI dev systeme, Podman local |
 | Gaming | `profiles/gaming.nix` | Steam, Proton, Lutris, Bottles, mangohud, gamescope, gamemode |
 | AI local | `profiles/ai.nix` | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) |
 | Shell dev | `devshells/dotnet.nix` | SDK .NET, Docker CLI, playwright, outils CLI |
@@ -93,9 +94,12 @@ modules/              logique Nix isolee par domaine
     default.nix       apps desktop generiques
     daily.nix         applications quotidiennes de base
     utilities.nix     utilitaires desktop quotidiens
-    editors.nix       IDE (VS Code, Rider, WebStorm)
+    dev.nix           applications dev desktop (GitKraken)
+    editors.nix       editeurs / IDE (Neovim, VS Code, Rider, WebStorm)
     gaming.nix        apps gaming (Lutris, Bottles, mangohud, gamescope, wine)
     ai.nix            apps AI local (ollama, llama-cpp)
+  containers/        moteurs de containers locaux de dev
+    podman.nix        podman local avec compatibilite Docker pour le profil dev
   roles/
     gaming.nix        role gaming (programs.steam, programs.gamemode + apps/gaming)
     ai.nix            role AI local (Flatpak + apps/ai)
@@ -128,6 +132,7 @@ La structure est prete pour `main`, `laptop`, `gaming` sans changer le layout :
 Une brique reste dans `workstation` si elle est :
 
 - liee au bureau/utilisateur (Hyprland, theming, WARP)
+- liee a l'UX locale d'un poste de dev (Podman local, GitKraken, Neovim, browsers desktop)
 - trop specifique au poste de travail pour etre partagee utilement
 - pas encore testee dans d'autres contextes
 
@@ -176,8 +181,10 @@ Frontieres retenues :
 
 - `daily.nix` -> applications utilisateur courantes
 - `utilities.nix` -> helpers techniques et petits outils systeme
+- `dev.nix` -> applications desktop de developpeur qui ne sont pas des editeurs
 - `connectivity.nix` -> integrations desktop/systeme liees au reseau et aux peripheriques
 - `editors.nix` -> editeurs et IDE
+- `containers/podman.nix` -> moteur de containers local du profil dev
 
 ## Frontiere modules / Home Manager / dotfiles
 
@@ -187,6 +194,18 @@ Regle retenue :
 - `home/default.nix` -> declaration explicite des fichiers utilisateur actifs
 - `dotfiles/` -> contenu brut des applications (`hyprland.conf`, `foot.ini`, `wofi`, `mako`, ...)
 - `scripts/` -> orchestration, diagnostic, validation et vérification ; jamais source de vérité
+
+## Frontiere Cockpit / virtualisation
+
+Cockpit n'appartient pas a `workstation`.
+
+Raison :
+
+- Cockpit est une UI web d'administration de host Linux
+- la gestion de VMs via Cockpit depend d'un backend serveur (`libvirt`, `qemu`)
+- cette responsabilite releve de `homelab`, pas d'un poste utilisateur
+
+La decision detaillee est documentee dans `docs/tool-placement.md`.
 
 Exemple concret :
 

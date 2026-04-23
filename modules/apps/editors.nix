@@ -1,5 +1,12 @@
 { pkgs, ... }:
 {
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+  };
+
   # Editors and IDEs are desktop applications — they are NOT part of the devShell.
   # The devShell provides the CLI/runtime environment; editors are separate tools
   # that work alongside it.

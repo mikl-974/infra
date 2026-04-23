@@ -30,10 +30,12 @@ Applications retenues :
 | App | Rôle |
 |---|---|
 | `firefox` | navigateur web generaliste |
+| `chromium` | navigateur secondaire / compatibilite web |
 | `zathura` | visionneuse PDF |
 | `imv` | visionneuse d'images legere |
 | `thunar` | gestionnaire de fichiers |
 | `file-roller` | gestionnaire d'archives |
+| `localsend` | partage local de fichiers entre appareils utilisateur |
 | `cliphist` | historique du presse-papiers |
 | `mako` | notifications desktop Wayland |
 

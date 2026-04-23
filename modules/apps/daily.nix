@@ -17,6 +17,7 @@
   environment.systemPackages = with pkgs; [
     # Web browser
     firefox
+    chromium
 
     # PDF / document viewer
     zathura
@@ -30,6 +31,7 @@
 
     # Explicit desktop comfort apps
     cliphist
+    localsend
     mako
   ];
 }

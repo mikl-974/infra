@@ -20,9 +20,10 @@ Briques conservees dans `workstation` :
 | Noctalia | theme et identite visuelle du poste — strictement personnel |
 | Hyprland + first-boot UX | specifique machines utilisateur |
 | Cloudflare WARP | client VPN desktop, pas une primitive infra generique |
+| Podman (profil dev local) | moteur de containers local de developpement, couple au profil dev et a une UX workstation |
 | Solaar / Bluetooth / Wi-Fi desktop | gestion locale des peripheriques et applets desktop — pas une primitive infra partagee |
-| Daily apps desktop | applications quotidiennes de base (web, PDF, images, fichiers) — specifiques a l'usage desktop |
-| Editeurs / IDE | VS Code, Rider, WebStorm — applications desktop dev |
+| Daily apps desktop | applications quotidiennes de base (web, PDF, images, fichiers, partage local) — specifiques a l'usage desktop |
+| Editeurs / IDE / apps dev desktop | VS Code, Rider, WebStorm, Neovim, GitKraken — applications desktop dev |
 | theming / dotfiles | strictement desktop / utilisateur |
 
 ## Separation desktop / daily / utilities / dev / gaming / ai / shell
@@ -30,9 +31,9 @@ Briques conservees dans `workstation` :
 | Couche | Ce qu'elle contient | Localisation |
 |---|---|---|
 | Base desktop | Hyprland, terminal, audio, Noctalia, WARP, Bluetooth, Wi-Fi, Solaar, daily apps, utilities | `profiles/desktop-hyprland.nix` |
-| Daily apps | navigateur, PDF, images, fichiers, archives, confort desktop | `modules/apps/daily.nix` |
+| Daily apps | navigateurs, PDF, images, fichiers, archives, partage local, confort desktop | `modules/apps/daily.nix` |
 | Utilities desktop | pavucontrol, brightnessctl, playerctl, nm-connection-editor | `modules/apps/utilities.nix` + `modules/desktop/connectivity.nix` |
-| Dev utilisateur | VS Code, Rider, WebStorm, CLI outils systeme | `profiles/dev.nix` |
+| Dev utilisateur | VS Code, Rider, WebStorm, Neovim, GitKraken, CLI outils systeme, Podman local | `profiles/dev.nix` |
 | Gaming | Steam, Proton, Lutris, Bottles, mangohud, gamescope | `profiles/gaming.nix` |
 | AI local | ollama, llama-cpp, Flatpak (AnythingLLM Desktop) | `profiles/ai.nix` |
 | Shell `.NET` | SDK .NET, Docker CLI, playwright | `devshells/dotnet.nix` |
@@ -46,6 +47,7 @@ Le shell `.NET` fournit les runtimes et outils CLI avec lesquels ces editeurs tr
 - `hosts/` : definition des machines concretes (`main`, `laptop`, `gaming`) — chaque machine a un `vars.nix`
 - `profiles/` : assemblages reutilisables (`desktop-hyprland`, `dev`, `gaming`, `ai`, `networking`)
 - `modules/` : modules Nix cibles par domaine (`desktop/`, `theming/`, `apps/`, `roles/`, `shell/`)
+- `modules/containers/` : moteurs de containers locaux de dev
 - `devshells/` : environnements de developpement CLI locaux (specifiques au poste)
 - `home/` : configuration Home Manager utilisateur (dotfiles, programmes)
 - `dotfiles/` : configurations applicatives brutes (`hypr/`, `foot/`, `wofi/`, `mako/`, `noctalia/`, `editors/`)
@@ -95,7 +97,7 @@ Repartition retenue :
 
 | Couche | Contenu |
 |---|---|
-| `modules/apps/daily.nix` | apps quotidiennes de base (Firefox, Zathura, imv, Thunar, File Roller, cliphist, mako) |
+| `modules/apps/daily.nix` | apps quotidiennes de base (Firefox, Chromium, Zathura, imv, Thunar, File Roller, LocalSend, cliphist, mako) |
 | `modules/apps/utilities.nix` | outils utilisateur quotidiens (pavucontrol, brightnessctl, playerctl, nm-connection-editor) |
 | `modules/desktop/connectivity.nix` | NetworkManager, nm-applet, Bluetooth, Blueman, Solaar via `hardware.logitech.wireless.*` |
 
@@ -125,7 +127,27 @@ Les IDEs (VS Code, Rider, WebStorm) sont installes comme paquets systeme, pas da
 
 Voir `docs/devshells.md`.
 
-Voir aussi `docs/daily-apps.md`, `docs/utilities.md`, `docs/profiles.md` et `docs/update-workflow.md`.
+Voir aussi `docs/daily-apps.md`, `docs/utilities.md`, `docs/profiles.md`, `docs/devshells.md`, `docs/tool-placement.md` et `docs/update-workflow.md`.
+
+## Placement des nouvelles briques
+
+La decision architecturale pour les briques Cockpit / apps / containers est documentee dans :
+
+- `docs/tool-placement.md`
+
+Resume :
+
+- `Cockpit` + plugins Cockpit + base VMs -> `homelab`
+- `GitKraken`, `Podman`, `Chromium`, `LocalSend`, `Neovim`, `NordVPN` -> `workstation`
+
+Dans cette passe `workstation`, les integrations locales effectivement branchees sont :
+
+- `Chromium` et `LocalSend` dans `modules/apps/daily.nix`
+- `Neovim` dans `modules/apps/editors.nix`
+- `GitKraken` dans `modules/apps/dev.nix`
+- `Podman` dans `modules/containers/podman.nix` via `profiles/dev.nix`
+
+`NordVPN` reste documente mais non implemente ici faute de module/package officiel stable dans la base Nix disponible pour cette passe.
 
 ## First boot / UX Hyprland
 
