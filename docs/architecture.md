@@ -18,7 +18,7 @@ Il porte maintenant ensemble :
 |---|---|---|
 | `modules/` | briques réutilisables | profiles, security, darwin |
 | `targets/hosts/` | réalité machine | `main`, `ms-s1-max`, `macmini` |
-| `home/users/` | identité d’un user | `mikl.nix`, `mfo.nix`, `dfo.nix` |
+| `home/users/` | identité d’un user | `mikl.nix`, `mfo.nix`, `dfo.nix`, `zfo.nix`, `lfo.nix` |
 | `home/roles/` | binding réutilisable par usage | `desktop-hyprland.nix`, `terminal-kitty.nix` |
 | `home/targets/` | composition finale par machine | `main.nix`, `ms-s1-max.nix` |
 | `dotfiles/` | contenu brut réutilisable | Hyprland, Kitty, GTK |
@@ -47,6 +47,17 @@ Deux targets NixOS réels valident maintenant le modèle moderne :
 - rôle réutilisable : `home/roles/desktop-hyprland.nix`
 
 `main` ne dépend plus du fallback `home/users/default.nix`.
+
+## Users normalisés
+
+Le repo expose maintenant des identités explicites dans `home/users/` :
+- `mfo` = Mickaël Folio
+- `dfo` = Delphine Folio
+- `zfo` = Zoé Folio
+- `lfo` = Léna Folio
+
+Définir un user dans `home/users/` ne l'active pas automatiquement.
+L'affectation réelle reste déclarée dans `home/targets/<host>.nix`.
 
 ## Darwin actuel
 

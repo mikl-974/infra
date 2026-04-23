@@ -11,6 +11,8 @@
 
 ### `mfo`
 - rôles : Hyprland, Steam, Chromium
+- identité : `home/users/mfo.nix`
+- affectation : `home/targets/ms-s1-max.nix`
 - dotfiles réellement actifs :
   - `dotfiles/hyprland/hyprland.conf`
   - `dotfiles/hyprland/profiles/mfo.conf`
@@ -21,10 +23,20 @@
 
 ### `dfo`
 - rôles : GNOME, Lutris, Steam, Firefox, Kitty
+- identité : `home/users/dfo.nix`
+- affectation : `home/targets/ms-s1-max.nix`
 - dotfiles réellement actifs :
   - `dotfiles/terminal/kitty.conf`
   - `dotfiles/terminal/profiles/dfo-kitty.conf`
   - `dotfiles/themes/noctalia/gtk/settings.ini`
+
+## Users disponibles mais non assignés
+
+- `home/users/zfo.nix`
+- `home/users/lfo.nix`
+
+Ils existent comme identités normalisées mais ne sont encore composés dans
+aucun `home/targets/<host>.nix`.
 
 ## Cas `main`
 

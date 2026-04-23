@@ -67,6 +67,18 @@ Composition retenue pour cette passe :
 
 Le fallback `home/users/default.nix` reste présent uniquement pour les hosts pas encore migrés (`laptop`, `gaming`).
 
+## Users normalisés disponibles
+
+Le repo contient maintenant une base explicite d'identités utilisateur dans `home/users/` :
+- `mfo` = Mickaël Folio
+- `dfo` = Delphine Folio
+- `zfo` = Zoé Folio
+- `lfo` = Léna Folio
+
+Ces identités sont disponibles pour la suite mais ne sont pas automatiquement
+affectées à une machine. L'affectation réelle reste faite dans
+`home/targets/<host>.nix`.
+
 ## Rôle de Nix / Homebrew / MAS sur Darwin
 
 Pour `macmini` :

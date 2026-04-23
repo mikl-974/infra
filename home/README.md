@@ -10,6 +10,19 @@ Composition Home Manager des users, rôles et targets.
 | `home/roles/` | binding réutilisable par rôle/app/domaine |
 | `home/targets/` | composition finale d'un host |
 
+## Users normalisés disponibles
+
+### Famille Folio
+- `home/users/mfo.nix` → Mickaël Folio
+- `home/users/dfo.nix` → Delphine Folio
+- `home/users/zfo.nix` → Zoé Folio
+- `home/users/lfo.nix` → Léna Folio
+
+Ces fichiers définissent seulement l'identité utilisateur.
+Ils ne rendent pas un user actif sur une machine.
+
+L'affectation réelle se fait uniquement dans `home/targets/<host>.nix`.
+
 ## Modèle concret
 
 ### `main`
@@ -26,13 +39,23 @@ Composition Home Manager des users, rôles et targets.
 
 ### `mfo`
 - identité : `home/users/mfo.nix`
-- rôles : `desktop-hyprland`, `gaming-steam`, `browser-chromium`
-- override réel : `~/.config/hypr/profile.conf`
+- actuellement assigné via : `home/targets/ms-s1-max.nix`
+- rôles sur ce target : `desktop-hyprland`, `gaming-steam`, `browser-chromium`
+- override target-specific réel : `~/.config/hypr/profile.conf`
 
 ### `dfo`
 - identité : `home/users/dfo.nix`
-- rôles : `desktop-gnome`, `gaming-lutris`, `gaming-steam`, `browser-firefox`, `terminal-kitty`
-- overrides réels : `~/.config/kitty/profile.conf` + préférences GNOME utilisateur
+- actuellement assigné via : `home/targets/ms-s1-max.nix`
+- rôles sur ce target : `desktop-gnome`, `gaming-lutris`, `gaming-steam`, `browser-firefox`, `terminal-kitty`
+- overrides target-specific réels : `~/.config/kitty/profile.conf` + préférences GNOME utilisateur
+
+### `zfo`
+- identité : `home/users/zfo.nix`
+- aucun target assigné pour le moment
+
+### `lfo`
+- identité : `home/users/lfo.nix`
+- aucun target assigné pour le moment
 
 ## Legacy
 
