@@ -17,11 +17,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    foundation = {
-      url = "github:mikl-974/foundation";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Declarative disk partitioning — required for NixOS Anywhere installations.
     # See docs/nixos-anywhere.md and targets/hosts/main/disko.nix.
     disko = {
@@ -67,14 +62,14 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, foundation, disko, home-manager, sops-nix, nix-openclaw, nix-darwin, nix-homebrew, noctalia, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, home-manager, sops-nix, nix-openclaw, nix-darwin, nix-homebrew, noctalia, ... }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
 
       # Shared building blocks used by all infra NixOS targets.
       sharedModules = [
-        foundation.nixosModules.networkingTailscale
+        ./modules/networking/tailscale.nix
         home-manager.nixosModules.home-manager
         sops-nix.nixosModules.sops
         ./modules/security/sops.nix
