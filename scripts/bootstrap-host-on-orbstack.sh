@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
-# bootstrap-host-on-orbstack.sh — Prepare an existing OrbStack NixOS VM for
-# its first `nixos-rebuild switch --flake .#<host>`.
+# bootstrap-host-on-orbstack.sh — Promotes an existing OrbStack VM to a
+# host defined in this repo (default: `homelab`).
 #
-# Pushes onto the VM (over SSH):
-#   - the mfo Age private key into /var/lib/sops-nix/key.txt (mode 0600)
-#   - generated SSH host keys (ssh-keygen -A) if missing
-#   - the mfo SSH pubkey into the live user's authorized_keys (so the
-#     compatibility user keeps working after promotion)
+# Steps performed against the remote VM (over SSH):
+#   1. Push the local mfo Age private key to /var/lib/sops-nix/key.txt
+#      so that sops-nix can decrypt the host's secrets at activation.
+#   2. Generate the SSH host keys (`ssh-keygen -A`) needed by sops-nix
+#      (it derives an age recipient from the ed25519 host key).
+#   3. Append mfo's pubkey to the SSH login user's authorized_keys so the
+#      operator keeps shell access during/after the first `nixos-rebuild`.
+#   4. Install /etc/nixos/orbstack-bridge.nix and patch
+#      /etc/nixos/configuration.nix so the OrbStack lxc baseline that gets
+#      rebuilt on every boot pulls in a oneshot service that re-runs
+#      `nixos-rebuild switch --impure --flake /etc/infra#<host>`. This
+#      defeats OrbStack's per-boot reset of /nix/var/nix/profiles/system.
 #
-# Usage:
-#   bootstrap-host-on-orbstack [--ssh-target USER@HOST] [--age-key PATH] [--host NAME]
-#
-# Defaults:
-#   --ssh-target mickael@orb
-#   --age-key    $SOPS_AGE_KEY_FILE > ~/.config/sops/age/keys.txt > secrets/keys/age/key.txt
-#   --host       homelab
+# After this script, run from the VM:
+#   cd /etc/infra && sudo nix --extra-experimental-features 'nix-command flakes' \
+#     run /etc/infra#install-manual -- <host>
 
 set -euo pipefail
+# (legacy header; canonical doc above)
+
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=./lib/workstation-install.sh
@@ -90,10 +95,24 @@ ssh "$SSH_TARGET" "
 "
 ok "Clé mfo présente côté utilisateur"
 
+step "Installation du bridge OrbStack (rebuild on boot)"
+BRIDGE_LOCAL="$REPO_ROOT/targets/hosts/$HOST/orbstack-extras/orbstack-bridge.nix"
+if [[ -f "$BRIDGE_LOCAL" ]]; then
+  ssh "$SSH_TARGET" "sudo install -m 0644 -o root -g root /dev/stdin /etc/nixos/orbstack-bridge.nix" < "$BRIDGE_LOCAL"
+  ssh "$SSH_TARGET" '
+    set -e
+    if ! sudo grep -qF "./orbstack-bridge.nix" /etc/nixos/configuration.nix; then
+      sudo sed -i "s|./orbstack.nix|./orbstack.nix\n      ./orbstack-bridge.nix|" /etc/nixos/configuration.nix
+    fi
+  '
+  ok "Bridge OrbStack installé (rebuild homelab à chaque boot)"
+else
+  warn "$BRIDGE_LOCAL absent — pas de bridge installé (le host ne survivra pas à un orb stop/start)"
+fi
+
 step "Terminé"
 log ""
-log "Promotion en host '$HOST' (depuis la VM, repo cloné en /root/workstation) :"
-log "  ssh $SSH_TARGET 'sudo nix --extra-experimental-features \"nix-command flakes\" run /root/workstation#install-manual -- $HOST'"
+log "Promotion en host '$HOST' (depuis la VM, repo cloné en /etc/infra) :"
+log "  ssh $SSH_TARGET 'cd /etc/infra && sudo nix --extra-experimental-features \"nix-command flakes\" run /etc/infra#install-manual -- $HOST'"
 log ""
-log "Ou via reconfigure direct :"
-log "  ssh $SSH_TARGET 'sudo nix --extra-experimental-features \"nix-command flakes\" run /root/workstation#reconfigure -- $HOST --mode test'"
+log "Au prochain orb stop/start, le bridge réappliquera automatiquement le flake."

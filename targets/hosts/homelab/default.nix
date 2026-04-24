@@ -26,7 +26,7 @@
 #
 # Run `nix run .#bootstrap-host-on-orbstack` from the Mac host to satisfy
 # (1) and (2) before the first promotion switch.
-{ config, hostVars, lib, pkgs, ... }:
+{ config, hostVars, lib, ... }:
 let
   authorizedKeys = import ../../../modules/users/authorized-keys.nix;
   onOrbstack = builtins.pathExists "/opt/orbstack-guest";
@@ -51,42 +51,13 @@ in
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault (! onOrbstack);
   boot.loader.grub.enable              = lib.mkDefault (! onOrbstack);
 
-  # OrbStack's vinit (`/opt/orb/vinit`) repoints
-  # `/nix/var/nix/profiles/system` back to the auto-generated `nixos-lxc`
-  # profile on every boot. To make `homelab` actually persist, re-apply the
-  # flake at boot. The repo is expected at `/etc/infra` (cloned at first
-  # bootstrap); the unit no-ops if it's missing.
-  systemd.services.infra-rebuild-on-boot = lib.mkIf onOrbstack {
-    description = "Re-apply NixOS flake config on boot (OrbStack reset workaround)";
-    wantedBy = [ "multi-user.target" ];
-    after    = [ "network-online.target" "sops-install-secrets.service" ];
-    wants    = [ "network-online.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    path = with pkgs; [ nixVersions.stable git ];
-    script = ''
-      set -eu
-      REPO=/etc/infra
-      if [ ! -d "$REPO/.git" ]; then
-        echo "infra repo absent dans $REPO, rien à faire"
-        exit 0
-      fi
-      CURRENT=$(readlink /run/current-system || true)
-      case "$CURRENT" in
-        *nixos-system-homelab-2[6-9]*|*nixos-system-homelab-[3-9]*)
-          echo "homelab déjà actif: $CURRENT"
-          exit 0
-          ;;
-      esac
-      echo "Réapplication de homelab depuis $REPO"
-      cd "$REPO"
-      git config --global --add safe.directory "$REPO" || true
-      exec nixos-rebuild switch --impure --flake "$REPO#homelab" \
-        --extra-experimental-features "nix-command flakes"
-    '';
-  };
+  # Persistance OrbStack : le rebuild "lxc baseline" déclenché au boot par
+  # OrbStack est rerouté vers le flake via `orbstack-extras/orbstack-bridge.nix`,
+  # installé hors-flake dans `/etc/nixos/orbstack-bridge.nix` par
+  # `scripts/bootstrap-host-on-orbstack.sh`. Le bridge ajoute un oneshot
+  # systemd à la lxc baseline qui exécute `nixos-rebuild switch --impure
+  # --flake /etc/infra#homelab` à chaque démarrage. Aucune action côté
+  # `homelab` n'est nécessaire ici.
 
   infra.security.sops = {
     enable = true;
