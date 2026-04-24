@@ -20,8 +20,20 @@ ERRORS=0
 WARNINGS=0
 HOST=""
 
+print_resolution_command() {
+  local resolution_command="${1:-}"
+  [[ -n "$resolution_command" ]] || return 0
+  echo "     Commande : $resolution_command"
+}
+
 ok()   { echo -e "  ${GRN}✔${RST}  $*"; }
-fail() { echo -e "  ${RED}✘${RST}  $*"; ERRORS=$(( ERRORS + 1 )); }
+fail() {
+  local message="$1"
+  local resolution_command="${2:-}"
+  echo -e "  ${RED}✘${RST}  $message"
+  print_resolution_command "$resolution_command"
+  ERRORS=$(( ERRORS + 1 ))
+}
 warn() { echo -e "  ${YLW}⚠${RST}  $*"; WARNINGS=$(( WARNINGS + 1 )); }
 
 while [[ $# -gt 0 ]]; do
@@ -65,10 +77,18 @@ check_cmd() {
   local cmd="$1"
   local mandatory="$2"
   local reason="$3"
+  local resolution_command=""
+
+  case "$cmd" in
+    bash) resolution_command="nix-shell -p bash" ;;
+    git) resolution_command="nix-shell -p git" ;;
+    ssh|ssh-keyscan|ssh-keygen) resolution_command="nix-shell -p openssh" ;;
+  esac
+
   if command -v "$cmd" &>/dev/null; then
     ok "$cmd disponible"
   elif [[ "$mandatory" == "yes" ]]; then
-    fail "$cmd introuvable — $reason"
+    fail "$cmd introuvable — $reason" "$resolution_command"
   else
     warn "$cmd introuvable — $reason"
   fi
@@ -82,10 +102,10 @@ check_cmd "ssh-keyscan" no "recommandé pour vérifier la clé hôte avant insta
 check_cmd "ssh-keygen" no "utile pour lire les empreintes de clés SSH"
 
 if command -v nix &>/dev/null; then
-  if (cd "$REPO_ROOT" && nix flake show . --all-systems --no-write-lock-file >/dev/null); then
+  if (cd "$REPO_ROOT" && nix --extra-experimental-features 'nix-command flakes' flake show . --all-systems --no-write-lock-file >/dev/null); then
     ok "flake lisible par nix"
   else
-    fail "nix n'arrive pas à lire le flake courant"
+    fail "nix n'arrive pas à lire le flake courant" "nix --extra-experimental-features 'nix-command flakes' flake show . --all-systems --no-write-lock-file"
   fi
 fi
 
@@ -101,12 +121,14 @@ done
 
 if [[ -n "$HOST" ]]; then
   MACHINE_CONTEXT="$(host_machine_context "$REPO_ROOT" "$HOST")"
+  HOST_EXISTS=true
   echo ""
   echo -e "${BLD}── Readiness du host '${HOST}'${RST}"
   if host_exists "$REPO_ROOT" "$HOST"; then
     ok "targets/hosts/$HOST existe"
   else
-    fail "targets/hosts/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")"
+    fail "targets/hosts/$HOST introuvable — hôtes disponibles : $(list_hosts "$REPO_ROOT")" "find targets/hosts -mindepth 1 -maxdepth 1 -type d"
+    HOST_EXISTS=false
   fi
 
   for path in \
@@ -117,17 +139,17 @@ if [[ -n "$HOST" ]]; then
     if [[ -f "$file" ]]; then
       ok "$label existe"
     else
-      fail "$label manquant"
+      fail "$label manquant" "nix run .#init-host -- $HOST"
     fi
   done
 
-  if [[ "$MACHINE_CONTEXT" == "virtual-machine" ]]; then
+  if [[ "$HOST_EXISTS" == "true" && "$MACHINE_CONTEXT" == "virtual-machine" ]]; then
     ok "Contexte machine : virtual-machine (profil modules/profiles/virtual-machine.nix)"
   else
     ok "Contexte machine : bare-metal"
   fi
 
-  if host_uses_disko "$REPO_ROOT" "$HOST"; then
+  if [[ "$HOST_EXISTS" == "true" ]] && host_uses_disko "$REPO_ROOT" "$HOST"; then
     if flake_host_uses_disko_module "$REPO_ROOT" "$HOST"; then
       ok "disko branché dans flake.nix pour ce host"
     else
@@ -138,44 +160,46 @@ if [[ -n "$HOST" ]]; then
     if [[ -n "$HOST_DISK" ]] && ! is_placeholder_value "$HOST_DISK"; then
       ok "NixOS Anywhere possible pour ce host (disko.nix présent, module disko branché, disk renseigné)"
     else
-      fail "NixOS Anywhere bloqué : le vrai disk reste à renseigner dans vars.nix (lsblk sur la machine cible)"
+      fail "NixOS Anywhere bloqué : le vrai disk reste à renseigner dans vars.nix (lsblk sur la machine cible)" "lsblk"
     fi
   else
     warn "NixOS Anywhere indisponible pour ce host (pas de disko.nix)"
   fi
 
-  if [[ -f "$(home_target_file "$REPO_ROOT" "$HOST")" ]]; then
+  if [[ "$HOST_EXISTS" == "true" && -f "$(home_target_file "$REPO_ROOT" "$HOST")" ]]; then
     ok "home/targets/$HOST.nix existe — composition Home Manager moderne détectée"
-  else
+  elif [[ "$HOST_EXISTS" == "true" ]]; then
     fail "Aucune composition Home Manager trouvée pour '$HOST'"
   fi
 
-  HOST_STACKS="$(grep -RhoE 'stacks/[^[:space:]]+/default\.nix' "$REPO_ROOT/targets/hosts/$HOST" \
-    | sed -E 's#.*stacks/([^/]+)/default\.nix#\1#' \
-    | sort -u || true)"
-  if [[ -n "$HOST_STACKS" ]]; then
-    while IFS= read -r stack_name; do
-      [[ -z "$stack_name" ]] && continue
-      ok "Stack locale détectée : $stack_name"
-    done <<< "$HOST_STACKS"
-  else
-    ok "Aucune stack locale importée explicitement par ce host"
-  fi
-
-  if grep -Rhoq 'stacks/openclaw/default\.nix' "$REPO_ROOT/targets/hosts/$HOST"; then
-    if [[ -f "$REPO_ROOT/stacks/openclaw/env/public.env" ]]; then
-      ok "OpenClaw : public env versionné"
+  if [[ "$HOST_EXISTS" == "true" ]]; then
+    HOST_STACKS="$(grep -RhoE 'stacks/[^[:space:]]+/default\.nix' "$REPO_ROOT/targets/hosts/$HOST" \
+      | sed -E 's#.*stacks/([^/]+)/default\.nix#\1#' \
+      | sort -u || true)"
+    if [[ -n "$HOST_STACKS" ]]; then
+      while IFS= read -r stack_name; do
+        [[ -z "$stack_name" ]] && continue
+        ok "Stack locale détectée : $stack_name"
+      done <<< "$HOST_STACKS"
     else
-      fail "OpenClaw : stacks/openclaw/env/public.env manquant"
+      ok "Aucune stack locale importée explicitement par ce host"
     fi
 
-    ok "OpenClaw : posture réseau minimale retenue = tailnet-only"
-    ok "OpenClaw : token d'auth gateway généré localement au premier start"
+    if grep -Rhoq 'stacks/openclaw/default\.nix' "$REPO_ROOT/targets/hosts/$HOST"; then
+      if [[ -f "$REPO_ROOT/stacks/openclaw/env/public.env" ]]; then
+        ok "OpenClaw : public env versionné"
+      else
+        fail "OpenClaw : stacks/openclaw/env/public.env manquant"
+      fi
 
-    if [[ -f "$REPO_ROOT/secrets/stacks/openclaw.yaml" ]]; then
-      ok "OpenClaw : secret env sops présent (secrets/stacks/openclaw.yaml)"
-    else
-      warn "OpenClaw : aucun secret env externe versionné — le premier boot minimal reste possible, mais Telegram/providers restent volontairement hors scope"
+      ok "OpenClaw : posture réseau minimale retenue = tailnet-only"
+      ok "OpenClaw : token d'auth gateway généré localement au premier start"
+
+      if [[ -f "$REPO_ROOT/secrets/stacks/openclaw.yaml" ]]; then
+        ok "OpenClaw : secret env sops présent (secrets/stacks/openclaw.yaml)"
+      else
+        warn "OpenClaw : aucun secret env externe versionné — le premier boot minimal reste possible, mais Telegram/providers restent volontairement hors scope"
+      fi
     fi
   fi
 fi

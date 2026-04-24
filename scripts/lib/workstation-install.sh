@@ -25,7 +25,7 @@ list_hosts() {
     else
       printf ' %s' "$host"
     fi
-  done < <(find "$hosts_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+  done < <(find "$hosts_dir" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
   printf '\n'
 }
 

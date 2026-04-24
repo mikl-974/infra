@@ -85,8 +85,9 @@ check_cmd "ssh" "SSH est requis pour joindre la cible"
 check_cmd "ssh-keyscan" "nécessaire pour lire la clé hôte avant connexion"
 check_cmd "ssh-keygen" "nécessaire pour afficher l'empreinte de la clé hôte"
 
-if ! (cd "$REPO_ROOT" && nix flake show . --all-systems --no-write-lock-file >/dev/null); then
+if ! (cd "$REPO_ROOT" && nix --extra-experimental-features 'nix-command flakes' flake show . --all-systems --no-write-lock-file >/dev/null); then
   echo -e "  ${RED}✘${RST}  Le flake n'est pas lisible par nix"
+  echo "     Commande : nix --extra-experimental-features 'nix-command flakes' flake show . --all-systems --no-write-lock-file"
   exit 1
 fi
 echo -e "  ${GRN}✔${RST}  Flake lisible"
