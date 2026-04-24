@@ -150,10 +150,10 @@ ssh mfo@orbstack@orb
   `nix run .#init-keys`). Si elle n'est PAS un recipient déclaré dans
   `.sops.yaml`, le rendu affiche un warning et la VM ne pourra pas
   déchiffrer les secrets sops. Solutions :
-  - utiliser la vraie clé `admin_mfo` :
+  - utiliser la vraie clé `mfo` :
     `nix run .#orbstack-cloud-init -- --age-key ~/.config/sops/age/keys.txt`
   - **OU** ajouter la clé locale comme recipient supplémentaire dans
-    `.sops.yaml` puis re-chiffrer :
+    `.sops.yaml` puis ré-aligner les fichiers chiffrés existants :
     ```bash
     sops updatekeys secrets/common.yaml secrets/hosts/*.yaml secrets/stacks/*.yaml secrets/cloud/*.yaml
     ```

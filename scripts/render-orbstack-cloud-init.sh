@@ -73,17 +73,43 @@ fi
 
 log "Clé age embarquée : $AGE_KEY"
 
-# Sanity check: the public key derived from $AGE_KEY MUST appear as a recipient
-# in .sops.yaml, otherwise the orbstack VM won't be able to decrypt anything.
+# Sanity checks:
+#   1. the public key derived from $AGE_KEY must be declared in .sops.yaml
+#   2. the same recipient must already be present in existing encrypted files,
+#      otherwise the VM still won't be able to decrypt current secrets until
+#      `sops updatekeys` is run with the canonical `mfo` key available.
 PUB_FROM_KEY="$(grep -oE 'age1[0-9a-z]{58}' "$AGE_KEY" | head -1 || true)"
 if [[ -n "$PUB_FROM_KEY" ]]; then
   if ! grep -q "$PUB_FROM_KEY" "$SOPS_YAML"; then
     warn "La clé publique $PUB_FROM_KEY n'est PAS un recipient déclaré dans .sops.yaml."
     warn "La VM orbstack ne pourra PAS déchiffrer les secrets sops avec cette clé."
     warn "Corrige en ajoutant cette clé dans .sops.yaml puis: sops updatekeys secrets/**/*.yaml"
-    warn "(ou utilise --age-key pour pointer vers la clé admin_mfo réelle)"
+    warn "(ou utilise --age-key pour pointer vers la vraie clé mfo)"
   else
     ok "Clé publique trouvée dans .sops.yaml : $PUB_FROM_KEY"
+  fi
+
+  missing_recipients=()
+  while IFS= read -r secret_file; do
+    if ! grep -q "$PUB_FROM_KEY" "$secret_file"; then
+      missing_recipients+=( "${secret_file#$REPO_ROOT/}" )
+    fi
+  done < <(
+    find "$REPO_ROOT/secrets" -type f \
+      \( -name '*.yaml' -o -name '*.yml' -o -name '*.json' -o -name '*.env' -o -name '*.ini' \) \
+      ! -path "$REPO_ROOT/secrets/keys/*" -print | while IFS= read -r file; do
+        if grep -q 'recipient:' "$file"; then
+          printf '%s\n' "$file"
+        fi
+      done
+  )
+
+  if (( ${#missing_recipients[@]} > 0 )); then
+    warn "Recipient absent de ${#missing_recipients[@]} fichier(s) chiffré(s) existant(s)."
+    warn "La VM orbstack ne pourra pas déchiffrer ces secrets tant que tu n'auras pas relancé:"
+    warn "  sops updatekeys secrets/common.yaml secrets/hosts/*.yaml secrets/stacks/*.yaml secrets/cloud/*.yaml"
+  else
+    ok "Recipient déjà présent dans tous les fichiers chiffrés existants."
   fi
 fi
 

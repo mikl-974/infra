@@ -3,7 +3,7 @@
 ## Prérequis de reconstruction
 
 1. Restaurer le repo Git (`mikl-974/infra`).
-2. Restaurer la clé Age **privée** correspondant à la recipient `admin_mfo` déclarée dans `.sops.yaml` (hors repo, jamais commitée — typiquement dérivée de la clé SSH Ed25519 de `mikl-974`).
+2. Restaurer la clé Age **privée** correspondant à la recipient `mfo` déclarée dans `.sops.yaml` (hors repo, jamais commitée — typiquement dérivée de la clé SSH Ed25519 de `mikl-974`).
 3. Pouvoir déchiffrer les secrets SOPS requis (`secrets/hosts/<host>.yaml` au minimum).
 
 ## Reconstruction d'une **workstation** (`main`, `laptop`, `gaming`, `ms-s1-max`)

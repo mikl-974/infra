@@ -19,7 +19,7 @@ Cette séparation est volontaire :
 - `stacks/<stack>.yaml` : secrets spécifiques à une stack. Les clés DOIVENT correspondre au champ `secrets` du contrat `stacks/<stack>/stack.nix`.
 - `cloud/<provider>.yaml` : secrets fournisseurs cloud (`azure`, `cloudflare`, `gcp`).
 
-Les règles SOPS associent chaque sous-chemin à un groupe de clés Age dans `.sops.yaml`. Aujourd'hui toutes les paths chiffrent vers la même clé `admin_mfo` ; la séparation des `creation_rules` par chemin est en place pour permettre ultérieurement une rotation par stack ou par provider sans réécrire les autres fichiers.
+Les règles SOPS associent chaque sous-chemin à un groupe de clés Age dans `.sops.yaml`. La clé canonique du projet est `mfo`. Une clé locale additionnelle `mfo_local` peut être ajoutée pour des bootstraps locaux ; après ce changement, les fichiers chiffrés existants doivent être ré-alignés avec `sops updatekeys`.
 
 ### 2. Clés locales de travail non versionnées
 
