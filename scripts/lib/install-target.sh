@@ -3,7 +3,7 @@
 #
 # Both flows reduce to the same three steps:
 #   1. validate-install on the host
-#   2. disko --mode disko targets/hosts/<host>/disko.nix
+#   2. disko --mode destroy,format,mount --flake <repo>#<host>
 #   3. nixos-install --flake <repo>#<host> --root /mnt --no-root-passwd
 #
 # The two scripts only differ in the safety checks performed before disko.
@@ -82,7 +82,8 @@ run_disko() {
   ( cd "$repo_root" && \
     nix --extra-experimental-features 'nix-command flakes' \
       run github:nix-community/disko -- \
-      --mode disko "targets/hosts/$host/disko.nix" )
+      --mode destroy,format,mount \
+      --flake ".#$host" )
   ok "Disko terminé"
   log ""
   lsblk

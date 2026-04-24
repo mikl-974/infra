@@ -124,27 +124,32 @@
           };
           modules = sharedDarwinModules ++ modules;
         };
+
+      # Build a minimal disko configuration for the CLI without evaluating the
+      # full host system graph.
+      mkDiskoConfig = { vars, diskoModule }:
+        import diskoModule { hostVars = vars; };
     in
     {
       nixosConfigurations = {
         main = mkHost {
           vars   = import ./targets/hosts/main/vars.nix;
-          modules = [ disko.nixosModules.disko ./targets/hosts/main/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/main/default.nix ./targets/hosts/main/disko.nix ];
         };
 
         laptop = mkHost {
           vars   = import ./targets/hosts/laptop/vars.nix;
-          modules = [ disko.nixosModules.disko ./targets/hosts/laptop/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/laptop/default.nix ./targets/hosts/laptop/disko.nix ];
         };
 
         gaming = mkHost {
           vars   = import ./targets/hosts/gaming/vars.nix;
-          modules = [ disko.nixosModules.disko ./targets/hosts/gaming/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/gaming/default.nix ./targets/hosts/gaming/disko.nix ];
         };
 
         openclaw-vm = mkHost {
           vars   = import ./targets/hosts/openclaw-vm/vars.nix;
-          modules = [ disko.nixosModules.disko ./targets/hosts/openclaw-vm/default.nix ];
+          modules = [ disko.nixosModules.disko ./targets/hosts/openclaw-vm/default.nix ./targets/hosts/openclaw-vm/disko.nix ];
         };
 
         ms-s1-max = mkHost {
@@ -172,6 +177,43 @@
         orbstack = mkHost {
           vars   = import ./targets/hosts/orbstack/vars.nix;
           modules = [ ./targets/hosts/orbstack/default.nix ];
+        };
+      };
+
+      diskoConfigurations = {
+        main = mkDiskoConfig {
+          vars = import ./targets/hosts/main/vars.nix;
+          diskoModule = ./targets/hosts/main/disko.nix;
+        };
+
+        laptop = mkDiskoConfig {
+          vars = import ./targets/hosts/laptop/vars.nix;
+          diskoModule = ./targets/hosts/laptop/disko.nix;
+        };
+
+        gaming = mkDiskoConfig {
+          vars = import ./targets/hosts/gaming/vars.nix;
+          diskoModule = ./targets/hosts/gaming/disko.nix;
+        };
+
+        openclaw-vm = mkDiskoConfig {
+          vars = import ./targets/hosts/openclaw-vm/vars.nix;
+          diskoModule = ./targets/hosts/openclaw-vm/disko.nix;
+        };
+
+        contabo = mkDiskoConfig {
+          vars = import ./targets/hosts/contabo/vars.nix;
+          diskoModule = ./targets/hosts/contabo/disko.nix;
+        };
+
+        homelab = mkDiskoConfig {
+          vars = import ./targets/hosts/homelab/vars.nix;
+          diskoModule = ./targets/hosts/homelab/disko.nix;
+        };
+
+        sandbox = mkDiskoConfig {
+          vars = import ./targets/hosts/sandbox/vars.nix;
+          diskoModule = ./targets/hosts/sandbox/disko.nix;
         };
       };
 

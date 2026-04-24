@@ -95,7 +95,10 @@ Le disque cible est lu depuis `targets/hosts/<host>/vars.nix` (champ `disk`).
 Lancer disko :
 
 ```bash
-nix run github:nix-community/disko -- --mode disko targets/hosts/<host>/disko.nix
+nix --extra-experimental-features 'nix-command flakes' \
+  run github:nix-community/disko -- \
+  --mode destroy,format,mount \
+  --flake .#<host>
 ```
 
 disko partitionne, formate et monte automatiquement.
@@ -355,7 +358,7 @@ nixos-rebuild switch --flake github:mikl-974/workstation#<host> \
 | Disques | `lsblk` |
 | Initialiser vars.nix | `nix run .#init-host -- <host>` |
 | Doctor | `nix run .#doctor -- --host <host>` |
-| Partitionnement disko | `nix run github:nix-community/disko -- --mode disko targets/hosts/<host>/disko.nix` |
+| Partitionnement disko | `nix --extra-experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode destroy,format,mount --flake .#<host>` |
 | Clone repo | `git clone https://github.com/mikl-974/workstation` |
 | Validation pré-install | `nix run .#validate-install -- <host>` |
 | Installation | `nixos-install --flake /root/workstation#<host> --root /mnt` |

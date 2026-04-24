@@ -43,12 +43,20 @@ log ""
 step "1/5 — Pre-flight"
 preflight "$REPO_ROOT" "$HOST"
 ensure_disk_safe_to_format "$DISK"
-ok "Host prêt et disque cible distinct du disque racine"
+if [[ -n "$ROOT_DISK" ]]; then
+  ok "Host prêt et disque cible distinct du disque racine"
+else
+  warn "Host prêt, mais le disque racine courant n'a pas pu être détecté automatiquement"
+fi
 
 step "2/5 — Confirmation"
 warn "Le disque $DISK va être effacé intégralement."
 log "  Vérifie avec : lsblk"
-log "  Le système courant ($ROOT_DISK) ne sera pas touché."
+if [[ -n "$ROOT_DISK" ]]; then
+  log "  Le système courant ($ROOT_DISK) ne sera pas touché."
+else
+  log "  Le disque qui porte / n'a pas été identifié automatiquement : confirme-le manuellement avec lsblk."
+fi
 confirm "Continuer l'installation de '$HOST' sur $DISK ?" || { log "Annulé."; exit 0; }
 
 step "3/5 — Partitionnement"

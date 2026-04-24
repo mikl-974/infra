@@ -301,12 +301,18 @@ if [[ "$HAS_DISKO" == true ]]; then
   fi
 
    if flake_host_uses_disko_module "$REPO_ROOT" "$HOST"; then
-     ok "flake.nix branche disko.nixosModules.disko pour $HOST"
-   else
-     fail "flake.nix n'ajoute pas disko.nixosModules.disko pour $HOST"
-   fi
+      ok "flake.nix branche disko.nixosModules.disko pour $HOST"
+    else
+      fail "flake.nix n'ajoute pas disko.nixosModules.disko pour $HOST"
+    fi
 
-  if [[ -f "$REPO_ROOT/scripts/install-anywhere.sh" ]]; then
+   if flake_host_imports_disko_file "$REPO_ROOT" "$HOST"; then
+      ok "flake.nix importe targets/hosts/$HOST/disko.nix pour $HOST"
+    else
+      fail "flake.nix n'importe pas targets/hosts/$HOST/disko.nix pour $HOST"
+    fi
+
+   if [[ -f "$REPO_ROOT/scripts/install-anywhere.sh" ]]; then
     if [[ -n "$DISK" ]] && ! is_placeholder_value "$DISK"; then
       ok "parcours NixOS Anywhere disponible : scripts/install-anywhere.sh"
     else
