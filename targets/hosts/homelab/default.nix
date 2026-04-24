@@ -37,6 +37,11 @@
     sopsFile = ../../../secrets/common.yaml;
   };
 
+  services.cockpit = {
+    enable = true;
+    openFirewall = true;
+  };
+
   sops.secrets."homelab/users/admin-password-hash" = {
     key = "hosts.homelab.users.admin.passwordHash";
     neededForUsers = true;
