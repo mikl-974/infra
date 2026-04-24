@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# render-orbstack-cloud-init.sh — Render the cloud-init template for the
+# `orbstack` host into a local, gitignored file ready for `orb create`.
+#
+# Reads:
+#   targets/hosts/orbstack/cloud-init.yaml      (versioned template)
+#   secrets/keys/age/key.txt                    (local age private key, gitignored)
+#   modules/users/authorized-keys.nix           (canonical mfo SSH pubkey)
+#
+# Writes:
+#   secrets/keys/orbstack-cloud-init.yaml       (gitignored)
+#
+# Usage:
+#   render-orbstack-cloud-init [--repo-url URL] [--branch BRANCH]
+
+set -euo pipefail
+
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./lib/workstation-install.sh
+source "$_SCRIPT_DIR/lib/workstation-install.sh"
+# shellcheck source=./lib/install-target.sh
+source "$_SCRIPT_DIR/lib/install-target.sh"
+REPO_ROOT="$(resolve_repo_root "$_SCRIPT_DIR")"
+
+REPO_URL="https://github.com/mikl-974/infra"
+BRANCH="main"
+AGE_KEY_OVERRIDE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --repo-url) REPO_URL="$2"; shift 2 ;;
+    --branch)   BRANCH="$2";   shift 2 ;;
+    --age-key)  AGE_KEY_OVERRIDE="$2"; shift 2 ;;
+    -h|--help)
+      cat <<EOF
+Usage: render-orbstack-cloud-init [--repo-url URL] [--branch BRANCH] [--age-key PATH]
+
+Defaults:
+  --repo-url $REPO_URL
+  --branch   $BRANCH
+  --age-key  \$SOPS_AGE_KEY_FILE > ~/.config/sops/age/keys.txt > secrets/keys/age/key.txt
+EOF
+      exit 0 ;;
+    *) die "Argument inconnu : $1" ;;
+  esac
+done
+
+TEMPLATE="$REPO_ROOT/targets/hosts/orbstack/cloud-init.yaml"
+KEYS_NIX="$REPO_ROOT/modules/users/authorized-keys.nix"
+SOPS_YAML="$REPO_ROOT/.sops.yaml"
+OUT="$REPO_ROOT/secrets/keys/orbstack-cloud-init.yaml"
+
+# Resolve the age private key to embed.
+# Priority:
+#   1. --age-key <path> arg
+#   2. $SOPS_AGE_KEY_FILE
+#   3. ~/.config/sops/age/keys.txt        (sops default — usually the admin key)
+#   4. secrets/keys/age/key.txt           (local working key — only useful if it
+#                                          is also a recipient in .sops.yaml)
+AGE_KEY="${AGE_KEY_OVERRIDE:-}"
+if [[ -z "$AGE_KEY" && -n "${SOPS_AGE_KEY_FILE:-}" ]]; then
+  AGE_KEY="$SOPS_AGE_KEY_FILE"
+fi
+if [[ -z "$AGE_KEY" && -f "$HOME/.config/sops/age/keys.txt" ]]; then
+  AGE_KEY="$HOME/.config/sops/age/keys.txt"
+fi
+if [[ -z "$AGE_KEY" && -f "$REPO_ROOT/secrets/keys/age/key.txt" ]]; then
+  AGE_KEY="$REPO_ROOT/secrets/keys/age/key.txt"
+fi
+
+[[ -f "$TEMPLATE" ]] || die "template introuvable : $TEMPLATE"
+[[ -n "$AGE_KEY" && -f "$AGE_KEY" ]] || die "aucune clé age privée trouvée (essayé: --age-key, \$SOPS_AGE_KEY_FILE, ~/.config/sops/age/keys.txt, secrets/keys/age/key.txt)"
+[[ -f "$KEYS_NIX" ]] || die "modules/users/authorized-keys.nix introuvable"
+
+log "Clé age embarquée : $AGE_KEY"
+
+# Sanity check: the public key derived from $AGE_KEY MUST appear as a recipient
+# in .sops.yaml, otherwise the orbstack VM won't be able to decrypt anything.
+PUB_FROM_KEY="$(grep -oE 'age1[0-9a-z]{58}' "$AGE_KEY" | head -1 || true)"
+if [[ -n "$PUB_FROM_KEY" ]]; then
+  if ! grep -q "$PUB_FROM_KEY" "$SOPS_YAML"; then
+    warn "La clé publique $PUB_FROM_KEY n'est PAS un recipient déclaré dans .sops.yaml."
+    warn "La VM orbstack ne pourra PAS déchiffrer les secrets sops avec cette clé."
+    warn "Corrige en ajoutant cette clé dans .sops.yaml puis: sops updatekeys secrets/**/*.yaml"
+    warn "(ou utilise --age-key pour pointer vers la clé admin_mfo réelle)"
+  else
+    ok "Clé publique trouvée dans .sops.yaml : $PUB_FROM_KEY"
+  fi
+fi
+
+# Extract mfo's first SSH key (one-line). The Nix file is plain text; grep is enough.
+SSH_KEY="$(grep -oE 'ssh-ed25519 [A-Za-z0-9+/=]+ [^"]+' "$KEYS_NIX" | head -1 || true)"
+[[ -n "$SSH_KEY" ]] || die "aucune clé ssh-ed25519 trouvée dans $KEYS_NIX"
+
+# Indent the age private key by 6 spaces (cloud-init `content: |` block).
+AGE_INDENTED="$(sed 's/^/      /' "$AGE_KEY")"
+
+# Render. Awk handles the multi-line age block injection; single-line tokens
+# are also handled here for consistency.
+#
+# Placeholders (substituted in this exact form):
+#   {{SSH_AUTHORIZED_KEY}}     one line, mfo's ssh-ed25519 pubkey
+#   {{AGE_PRIVATE_KEY_BLOCK}}  whole line replaced by the indented age key
+#   {{INFRA_REPO_URL}}         https URL to the infra repo
+#   {{INFRA_REPO_BRANCH}}      branch to clone
+mkdir -p "$(dirname "$OUT")"
+awk -v ssh_key="$SSH_KEY" \
+    -v repo_url="$REPO_URL" \
+    -v branch="$BRANCH" \
+    -v age_block="$AGE_INDENTED" \
+    '
+      { line = $0 }
+      { gsub(/\{\{SSH_AUTHORIZED_KEY\}\}/, ssh_key, line) }
+      { gsub(/\{\{INFRA_REPO_URL\}\}/, repo_url, line) }
+      { gsub(/\{\{INFRA_REPO_BRANCH\}\}/, branch, line) }
+      line ~ /\{\{AGE_PRIVATE_KEY_BLOCK\}\}/ { print age_block; next }
+      { print line }
+    ' "$TEMPLATE" > "$OUT"
+
+chmod 0600 "$OUT"
+
+ok "Rendu : $OUT (mode 0600, gitignored)"
+log ""
+log "Vérifications utiles :"
+log "  head -20 $OUT"
+log ""
+log "Création de la VM (sur le Mac hôte d'OrbStack) :"
+log "  orb create -a arm64 -u root \\"
+log "    --user-data $OUT \\"
+log "    nixos orbstack"
+log ""
+log "Après ~2 min :"
+log "  ssh mfo@orbstack@orb"

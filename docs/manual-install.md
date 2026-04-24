@@ -89,6 +89,7 @@ nix run .#install-anywhere -- <host> <ip-cible>
 | `sudo nix run .#install-from-existing -- <host>` | install neuve depuis NixOS existant, autre disque | oui (disque cible, refuse `/`) |
 | `nix run .#install-manual -- <host>` | dispatcher live↔existing | oui |
 | `nix run .#install-anywhere -- <host> <ip>` | install à distance via SSH+kexec | oui |
+| `nix run .#orbstack-cloud-init` | rend le user-data cloud-init pour la VM `orbstack` | non |
 
 ---
 
@@ -115,3 +116,49 @@ nix run .#install-anywhere -- <host> <ip-cible>
 ## Référence détaillée (partitionnement manuel sans disko, etc.)
 
 Voir [`docs/manual-install-reference.md`](manual-install-reference.md).
+
+---
+
+## OrbStack — bootstrap full-auto via cloud-init
+
+OrbStack supporte `cloud-init` au premier boot. On lui passe un `user-data`
+qui :
+
+1. autorise la clé SSH `mfo`
+2. dépose la clé age dans `/var/lib/sops-nix/key.txt`
+3. clone le repo `infra` dans `/etc/infra`
+4. lance `nixos-rebuild switch --flake /etc/infra#orbstack`
+
+### Workflow
+
+```bash
+# 1. Rendre le user-data (lit la clé age locale ou ~/.config/sops/age/keys.txt)
+nix run .#orbstack-cloud-init
+
+# 2. Créer la VM (sur le Mac hôte d'OrbStack)
+orb create -a arm64 -u root \
+  --user-data secrets/keys/orbstack-cloud-init.yaml \
+  nixos orbstack
+
+# 3. ~2 min plus tard
+ssh mfo@orbstack@orb
+```
+
+### Pré-requis
+
+- une clé age privée (par défaut : `secrets/keys/age/key.txt` créée par
+  `nix run .#init-keys`). Si elle n'est PAS un recipient déclaré dans
+  `.sops.yaml`, le rendu affiche un warning et la VM ne pourra pas
+  déchiffrer les secrets sops. Solutions :
+  - utiliser la vraie clé `admin_mfo` :
+    `nix run .#orbstack-cloud-init -- --age-key ~/.config/sops/age/keys.txt`
+  - **OU** ajouter la clé locale comme recipient supplémentaire dans
+    `.sops.yaml` puis re-chiffrer :
+    ```bash
+    sops updatekeys secrets/common.yaml secrets/hosts/*.yaml secrets/stacks/*.yaml secrets/cloud/*.yaml
+    ```
+
+### Idempotence
+
+`services.cloud-init.enable = true` est conservé sur le host : recréer la
+même VM avec le même user-data refait le bootstrap proprement.

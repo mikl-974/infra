@@ -11,7 +11,7 @@
 #
 # It mirrors `sandbox` semantically (server profile + admin user via sops),
 # but with mfo as the operator account so the developer logs in directly.
-{ config, hostVars, lib, ... }:
+{ config, hostVars, lib, pkgs, ... }:
 {
   imports = [
     ../../../modules/profiles/server.nix
@@ -42,4 +42,14 @@
 
   users.users.mfo.hashedPasswordFile =
     config.sops.secrets."orbstack/users/mfo-password-hash".path;
+
+  # Cloud-init: provisions SSH keys, the sops age key, the repo clone, and the
+  # initial nixos-rebuild at first boot. Kept enabled afterwards so re-creating
+  # the VM with the same user-data is idempotent.
+  services.cloud-init = {
+    enable = true;
+    network.enable = false;   # OrbStack handles networking natively
+  };
+  # cloud-init needs git on PATH to clone the infra repo at first boot.
+  environment.systemPackages = [ pkgs.git ];
 }
