@@ -26,9 +26,10 @@
 #
 # Run `nix run .#bootstrap-host-on-orbstack` from the Mac host to satisfy
 # (1) and (2) before the first promotion switch.
-{ config, hostVars, lib, ... }:
+{ config, hostVars, lib, pkgs, ... }:
 let
   authorizedKeys = import ../../../modules/users/authorized-keys.nix;
+  onOrbstack = builtins.pathExists "/opt/orbstack-guest";
 in
 {
   imports = [
@@ -46,9 +47,46 @@ in
   # On real bare-metal homelab hardware, /opt/orbstack-guest is absent so
   # systemd-boot is enabled normally. Requires `--impure` so that pathExists
   # can read outside the Nix store; reconfigure.sh passes it.
-  boot.loader.systemd-boot.enable      = lib.mkDefault (! builtins.pathExists "/opt/orbstack-guest");
-  boot.loader.efi.canTouchEfiVariables = lib.mkDefault (! builtins.pathExists "/opt/orbstack-guest");
-  boot.loader.grub.enable              = lib.mkDefault (! builtins.pathExists "/opt/orbstack-guest");
+  boot.loader.systemd-boot.enable      = lib.mkDefault (! onOrbstack);
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault (! onOrbstack);
+  boot.loader.grub.enable              = lib.mkDefault (! onOrbstack);
+
+  # OrbStack's vinit (`/opt/orb/vinit`) repoints
+  # `/nix/var/nix/profiles/system` back to the auto-generated `nixos-lxc`
+  # profile on every boot. To make `homelab` actually persist, re-apply the
+  # flake at boot. The repo is expected at `/etc/infra` (cloned at first
+  # bootstrap); the unit no-ops if it's missing.
+  systemd.services.infra-rebuild-on-boot = lib.mkIf onOrbstack {
+    description = "Re-apply NixOS flake config on boot (OrbStack reset workaround)";
+    wantedBy = [ "multi-user.target" ];
+    after    = [ "network-online.target" "sops-install-secrets.service" ];
+    wants    = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    path = with pkgs; [ nixVersions.stable git ];
+    script = ''
+      set -eu
+      REPO=/etc/infra
+      if [ ! -d "$REPO/.git" ]; then
+        echo "infra repo absent dans $REPO, rien à faire"
+        exit 0
+      fi
+      CURRENT=$(readlink /run/current-system || true)
+      case "$CURRENT" in
+        *nixos-system-homelab-2[6-9]*|*nixos-system-homelab-[3-9]*)
+          echo "homelab déjà actif: $CURRENT"
+          exit 0
+          ;;
+      esac
+      echo "Réapplication de homelab depuis $REPO"
+      cd "$REPO"
+      git config --global --add safe.directory "$REPO" || true
+      exec nixos-rebuild switch --impure --flake "$REPO#homelab" \
+        --extra-experimental-features "nix-command flakes"
+    '';
+  };
 
   infra.security.sops = {
     enable = true;
