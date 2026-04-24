@@ -4,6 +4,10 @@ Quand NixOS Anywhere n'est pas utilisable (pas de SSH, pas de kexec, hyperviseur
 non compatible, etc.), trois flux existent. **Choisir le bon flux dépend
 uniquement de l'état du disque cible**, pas de la procédure mentale d'install.
 
+`install-manual` auto-détecte maintenant :
+- **live** → `install-from-live`
+- **existing** → `reconfigure` (application non destructive de la config sur le NixOS courant)
+
 ## Quel flux pour quel cas ?
 
 | Cas | État du disque cible | Tu veux | Commande |
@@ -87,7 +91,7 @@ nix run .#install-anywhere -- <host> <ip-cible>
 | `nix run .#reconfigure -- <host>` | applique la config sur le système courant | non |
 | `sudo nix run .#install-from-live -- <host>` | install neuve depuis live ISO | oui (disque cible) |
 | `sudo nix run .#install-from-existing -- <host>` | install neuve depuis NixOS existant, autre disque | oui (disque cible, refuse `/`) |
-| `nix run .#install-manual -- <host>` | dispatcher live↔existing | oui |
+| `nix run .#install-manual -- <host>` | dispatcher live↔reconfigure selon le contexte | non si `existing`, oui si `live` |
 | `nix run .#install-anywhere -- <host> <ip>` | install à distance via SSH+kexec | oui |
 | `nix run .#orbstack-cloud-init` | rend le user-data cloud-init pour la VM `orbstack` | non |
 
@@ -109,7 +113,7 @@ nix run .#install-anywhere -- <host> <ip-cible>
 | `nixos-install` casse en plein milieu | relancer le script : disko est idempotent |
 | `nixos-rebuild` se plaint d'un `fileSystems` manquant | la config référence un point de montage que la VM n'a pas — soit ajuster le host, soit créer le point de montage |
 | Pas de réseau sur le live ISO | `wpa_supplicant -B -i wlan0 -c <(wpa_passphrase SSID PASS) && dhclient wlan0` |
-| Détection auto du dispatcher se trompe | forcer avec `--method live` ou `--method existing` |
+| Détection auto du dispatcher se trompe | forcer avec `--method live` ou `--method existing` (`existing` = reconfigure) |
 
 ---
 

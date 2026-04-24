@@ -3,7 +3,7 @@
 #
 # Détecte le contexte d'exécution et délègue au script approprié :
 #   - live ISO NixOS        → install-from-live
-#   - NixOS déjà installé   → install-from-existing
+#   - NixOS déjà installé   → reconfigure
 #
 # Usage : install-manual <host> [--method live|existing]
 
@@ -27,7 +27,12 @@ Usage: install-manual <host> [--method live|existing]
 
 Détection automatique si --method n'est pas fourni :
   - kernel cmdline contient 'boot=' (live ISO) → live
-  - sinon, fichier /etc/NIXOS présent → existing
+  - sinon, fichier /etc/NIXOS présent → existing (reconfigure le système courant)
+
+Notes :
+  - 'existing' applique uniquement la config NixOS du host sur le système courant
+  - pour installer sur un autre disque depuis un NixOS existant, utiliser
+    directement : install-from-existing <host>
 EOF
       exit 0
       ;;
@@ -64,6 +69,6 @@ dispatch_app() {
 
 case "$METHOD" in
   live)     dispatch_app "install-from-live" "install-from-live.sh" ;;
-  existing) dispatch_app "install-from-existing" "install-from-existing.sh" ;;
+  existing) dispatch_app "reconfigure" "reconfigure.sh" ;;
   *)        die "Méthode inconnue : $METHOD (attendu: live | existing)" ;;
 esac
