@@ -22,10 +22,10 @@
     };
 
     # Home Manager — manages user dotfiles and per-user packages.
-    # Intentionally kept on the 24.11 release branch for stability while
-    # nixpkgs itself tracks nixos-unstable for package selection.
+    # Track a recent release branch so it stays compatible with the
+    # nixpkgs snapshot used by this flake.
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

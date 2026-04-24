@@ -26,8 +26,8 @@
     imv
 
     # File and archive browsing
-    xfce.thunar
-    gnome.file-roller
+    thunar
+    file-roller
 
     # Explicit desktop comfort apps
     cliphist

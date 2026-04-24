@@ -12,6 +12,8 @@
   # Workstations expose SSH (key-only) so mfo can connect from anywhere on the tailnet.
   infra.security.ssh.enable = true;
 
+  nixpkgs.config.allowUnfree = true;
+
   networking.hostName = hostVars.hostname;
   time.timeZone      = hostVars.timezone;
   i18n.defaultLocale = hostVars.locale;

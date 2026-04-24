@@ -3,9 +3,9 @@
 # This host is intentionally simple for now: one real user, one reusable desktop
 # role, and one explicit target composition.
 {
-  mikl = {
+  mfo = {
     imports = [
-      ../users/mikl.nix
+      ../users/mfo.nix
       ../roles/desktop-hyprland.nix
       ../roles/noctalia.nix
     ];

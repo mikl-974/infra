@@ -25,10 +25,13 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
-    sops.age.keyFile = cfg.ageKeyFile;
-  } // lib.optionalAttrs (cfg.defaultSopsFile != null) {
-    sops.defaultSopsFile = cfg.defaultSopsFile;
-    sops.defaultSopsFormat = cfg.defaultSopsFormat;
-  });
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      sops.age.keyFile = cfg.ageKeyFile;
+    })
+    (lib.mkIf (cfg.enable && cfg.defaultSopsFile != null) {
+      sops.defaultSopsFile = cfg.defaultSopsFile;
+      sops.defaultSopsFormat = cfg.defaultSopsFormat;
+    })
+  ];
 }

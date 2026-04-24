@@ -14,7 +14,7 @@
     pavucontrol
 
     # Advanced NetworkManager connection editor — useful for Wi-Fi/VPN profiles
-    nm-connection-editor
+    networkmanagerapplet
 
     # Display brightness helper used by desktops, keybinds or scripts
     brightnessctl
