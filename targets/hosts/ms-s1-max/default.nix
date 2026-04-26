@@ -1,4 +1,7 @@
 { ... }:
 {
-  imports = [ ./config/default.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ./config/default.nix
+  ];
 }

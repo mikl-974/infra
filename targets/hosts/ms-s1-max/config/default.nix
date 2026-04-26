@@ -9,7 +9,6 @@
 
   infra.security.sops = {
     enable = true;
-    defaultSopsFile = ../../../../secrets/hosts/ms-s1-max.yaml;
   };
 
   infra.users.root = {
@@ -17,11 +16,10 @@
     sopsFile = ../../../../secrets/common.yaml;
   };
 
-  sops.secrets."ms-s1-max/users/mfo-password-hash" = {
-    key = "hosts/ms-s1-max/users/mfo/passwordHash";
-    neededForUsers = true;
-  };
-
-  users.users.mfo.hashedPasswordFile =
-    config.sops.secrets."ms-s1-max/users/mfo-password-hash".path;
+  # Bootstrap password hash for the first NixOS install.
+  # The host-specific sops file is currently not decryptable with the canonical
+  # Age identity available in this repo, so keep the workstation installable and
+  # rotate the password back into sops once the host is up.
+  users.users.mfo.hashedPassword =
+    "$y$j9T$84Kov0jVH3Bmj6ToiyqM8/$HNrOk4xunHbPOC4BKidk/7uyQym1ENr07p5uLYQV2M4";
 }

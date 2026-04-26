@@ -129,7 +129,11 @@
       nixosConfigurations = {
         ms-s1-max = mkHost {
           vars   = import ./targets/hosts/ms-s1-max/vars.nix;
-          modules = [ ./targets/hosts/ms-s1-max/default.nix ];
+          modules = [
+            disko.nixosModules.disko
+            ./targets/hosts/ms-s1-max/default.nix
+            ./targets/hosts/ms-s1-max/disko.nix
+          ];
         };
 
         contabo = mkHost {
@@ -139,6 +143,11 @@
       };
 
       diskoConfigurations = {
+        ms-s1-max = mkDiskoConfig {
+          vars = import ./targets/hosts/ms-s1-max/vars.nix;
+          diskoModule = ./targets/hosts/ms-s1-max/disko.nix;
+        };
+
         contabo = mkDiskoConfig {
           vars = import ./targets/hosts/contabo/vars.nix;
           diskoModule = ./targets/hosts/contabo/disko.nix;

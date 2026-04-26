@@ -7,6 +7,7 @@
   system   = "x86_64-linux";
   username = "mfo";            # primary interactive user / install operator
   hostname = "ms-s1-max";
+  disk     = "/dev/nvme0n1";   # discovered on the current Fedora install
   timezone = "Asia/Bangkok";
   locale   = "en_US.UTF-8";
 }
