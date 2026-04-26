@@ -248,6 +248,9 @@ if [[ "$EXPECT_DESKTOP" == true ]]; then
   else
     fail "greetd non détecté"
   fi
+  if grep -Rqs 'withUWSM *= *true' "$REPO_ROOT/modules/desktop" "$REPO_ROOT/targets/hosts/$HOST_NAME" 2>/dev/null; then
+    check_binary "uwsm" "UWSM"
+  fi
 
   if [[ "${XDG_CURRENT_DESKTOP:-}" == "Hyprland" || "${XDG_SESSION_DESKTOP:-}" == "Hyprland" ]]; then
     if pgrep -af 'mako' >/dev/null 2>&1; then
@@ -299,10 +302,29 @@ if [[ "$HOST_CONTEXT_AVAILABLE" == true ]] && grep -Rqs 'services\.ollama' "$REP
   check_service "ollama" "Ollama"
   check_binary "ollama" "CLI Ollama"
   check_binary "llama-cli" "CLI llama.cpp"
+  check_binary "hf" "CLI Hugging Face"
+
+  if [[ -d /var/lib/llama-cpp/models ]]; then
+    ok "Repertoire modeles llama.cpp disponible : /var/lib/llama-cpp/models"
+  else
+    fail "Repertoire modeles llama.cpp absent : /var/lib/llama-cpp/models"
+  fi
 
   if grep -Rqs 'rocm' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
     check_binary "rocminfo" "CLI ROCm rocminfo"
     check_binary "rocm-smi" "CLI ROCm rocm-smi"
+  fi
+fi
+
+if [[ "$EXPECT_DESKTOP" == true ]]; then
+  echo ""
+  echo -e "${BLD}── Outils desktop locaux${RST}"
+  echo ""
+  check_binary "btop" "CLI btop"
+
+  if [[ "$HOST_CONTEXT_AVAILABLE" == true ]] && grep -Rqs 'workstation\.containers\.podman\.enable *= *true' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
+    check_binary "podman" "CLI Podman"
+    check_binary "podman-desktop" "Podman Desktop"
   fi
 fi
 

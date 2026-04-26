@@ -1,69 +1,15 @@
-# Noctalia Shell — home-manager configuration.
+# Noctalia Shell — official Home Manager integration.
 # See https://docs.noctalia.dev/getting-started/nixos/
-{ inputs, pkgs, ... }:
+#
+# This role wires the upstream Home Manager module and enables the shell.
+# Per-user settings live in the user module and point to a JSON dotfile path.
+{ inputs, ... }:
 {
-  # Import the official Noctalia home-manager module.
   imports = [
     inputs.noctalia.homeModules.default
   ];
 
   programs.noctalia-shell = {
     enable = true;
-
-    # Shell settings — bar position, density, widgets, etc.
-    settings = {
-      # configure noctalia here
-      bar = {
-        position = "top";
-        barType = "floating";
-        marginVertical = 4;
-        marginHorizontal = 200;
-        showCapsule = false;
-        widgets = {
-          left = [
-            {
-              id = "ControlCenter";
-              useDistroLogo = true;
-            }
-            {
-              id = "Network";
-            }
-            {
-              id = "Bluetooth";
-            }
-          ];
-          center = [
-            {
-              hideUnoccupied = false;
-              id = "Workspace";
-              labelMode = "none";
-            }
-          ];
-          right = [
-            {
-              alwaysShowPercentage = false;
-              id = "Battery";
-              warningThreshold = 30;
-            }
-            {
-              formatHorizontal = "HH:mm";
-              formatVertical = "HH mm";
-              id = "Clock";
-              useMonospacedFont = true;
-              usePrimaryColor = true;
-            }
-          ];
-        };
-      };
-      colorSchemes.predefinedScheme = "Rose Pine";
-      general = {
-        radiusRatio = 0.2;
-      };
-      location = {
-        monthBeforeDay = false;
-        name = "Bangkok, Thailande";
-      };
-    };
-
   };
 }

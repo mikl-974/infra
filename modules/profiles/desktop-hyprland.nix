@@ -11,6 +11,7 @@
   # it is a user-facing network tool, not a generic infrastructure primitive.
   workstation.desktop.warp.enable = true;
 
-  # Noctalia: personal color scheme and visual identity of this workstation.
+  # Noctalia is the desktop shell used on this workstation.
+  # The actual shell settings live in Home Manager via home/roles/noctalia.nix.
   workstation.theming.noctalia.enable = true;
 }

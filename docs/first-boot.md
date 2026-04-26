@@ -8,7 +8,9 @@ Verifier :
 - user `mfo` present
 - `ollama` actif
 - `rocminfo` et `rocm-smi` disponibles
-- `ollama`, `llama-cli`, `opencode-desktop`, `rider`, `webstorm`, `code` dans le PATH
+- `ollama`, `llama-cli`, `hf`, `opencode-desktop`, `rider`, `webstorm`, `code` dans le PATH
+- `btop`, `podman`, `podman-desktop` dans le PATH
+- `/var/lib/llama-cpp/models` present et accessible
 
 Commande utile :
 

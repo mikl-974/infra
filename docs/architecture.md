@@ -79,6 +79,8 @@ On y trouve explicitement :
 - `ollama`
 - `llama-cpp`
 - `opencode-desktop`
+- `Podman Desktop`
+- `btop`
 - `VS Code`
 - `Rider`
 - `WebStorm`
@@ -109,7 +111,7 @@ Son IA reste un choix de machine locale, pas un service infra partage.
 - user systeme : `modules/users/mfo.nix`
 - Home Manager : `home/targets/ms-s1-max.nix`
 - mapping logiciel local : `targets/hosts/ms-s1-max/config/capabilities.nix`
-- IA GPU AMD : `pkgs.ollama-rocm`, `pkgs.llama-cpp-rocm`, `nixpkgs.config.rocmSupport = true`
+- IA GPU AMD : `pkgs.ollama-rocm`, `pkgs.llama-cpp-rocm`, `pkgs.python3Packages.huggingface-hub`, `nixpkgs.config.rocmSupport = true`
 - runtime systeme ROCm : `rocm-runtime`, `rocminfo`, `rocm-smi`, `amdsmi`
 
 ### `contabo`

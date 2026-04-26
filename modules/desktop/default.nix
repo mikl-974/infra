@@ -25,7 +25,9 @@
     # Generic greetd default for Hyprland-centric hosts; mixed-desktop hosts can
     # still override or disable greetd at the target level.
     # No --remember here: keep the greeter stateless unless a target opts in.
-    command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+    command = ''
+      ${pkgs.tuigreet}/bin/tuigreet --time --cmd "${pkgs.uwsm}/bin/uwsm start hyprland.desktop"
+    '';
     user = "greeter";
   };
 }

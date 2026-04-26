@@ -9,6 +9,7 @@
   imports = [
     ../../../../modules/containers/podman.nix
     ../../../../modules/apps/dev-workstation.nix
+    ../../../../modules/apps/podman-desktop.nix
     ../../../../modules/apps/ai-local.nix
     ../../../../modules/apps/rocm-runtime.nix
   ];

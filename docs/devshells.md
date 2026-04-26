@@ -17,7 +17,7 @@ Les editeurs et IDE sont des applications desktop — ils ne vivent pas dans un 
 |---|---|---|
 | devShell `.NET` | SDK, Docker CLI, outils CLI | `modules/devshells/dotnet.nix` |
 | Applications dev | VS Code, Rider, WebStorm, Neovim, GitKraken | `modules/apps/editors.nix` + `modules/apps/dev.nix` |
-| Containers locaux de dev | Podman + compatibilite Docker locale | `modules/containers/podman.nix` via `modules/profiles/dev.nix` |
+| Containers locaux de dev | Podman + compatibilite Docker locale + Podman Desktop | `modules/containers/podman.nix` + `modules/apps/podman-desktop.nix` |
 
 Les editeurs sont des applications desktop. Ils sont installes via le profil `dev`
 et disponibles a tout moment sur le poste. Le shell fournit l'environnement dans
@@ -69,6 +69,9 @@ autre repo n'a besoin de les consommer.
 
 Le shell `.NET` garde le binaire `docker-client`, mais le backend containers local
 est desormais structure cote systeme dans `modules/containers/podman.nix`.
+
+Podman Desktop reste une application graphique separee. Il ne vit pas dans le
+devShell et reste installe comme package systeme sur le host qui porte cette UX.
 
 But :
 

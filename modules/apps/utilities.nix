@@ -21,5 +21,8 @@
 
     # Media player control helper used by desktop keybinds and scripts
     playerctl
+
+    # Terminal system monitor used directly on workstations
+    btop
   ];
 }

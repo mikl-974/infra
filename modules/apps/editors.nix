@@ -10,5 +10,6 @@
     ./vscode.nix
     ./rider.nix
     ./webstorm.nix
+    ./datagrip.nix
   ];
 }

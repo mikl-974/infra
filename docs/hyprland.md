@@ -28,6 +28,7 @@ La base inclut :
 
 - Hyprland + XWayland
 - login manager simple (`greetd` + `tuigreet`)
+- session manager Wayland (`uwsm`)
 - PipeWire
 - xdg portal Hyprland
 - polkit
@@ -63,8 +64,21 @@ Noctalia est active dans `modules/profiles/desktop-hyprland.nix` via :
 workstation.theming.noctalia.enable = true;
 ```
 
-Le module systeme (`modules/theming/noctalia.nix`) installe les packages GTK/curseur et definit les variables d'environnement.
-La personnalisation visuelle (couleurs, CSS, wallpapers) vit dans `dotfiles/themes/noctalia/`.
+Le module systeme (`modules/theming/noctalia.nix`) garde seulement les
+dependances visuelles globales (GTK, curseur, variables de session).
+La configuration officielle du shell lui-meme vit dans `home/roles/noctalia.nix`
+via `inputs.noctalia.homeModules.default`.
+
+Le shell est lance par Hyprland avec `exec-once = uwsm app -- noctalia-shell`.
+Le paquet NixOS `noctalia-shell` embarque deja le wrapper Quickshell adequat et
+reste donc la commande correcte sur ce poste, meme si la doc upstream montre
+souvent `qs -c noctalia-shell` dans un contexte plus generique.
+
+La session Hyprland elle-meme est demarree via `uwsm start hyprland.desktop`
+depuis `greetd`, ce qui aligne le poste avec le chemin recommande par Hyprland
+et evite les warnings Noctalia sur une session lancee avec une commande non
+supportee. Le chemin systemd `services.noctalia-shell` existe upstream mais est
+explicitement deprecie.
 
 Voir `docs/theming.md` pour les details.
 
