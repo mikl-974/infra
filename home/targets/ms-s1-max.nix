@@ -14,7 +14,11 @@
       ../roles/noctalia.nix
     ];
 
-    wayland.windowManager.mango.enable = true;
+    wayland.windowManager.hyprland.enable = true;
+
+    home.packages = with pkgs; [
+      foot
+    ];
 
     home.file.".config/hypr/profile.conf".source =
       lib.mkForce ../../dotfiles/hyprland/profiles/mfo.conf;

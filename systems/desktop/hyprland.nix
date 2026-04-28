@@ -18,6 +18,12 @@
   };
 
   environment.systemPackages = with pkgs; [
+    wl-clipboard
+    grim
+    slurp
+  ];
+
+  home.packages = with pkgs; [
     foot
     wl-clipboard
     grim
