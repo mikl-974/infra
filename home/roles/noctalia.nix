@@ -11,11 +11,5 @@
 
   programs.noctalia-shell = {
     enable = true;
-    profile = {
-      # Make sure foot is in the PATH before noctalia-qs starts
-      SHELL_PATH = "${pkgs.foot}/bin/foot";
-    };
   };
-
-  programs.foot.enable = true;
 }
