@@ -6,10 +6,11 @@
 # - Noctalia shell
 # - explicit browser/session overrides kept local to this target
 {
-  mfo = { lib, inputs, pkgs, ... }: {
+  mfo = { lib, pkgs, ... }: {
     imports = [
       ../users/mfo.nix
       ../roles/desktop-hyprland.nix
+      ../roles/desktop-mango.nix
       ../roles/noctalia.nix
     ];
 

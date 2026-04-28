@@ -5,6 +5,7 @@
 {
   imports = [
     ./desktop-hyprland.nix
+    ./desktop-mangowm.nix
     ./networking.nix
     ../security/ssh.nix
   ];

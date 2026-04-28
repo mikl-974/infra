@@ -1,5 +1,5 @@
 {
-  "settingsVersion": 1,
+  "settingsVersion": 60,
   "bar": {
     "barType": "floating",
     "position": "top",
@@ -51,10 +51,10 @@
           "hideUnoccupied": false,
           "iconScale": 0.8,
           "id": "Workspace",
-          "labelMode": "none",
+          "labelMode": "index",
           "occupiedColor": "secondary",
-          "pillSize": 0.6,
-          "showApplications": true,
+          "pillSize": 0.7,
+          "showApplications": false,
           "showApplicationsHover": false,
           "showBadge": true,
           "showLabelsOnlyWhenOccupied": true,
@@ -116,10 +116,16 @@
           "id": "plugin:tailscale"
         },
         {
-          "id": "Bluetooth"
+          "displayMode": "onhover",
+          "iconColor": "none",
+          "id": "Bluetooth",
+          "textColor": "none"
         },
         {
-          "id": "Network"
+          "displayMode": "onhover",
+          "iconColor": "none",
+          "id": "Network",
+          "textColor": "none"
         },
         {
           "displayMode": "onhover",
@@ -129,14 +135,18 @@
           "textColor": "none"
         },
         {
+          "clockColor": "none",
+          "customFont": "",
           "formatHorizontal": "HH:mm",
           "formatVertical": "HH mm",
           "id": "Clock",
-          "useMonospacedFont": true,
-          "usePrimaryColor": true
+          "tooltipFormat": "HH:mm ddd, MMM dd",
+          "useCustomFont": false
         },
         {
+          "colorizeDistroLogo": false,
           "colorizeSystemIcon": "none",
+          "colorizeSystemText": "none",
           "customIconPath": "",
           "enableColorization": false,
           "icon": "noctalia",
@@ -188,7 +198,7 @@
     "autoStartAuth": false,
     "allowPasswordWithFprintd": false,
     "clockStyle": "custom",
-    "clockFormat": "hh\\nmm",
+    "clockFormat": "hh\nmm",
     "passwordChars": false,
     "lockScreenMonitors": [],
     "lockScreenBlur": 0,
@@ -273,14 +283,14 @@
     "monitorDirectories": [],
     "enableMultiMonitorDirectories": false,
     "showHiddenFiles": false,
-    "viewMode": "single",
+    "viewMode": "recursive",
     "setWallpaperOnAllMonitors": true,
     "linkLightAndDarkWallpapers": true,
     "fillMode": "crop",
     "fillColor": "#000000",
     "useSolidColor": false,
     "solidColor": "#1a1a2e",
-    "automationEnabled": false,
+    "automationEnabled": true,
     "wallpaperChangeMode": "random",
     "randomIntervalSec": 300,
     "transitionDuration": 1500,
@@ -475,7 +485,7 @@
     "showHeader": true,
     "showKeybinds": true,
     "largeButtonsStyle": true,
-    "largeButtonsLayout": "single-row",
+    "largeButtonsLayout": "grid",
     "powerOptions": [
       {
         "action": "lock",
@@ -597,7 +607,7 @@
     "backlightDeviceMappings": []
   },
   "colorSchemes": {
-    "useWallpaperColors": false,
+    "useWallpaperColors": true,
     "predefinedScheme": "Rose Pine",
     "darkMode": true,
     "schedulingMode": "off",
@@ -633,7 +643,7 @@
     "colorGeneration": ""
   },
   "plugins": {
-    "autoUpdate": false,
+    "autoUpdate": true,
     "notifyUpdates": true
   },
   "idle": {

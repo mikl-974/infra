@@ -26,7 +26,6 @@
     WLR_NO_HARDWARE_CURSORS = "1";
     WLR_RENDERER_ALLOW_SOFTWARE = "1";
     QT_QPA_PLATFORM         = "wayland";
-    QT_QUICK_BACKEND        = "software";
   };
 
   environment.systemPackages = with pkgs; [
