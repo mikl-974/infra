@@ -113,7 +113,7 @@ if run_rebuild; then
 fi
 
 if [[ $REBUILD_OK -eq 0 ]] && rebuild_hit_seccomp_filter_error; then
-  warn "Le sandbox Nix du host courant ne supporte pas ce filtre seccomp — nouvelle tentative avec filter-syscalls=false"
+  warn "L'environnement sandbox (Docker/Podman) ne supporte pas ce filtre seccomp — nouvelle tentative avec filter-syscalls=false"
   log ""
   REBUILD_EXTRA_ARGS=(--option filter-syscalls false)
   if run_rebuild "${REBUILD_EXTRA_ARGS[@]}"; then
