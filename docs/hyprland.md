@@ -1,8 +1,10 @@
-# Base Hyprland
+# Bases Desktop (Hyprland et MangoWM)
 
 ## Localisation
 
-La base desktop Hyprland est organisee ainsi :
+La base desktop est organisée ainsi :
+
+### Hyprland
 
 - profil : `systems/profiles/desktop-hyprland.nix`
 - modules :
@@ -21,6 +23,67 @@ La base desktop Hyprland est organisee ainsi :
   - `dotfiles/terminal/`
   - `dotfiles/notifications/`
 - theming : `systems/theming/noctalia.nix`
+
+### MangoWM (alternative à Hyprland)
+
+- profil : `systems/profiles/desktop-mangowm.nix`
+- modules :
+  - `systems/desktop/default.nix`
+  - `systems/desktop/mangowm.nix`
+  - `systems/desktop/audio.nix`
+  - `systems/desktop/connectivity.nix`
+  - `systems/desktop/portals.nix`
+  - `systems/desktop/fonts.nix`
+  - `systems/desktop/warp.nix`
+  - `systems/bundles/daily.nix`
+  - `systems/bundles/utilities.nix`
+  - la composition Home Manager active (`home/targets/<host>.nix`)
+  - `dotfiles/hyprland/hyprland.conf` (utilisé comme config MangoWM)
+  - `dotfiles/launchers/`
+  - `dotfiles/terminal/`
+  - `dotfiles/notifications/`
+- theming : `systems/theming/noctalia.nix`
+
+## Choix du window manager
+
+Pour choisir entre Hyprland et MangoWM, modifiez votre configuration :
+
+```nix
+# Pour Hyprland (défaut)
+workstation.desktop.windowManager.hyprland.enable = true;
+workstation.desktop.windowManager.mangowm.enable = false;
+
+# Pour MangoWM
+workstation.desktop.windowManager.hyprland.enable = false;
+workstation.desktop.windowManager.mangowm.enable = true;
+```
+
+## Composition actuelle
+
+La base inclut :
+
+- Window manager (Hyprland ou MangoWM) + XWayland
+- login manager simple (`greetd` + `tuigreet`)
+- session manager Wayland (`uwsm`)
+- PipeWire
+- xdg portal
+- polkit
+- NetworkManager
+- nm-applet
+- Bluetooth + Blueman
+- Solaar (via `hardware.logitech.wireless.*`)
+- Cloudflare WARP
+- Noctalia (theme système)
+- terminal (`foot`)
+- launcher (`wofi`)
+- applications quotidiennes (`firefox`, `zathura`, `imv`, `thunar`, `file-roller`, `cliphist`, `mako`)
+- outils Wayland minimaux (`waybar` pour Hyprland, `i3-gaps` pour MangoWM, `wl-clipboard`, `grim`, `slurp`)
+- utilitaires desktop (`pavucontrol`, `brightnessctl`, `playerctl`, `nm-connection-editor`)
+- dotfiles actifs
+- autostart explicite de `noctalia-shell`
+- autostart explicite de `mako`
+- historique clipboard actif via `cliphist` + `wl-paste --watch`
+- bindings de base pour terminal, launcher, navigateur, fichiers et clipboard history
 
 ## Composition actuelle
 

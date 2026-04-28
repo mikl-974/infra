@@ -8,8 +8,6 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL          = "1";
-    XDG_CURRENT_DESKTOP     = "Hyprland";
-    XDG_SESSION_TYPE        = "wayland";
     # Fallback pour les VMs et machines sans curseur HW Wayland
     WLR_NO_HARDWARE_CURSORS = "1";
     # Forcer le renderer software si pas de GPU Vulkan/DRM

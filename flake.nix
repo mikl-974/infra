@@ -50,9 +50,14 @@
     };
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
+    mango = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, disko, home-manager, sops-nix, nix-darwin, nix-homebrew, noctalia, colmena, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, home-manager, sops-nix, nix-darwin, nix-homebrew, noctalia, colmena, mango, ... }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
@@ -62,6 +67,7 @@
         ./systems/networking/tailscale.nix
         home-manager.nixosModules.home-manager
         sops-nix.nixosModules.sops
+        mango.nixosModules.mango
         ./systems/security/sops.nix
       ];
 

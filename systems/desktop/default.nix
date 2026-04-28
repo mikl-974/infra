@@ -2,6 +2,7 @@
 {
   imports = [
     ./hyprland.nix
+    ./mangowm.nix
     ./audio.nix
     ./connectivity.nix
     ./portals.nix
@@ -22,11 +23,10 @@
   services.dbus.enable = true;
   services.greetd.enable = true;
   services.greetd.settings.default_session = {
-    # Generic greetd default for Hyprland-centric hosts; mixed-desktop hosts can
-    # still override or disable greetd at the target level.
-    # No --remember here: keep the greeter stateless unless a target opts in.
+    # Expose all installed Wayland sessions so the user can choose Mango or
+    # Hyprland from tuigreet instead of hardcoding a single compositor.
     command = ''
-      ${pkgs.tuigreet}/bin/tuigreet --time --cmd "${pkgs.uwsm}/bin/uwsm start hyprland.desktop"
+      ${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session
     '';
     user = "greeter";
   };
