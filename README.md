@@ -40,6 +40,7 @@ Exemple :
 - `targets/vms/` : definitions de VM portables
 - `home/` : composition Home Manager
 - `dotfiles/` : fichiers applicatifs versionnes
+- `assets/` : assets locaux versionnes (wallpapers, etc.)
 - `stacks/` : contrats des services deployables
 - `deployments/` : topologie + inventory + validation stricte
 - `secrets/` : secrets chiffres avec SOPS
@@ -93,3 +94,9 @@ Commencer par :
 - `docs/ai.md`
 - `docs/secrets.md`
 - `docs/update-workflow.md`
+
+## Wallpapers
+
+- les wallpapers versionnes vivent dans `assets/wallpapers/`
+- utiliser `assets/wallpapers/light/` et `assets/wallpapers/dark/` pour garder une structure simple
+- la config Noctalia de `mfo` pointe actuellement sur `assets/wallpapers/` avec scan recursif

@@ -279,7 +279,7 @@
   "wallpaper": {
     "enabled": true,
     "overviewEnabled": false,
-    "directory": "/home/mfo/Pictures/Wallpapers",
+    "directory": "/home/mfo/infra/assets/wallpapers",
     "monitorDirectories": [],
     "enableMultiMonitorDirectories": false,
     "showHiddenFiles": false,
