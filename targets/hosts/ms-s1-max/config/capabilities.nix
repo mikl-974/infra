@@ -11,6 +11,7 @@
     ../../../../systems/bundles/dev-workstation.nix
     ../../../../systems/apps/podman-desktop.nix
     ../../../../systems/bundles/ai-local.nix
+    ../../../../systems/bundles/gaming.nix
     ../../../../systems/bundles/rocm-runtime.nix
   ];
 

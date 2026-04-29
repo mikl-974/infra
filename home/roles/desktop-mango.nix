@@ -121,6 +121,16 @@
       tagrule=id:1,layout_name:tile
       tagrule=id:2,layout_name:tile
       tagrule=id:3,layout_name:tile
+
+      # Volume up
+      bind=NONE,XF86AudioRaiseVolume,spawn,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+
+      # Volume down
+      bind=NONE,XF86AudioLowerVolume,spawn,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+
+      # Volume - Mute
+      bind=NONE,XF86AudioMute,spawn,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
     '';
 
     autostart_sh = ''
