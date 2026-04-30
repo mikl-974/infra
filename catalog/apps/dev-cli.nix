@@ -1,4 +1,5 @@
 { pkgs }:
 with pkgs; [
-  playwright-test
+  gh
+  azure-cli
 ]

@@ -4,6 +4,7 @@ with pkgs; [
   chromium
   zathura
   imv
+  gnome-calculator
   thunar
   file-roller
   cliphist

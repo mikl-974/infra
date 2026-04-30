@@ -2,7 +2,7 @@
 let
   cfg = config.infra.security.sops;
   sopsInstallSecretsRuntimeOnly =
-    inputs.sops-nix.packages.${pkgs.system}.sops-install-secrets.overrideAttrs
+    inputs.sops-nix.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets.overrideAttrs
       (_: {
         outputs = [ "out" ];
         postInstall = "";

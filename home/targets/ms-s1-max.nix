@@ -14,6 +14,7 @@
       ../roles/noctalia.nix
     ];
 
+    services.swayosd.enable = true;
     wayland.windowManager.hyprland.enable = true;
 
     home.packages = with pkgs; [

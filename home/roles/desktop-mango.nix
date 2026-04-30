@@ -4,7 +4,7 @@
 
   wayland.windowManager.mango = {
     enable = true;
-    settings = ''
+    extraConfig = ''
       # Colors
       rootcolor=0x201b14ff
       bordercolor=0x444444ff
@@ -79,6 +79,7 @@
       bind=Alt,Return,spawn,${pkgs.foot}/bin/foot
       bind=Alt,space,spawn,noctalia-shell ipc call launcher toggle
       bind=Alt,v,spawn,noctalia-shell ipc call launcher clipboard
+      bind=SUPER+SHIFT,S,spawn,noctalia-shell ipc call plugin:screen-shot-and-record screenshot
       bind=Alt,c,spawn,noctalia-shell ipc call controlCenter toggle
       bind=Alt,s,spawn,noctalia-shell ipc call sessionMenu toggle
       bind=Alt,b,spawn,chromium
@@ -131,6 +132,15 @@
       # Volume - Mute
       bind=NONE,XF86AudioMute,spawn,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
+      bind=NONE,XF86Calculator,spawn,gnome-calculator
+
+      # Luminosité (nécessite brightnessctl ou swayosd)
+      bind=NONE,XF86MonBrightnessUp,spawn,swayosd-client --brightness raise
+      bind=NONE,XF86MonBrightnessDown,spawn,swayosd-client --brightness lower
+
+      # Rétroéclairage du clavier (spécifique au MX Keys)
+      bind=NONE,XF86KbdBrightnessUp,spawn,brightnessctl --device='logitech_keyboard_backlight' set +10%
+      bind=NONE,XF86KbdBrightnessDown,spawn,brightnessctl --device='logitech_keyboard_backlight' set 10%-
     '';
 
     autostart_sh = ''

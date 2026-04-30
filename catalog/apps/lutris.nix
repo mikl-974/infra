@@ -1,7 +1,7 @@
 { pkgs }:
 with pkgs; [
   lutris
-  wineWowPackages.staging
+  wineWow64Packages.staging
   winetricks
   vulkan-tools
   mesa-demos

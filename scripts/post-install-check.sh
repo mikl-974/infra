@@ -304,6 +304,10 @@ if [[ "$HOST_CONTEXT_AVAILABLE" == true ]] && grep -Rqs 'services\.ollama' "$REP
   check_binary "llama-cli" "CLI llama.cpp"
   check_binary "hf" "CLI Hugging Face"
 
+  if grep -Rqs 'llama-cpp-server' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
+    check_service "llama-cpp-server" "Serveur llama.cpp"
+  fi
+
   if [[ -d /var/lib/llama-cpp/models ]]; then
     ok "Repertoire modeles llama.cpp disponible : /var/lib/llama-cpp/models"
   else

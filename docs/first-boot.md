@@ -7,6 +7,7 @@ Verifier :
 - session Hyprland disponible
 - user `mfo` present
 - `ollama` actif
+- `llama-cpp-server` actif
 - `rocminfo` et `rocm-smi` disponibles
 - `ollama`, `llama-cli`, `hf`, `opencode-desktop`, `rider`, `webstorm`, `code` dans le PATH
 - `btop`, `podman`, `podman-desktop` dans le PATH

@@ -26,7 +26,7 @@
     # Track a recent release branch so it stays compatible with the
     # nixpkgs snapshot used by this flake.
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
