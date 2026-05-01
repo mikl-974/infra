@@ -45,7 +45,7 @@ in
       package = llamaRocmPkgs.llama-cpp-rocm;
       host = "127.0.0.1";
       fit = "off";
-      ctxSize = 4096;
+      ctxSize = 262144;
       metrics = true;
       enableUnifiedMemory = true;
       openFirewall = false;
@@ -59,7 +59,7 @@ in
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0";
         port = 8080;
-        ctxSize = 4096;
+        ctxSize = 262144;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
@@ -77,14 +77,14 @@ in
         ];
       };
 
-      gemma4-31b-q8 = {
+      gemma4-31b-q6 = {
         enable = true;
         autoStart = true;
-        description = "Gemma 4 31B Q8_0 via llama.cpp";
+        description = "Gemma 4 31B Q6_K via llama.cpp";
         source = "hf";
-        model = "unsloth/gemma-4-31B-it-GGUF:Q8_0";
+        model = "unsloth/gemma-4-31B-it-GGUF:Q6_K";
         port = 8081;
-        ctxSize = 4096;
+        ctxSize = 262144;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
@@ -108,7 +108,7 @@ in
         source = "hf";
         model = "unsloth/Qwen3-Coder-Next-GGUF:Q8_0";
         port = 8082;
-        ctxSize = 4096;
+        ctxSize = 262144;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;

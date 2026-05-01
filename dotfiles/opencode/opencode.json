@@ -9,7 +9,8 @@
           "id": "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0",
           "name": "Qwen 3.6 35B A3B Q8 (local)",
           "limit": {
-            "context": 4096
+            "context": 262144,
+            "output": 32000
           }
         }
       },
@@ -21,11 +22,12 @@
     },
     "llama-gemma4": {
       "models": {
-        "gemma4-31b-q8": {
-          "id": "unsloth/gemma-4-31B-it-GGUF:Q8_0",
-          "name": "Gemma 4 31B Q8 (local)",
+        "gemma4-31b-q6": {
+          "id": "unsloth/gemma-4-31B-it-GGUF:Q6_K",
+          "name": "Gemma 4 31B Q6 (local)",
           "limit": {
-            "context": 4096
+            "context": 262144,
+            "output": 32000
           }
         }
       },
@@ -41,7 +43,8 @@
           "id": "unsloth/Qwen3-Coder-Next-GGUF:Q8_0",
           "name": "Qwen3 Coder Next Q8 (local)",
           "limit": {
-            "context": 4096
+            "context": 262144,
+            "output": 32000
           }
         }
       },
@@ -49,25 +52,6 @@
       "npm": "@ai-sdk/openai-compatible",
       "options": {
         "baseURL": "http://127.0.0.1:8082/v1"
-      }
-    },
-    "ollama": {
-      "models": {
-        "gemma4": {
-          "name": "gemma4"
-        },
-        "qwen3.5": {
-          "name": "qwen3.5"
-        },
-        "qwen3.6:27b": {
-          "_launch": true,
-          "name": "qwen3.6:27b"
-        }
-      },
-      "name": "Ollama",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "http://127.0.0.1:11434/v1"
       }
     }
   }
