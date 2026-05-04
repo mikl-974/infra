@@ -1,5 +1,7 @@
 # Home Manager composition for `ms-s1-max`.
-#
+# sudo nixos-rebuild switch --flake /home/mfo/infra#ms-s1-max
+
+
 # Single-user on purpose:
 # - `mfo` only
 # - Hyprland desktop
