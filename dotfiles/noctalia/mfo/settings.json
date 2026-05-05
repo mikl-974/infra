@@ -1,15 +1,17 @@
 {
-  "settingsVersion": 60,
+  "settingsVersion": 59,
   "bar": {
     "barType": "floating",
     "position": "top",
-    "monitors": [],
+    "monitors": [
+      "DP-1"
+    ],
     "density": "default",
     "showOutline": false,
     "showCapsule": false,
     "capsuleOpacity": 1,
     "capsuleColorKey": "none",
-    "widgetSpacing": 6,
+    "widgetSpacing": 8,
     "contentPadding": 2,
     "fontScale": 1,
     "enableExclusionZoneInset": true,
@@ -104,7 +106,7 @@
         {
           "clockColor": "none",
           "customFont": "",
-          "formatHorizontal": "HH:mm",
+          "formatHorizontal": "HH:mm dddd, MMM dd",
           "formatVertical": "HH mm",
           "id": "Clock",
           "tooltipFormat": "HH:mm ddd, MMM dd",
@@ -150,37 +152,6 @@
             "screenshotEditor": "swappy"
           },
           "id": "plugin:screen-shot-and-record"
-        },
-        {
-          "defaultSettings": {
-            "colorizationBadge": "Primary",
-            "colorizationBadgeText": "Primary",
-            "colorizationEnabled": false,
-            "colorizationIcon": "Primary",
-            "defaultTab": 0,
-            "enableSystemNotifications": false,
-            "githubUrl": "",
-            "maxEvents": 50,
-            "notifyForks": true,
-            "notifyGitHubNotifications": true,
-            "notifyMyRepoForks": true,
-            "notifyMyRepoStars": true,
-            "notifyPRs": true,
-            "notifyRepoCreations": true,
-            "notifyStars": true,
-            "openInBrowser": true,
-            "refreshInterval": 1800,
-            "showForks": true,
-            "showMyRepoForks": true,
-            "showMyRepoStars": true,
-            "showNotificationBadge": true,
-            "showPRs": true,
-            "showRepoCreations": true,
-            "showStars": true,
-            "token": "",
-            "username": ""
-          },
-          "id": "plugin:github-feed"
         },
         {
           "defaultSettings": {
