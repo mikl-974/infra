@@ -19,6 +19,8 @@ in
     ../../../../systems/containers/podman.nix
     ../../../../systems/bundles/dev-workstation.nix
     ../../../../systems/apps/podman-desktop.nix
+    ../../../../systems/apps/postgresql.nix
+    ../../../../systems/apps/pgweb.nix
     ../../../../systems/bundles/ai-local.nix
     ../../../../systems/bundles/gaming.nix
     ../../../../systems/bundles/rocm-runtime.nix
@@ -127,5 +129,7 @@ in
     };
   };
 
+  workstation.dev.postgresql.enable = true;
+  workstation.dev.pgweb.enable = true;
   workstation.containers.podman.enable = true;
 }
