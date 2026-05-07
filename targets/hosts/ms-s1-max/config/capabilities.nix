@@ -45,10 +45,15 @@ in
       package = llamaRocmPkgs.llama-cpp-rocm;
       host = "127.0.0.1";
       fit = "off";
-      ctxSize = 262144;
+      ctxSize = 131072;
       metrics = true;
       enableUnifiedMemory = true;
       openFirewall = false;
+      extraArgs = [
+        "--no-mmap"
+        "-fa"
+        "1"
+      ];
     };
 
     models = {
@@ -59,15 +64,12 @@ in
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0";
         port = 8080;
-        ctxSize = 262144;
+        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
         extraArgs = [
-          "--no-mmap"
           "--no-host"
-          "--flash-attn"
-          "on"
           "--parallel"
           "1"
           "--batch-size"
@@ -84,14 +86,11 @@ in
         source = "hf";
         model = "unsloth/gemma-4-31B-it-GGUF:Q6_K";
         port = 8081;
-        ctxSize = 262144;
+        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
         extraArgs = [
-          "--no-mmap"
-          "--flash-attn"
-          "on"
           "--parallel"
           "1"
           "--batch-size"
@@ -108,21 +107,21 @@ in
         source = "hf";
         model = "unsloth/Qwen3-Coder-Next-GGUF:Q8_0";
         port = 8082;
-        ctxSize = 262144;
+        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
         extraArgs = [
-          "--no-mmap"
           "--no-host"
-          "--flash-attn"
-          "on"
           "--parallel"
           "1"
           "--batch-size"
           "2048"
           "--ubatch-size"
           "2048"
+          "--no-mmap"
+          "-fa"
+          "1"
         ];
       };
     };

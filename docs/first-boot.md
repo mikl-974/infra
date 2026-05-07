@@ -8,6 +8,7 @@ Verifier :
 - user `mfo` present
 - `ollama` actif
 - `llama-cpp-server` actif
+- `cat /proc/cmdline` contient `iommu=pt amdgpu.gttsize=126976 ttm.pages_limit=32505856`
 - `rocminfo` et `rocm-smi` disponibles
 - `ollama`, `llama-cli`, `hf`, `opencode-desktop`, `rider`, `webstorm`, `code` dans le PATH
 - `btop`, `podman`, `podman-desktop` dans le PATH

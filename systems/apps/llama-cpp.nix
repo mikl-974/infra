@@ -50,7 +50,7 @@ let
         resolve cfg.defaults.enableUnifiedMemory modelCfg.enableUnifiedMemory;
       openFirewall = resolve cfg.defaults.openFirewall modelCfg.openFirewall;
       autoStart = modelCfg.autoStart;
-      extraArgs = modelCfg.extraArgs;
+      extraArgs = cfg.defaults.extraArgs ++ modelCfg.extraArgs;
       extraEnvironment = cfg.defaults.extraEnvironment // modelCfg.extraEnvironment;
     };
 
@@ -237,6 +237,12 @@ in
         type = types.attrsOf types.str;
         default = { };
         description = "Extra environment variables merged into every llama.cpp service.";
+      };
+
+      extraArgs = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Extra llama-server arguments appended to every generated service.";
       };
     };
 

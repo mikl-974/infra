@@ -27,11 +27,15 @@ Le point d'entree unique est :
 
 Sur `ms-s1-max`, le host fixe maintenant explicitement :
 
+- `boot.kernelParams = [ "iommu=pt" "amdgpu.gttsize=126976" "ttm.pages_limit=32505856" ]`
 - `environment.variables.HSA_OVERRIDE_GFX_VERSION = "11.5.1"`
 - `environment.variables.MIOPEN_DEBUG_DISABLE_FIND_DB = "1"`
 
 Pourquoi :
 
+- `iommu=pt` reduit l'overhead IOMMU pour l'acces a la memoire unifiee de l'iGPU.
+- `amdgpu.gttsize=126976` reserve jusqu'a 124 Gio de GTT pour l'iGPU.
+- `ttm.pages_limit=32505856` aligne la limite de pages epinglees sur ces 124 Gio.
 - `HSA_OVERRIDE_GFX_VERSION = "11.5.1"` force les consumers ROCm a traiter le
   GPU Strix Halo comme `gfx1151`, ce qui evite les problemes de detection sur
   des builds encore en retard sur cette generation.
@@ -41,8 +45,34 @@ Pourquoi :
 
 Le repo applique le tuning a deux niveaux :
 
+- au boot via `boot.kernelParams` pour exposer une enveloppe memoire adaptee a Strix Halo
 - globalement via `environment.variables` pour les usages manuels (`llama.cpp`,
   outils ROCm, shells)
+
+## Garde-fou kernel et firmware
+
+Pour `ms-s1-max`, eviter :
+
+- les kernels anterieurs a `6.18.4` pour les charges ROCm `gfx1151`
+- `linux-firmware-20251125`, connu pour casser ROCm sur Strix Halo
+
+Verification rapide :
+
+```bash
+uname -r
+cat /proc/cmdline
+journalctl -b | rg 'Command line:|amdgpu.gttsize|ttm.pages_limit'
+```
+
+Si la machine utilise une base RPM ou si vous comparez avec une install Fedora,
+la version du firmware se verifie aussi avec :
+
+```bash
+rpm -qa | grep linux-firmware
+```
+
+Sur NixOS, garder le meme principe : verifier les regressions firmware/kernel
+avant mise a jour de la pile ROCm ou avant d'attribuer un crash a `llama.cpp`.
 
 Pour le moment, Ollama est retire de la configuration active : le tuning ROCm
 reste donc porte au niveau host pour `llama.cpp` direct et les outils ROCm.
@@ -112,6 +142,8 @@ Le host fixe des defaults `llama.cpp` adaptes a Strix Halo :
 - `host = "127.0.0.1"`
 - `-fit off`
 - `--metrics`
+- `--no-mmap`
+- `-fa 1`
 - `GGML_CUDA_ENABLE_UNIFIED_MEMORY = "1"`
 - pas d'ouverture firewall par defaut
 

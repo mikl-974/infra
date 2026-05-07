@@ -9,7 +9,7 @@
           "id": "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0",
           "name": "Qwen 3.6 35B A3B Q8 (local)",
           "limit": {
-            "context": 262144,
+            "context": 131072,
             "output": 32000
           }
         }
@@ -26,7 +26,7 @@
           "id": "unsloth/gemma-4-31B-it-GGUF:Q6_K",
           "name": "Gemma 4 31B Q6 (local)",
           "limit": {
-            "context": 262144,
+            "context": 131072,
             "output": 32000
           }
         }
@@ -43,7 +43,7 @@
           "id": "unsloth/Qwen3-Coder-Next-GGUF:Q8_0",
           "name": "Qwen3 Coder Next Q8 (local)",
           "limit": {
-            "context": 262144,
+            "context": 131072,
             "output": 32000
           }
         }
@@ -70,6 +70,14 @@
         "npx",
         "-y",
         "@playwright/mcp@latest"
+      ]
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest"
       ]
     },
     "context7": {
