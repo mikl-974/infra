@@ -37,6 +37,7 @@ un tout coherent.
 Mais le bundle ne remplace pas les briques atomiques :
 
 - `systems/apps/lutris.nix`
+- `systems/apps/heroic.nix`
 - `systems/apps/steam.nix`
 - `systems/bundles/gaming.nix`
 

@@ -44,6 +44,7 @@ Le repo retient maintenant cette hierarchie :
 Exemple retenu :
 
 - `systems/apps/lutris.nix` : installer Lutris seul
+- `systems/apps/heroic.nix` : installer Heroic seul
 - `systems/apps/steam.nix` : installer Steam seul
 - `systems/bundles/gaming.nix` : pack gaming compose
 - `systems/profiles/gaming.nix` : point d'entree reutilisable si un host veut le bundle complet

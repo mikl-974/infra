@@ -22,7 +22,14 @@
   # specifiques au compositeur ne doivent pas etre globales si Mango et
   # Hyprland coexistent sur la meme machine.
   environment.sessionVariables = {
-    NIXOS_OZONE_WL          = "1";
+    BROWSER = "chromium-browser";
+    XDG_CURRENT_DESKTOP = "wlroots";
+    GTK_USE_PORTAL = "1";
+    
+    # Force Wayland pour d'autres Toolkits
+    NIXOS_OZONE_WL = "1"; # Force Wayland pour la majorité des apps Electron
+    MOZ_ENABLE_WAYLAND = "1"; # pour Firefox
+    
     WLR_NO_HARDWARE_CURSORS = "1";
     WLR_RENDERER_ALLOW_SOFTWARE = "1";
     QT_QPA_PLATFORM         = "wayland";

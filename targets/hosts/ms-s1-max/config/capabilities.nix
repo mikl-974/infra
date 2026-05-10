@@ -36,7 +36,7 @@ in
   # Keep the override global for manual llama.cpp/rocminfo sessions, and mirror
   # the service-specific part below for the Ollama daemon.
   environment.variables = {
-    HSA_OVERRIDE_GFX_VERSION = "11.5.1";
+  #  HSA_OVERRIDE_GFX_VERSION = "11.5.1";
     MIOPEN_DEBUG_DISABLE_FIND_DB = "1";
   };
 
@@ -52,7 +52,7 @@ in
       enableUnifiedMemory = true;
       openFirewall = false;
       extraArgs = [
-        "--no-mmap"
+       # "--no-mmap"
         "-fa"
         "1"
       ];
@@ -66,7 +66,6 @@ in
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0";
         port = 8080;
-        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
@@ -88,7 +87,6 @@ in
         source = "hf";
         model = "unsloth/gemma-4-31B-it-GGUF:Q6_K";
         port = 8081;
-        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
@@ -102,14 +100,13 @@ in
         ];
       };
 
-      qwen3-coder-next-q8 = {
+      qwen3-coder-next-q4 = {
         enable = true;
         autoStart = false;
-        description = "Qwen3 Coder Next Q8_0 via llama.cpp";
+        description = "Qwen3 Coder Next Q4 via llama.cpp";
         source = "hf";
-        model = "unsloth/Qwen3-Coder-Next-GGUF:Q8_0";
+        model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_XL";
         port = 8082;
-        ctxSize = 131072;
         fit = "off";
         metrics = false;
         enableUnifiedMemory = false;
@@ -121,9 +118,6 @@ in
           "2048"
           "--ubatch-size"
           "2048"
-          "--no-mmap"
-          "-fa"
-          "1"
         ];
       };
     };

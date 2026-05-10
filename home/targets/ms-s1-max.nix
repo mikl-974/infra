@@ -26,6 +26,11 @@
     home.file.".config/hypr/profile.conf".source =
       lib.mkForce ../../dotfiles/hyprland/profiles/mfo.conf;
 
-    home.sessionVariables.BROWSER = "chromium";
+    home.sessionVariables = {
+      BROWSER = "chromium-browser";
+      XDG_CURRENT_DESKTOP = "wlroots";
+      GTK_USE_PORTAL = "1";
+    };
+
   };
 }

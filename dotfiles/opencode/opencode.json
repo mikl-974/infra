@@ -39,9 +39,9 @@
     },
     "llama-qwen3-coder-next": {
       "models": {
-        "qwen3-coder-next-q8": {
-          "id": "unsloth/Qwen3-Coder-Next-GGUF:Q8_0",
-          "name": "Qwen3 Coder Next Q8 (local)",
+        "qwen3-coder-next-q4": {
+          "id": "unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_XL",
+          "name": "Qwen3 Coder Next Q4 (local)",
           "limit": {
             "context": 131072,
             "output": 32000
@@ -88,6 +88,14 @@
         "Accept": "application/json, text/event-stream"
       },
       "enabled": true
+    },
+    "blazorblueprint": {
+      "type": "local",
+      "command": [ 
+        "npx",
+        "-y", 
+        "@blazorblueprint/mcp"
+      ]
     }
   }
 

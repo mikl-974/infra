@@ -22,4 +22,12 @@
   # rotate the password back into sops once the host is up.
   users.users.mfo.hashedPassword =
     "$y$j9T$84Kov0jVH3Bmj6ToiyqM8/$HNrOk4xunHbPOC4BKidk/7uyQym1ENr07p5uLYQV2M4";
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    # Supprime tout sauf les 3 dernières versions
+    options = "--delete-older-than 3"; 
+  };
+
 }
