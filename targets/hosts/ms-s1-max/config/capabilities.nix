@@ -32,6 +32,28 @@ in
 
   nixpkgs.config.rocmSupport = true;
 
+  services.printing = {
+    enable = true;
+    drivers = [
+      pkgs.brgenml1lpr
+      pkgs.brgenml1cupswrapper
+    ];
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
+  hardware.sane = {
+    enable = true;
+    extraBackends = [
+      pkgs.brscan4
+      pkgs.sane-airscan
+    ];
+  };
+
   # Strix Halo (gfx1151) is still not detected reliably by all ROCm consumers.
   # Keep the override global for manual llama.cpp/rocminfo sessions, and mirror
   # the service-specific part below for the Ollama daemon.

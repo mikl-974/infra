@@ -28,8 +28,11 @@
 
     home.sessionVariables = {
       BROWSER = "chromium-browser";
-      XDG_CURRENT_DESKTOP = "wlroots";
       GTK_USE_PORTAL = "1";
+      # Empty on purpose: a non-empty value forces xdg-open down the
+      # Flatpak/OpenURI path, which currently yields the "No Apps available"
+      # chooser instead of using the working MIME associations.
+      NIXOS_XDG_OPEN_USE_PORTAL = "";
     };
 
   };

@@ -23,7 +23,6 @@
   # Hyprland coexistent sur la meme machine.
   environment.sessionVariables = {
     BROWSER = "chromium-browser";
-    XDG_CURRENT_DESKTOP = "wlroots";
     GTK_USE_PORTAL = "1";
     
     # Force Wayland pour d'autres Toolkits
