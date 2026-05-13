@@ -69,58 +69,50 @@ in
       package = llamaRocmPkgs.llama-cpp-rocm;
       host = "127.0.0.1";
       fit = "off";
-      ctxSize = 131072;
+      ctxSize = 32768;
       metrics = true;
-      enableUnifiedMemory = true;
+      enableUnifiedMemory = false;
       openFirewall = false;
       extraArgs = [
        # "--no-mmap"
-        "-fa"
-        "1"
+        "-fa" "1"
+        "--no-host"
+        "--parallel" "1"
+        "--batch-size" "2048"
+        "--ubatch-size" "2048"
       ];
     };
 
     models = {
       qwen36-35b-a3b-q8 = {
         enable = true;
-        autoStart = true;
+        autoStart = false;
         description = "Qwen3.6 35B A3B Q8_0 via llama.cpp";
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0";
         port = 8080;
         fit = "off";
         metrics = false;
-        enableUnifiedMemory = false;
         extraArgs = [
-          "--no-host"
-          "--parallel"
-          "1"
-          "--batch-size"
-          "2048"
-          "--ubatch-size"
-          "2048"
         ];
       };
 
       gemma4-31b-q6 = {
         enable = true;
-        autoStart = false;
+        autoStart = true;
         description = "Gemma 4 31B Q6_K via llama.cpp";
         source = "hf";
         model = "unsloth/gemma-4-31B-it-GGUF:Q6_K";
         port = 8081;
         fit = "off";
         metrics = false;
-        enableUnifiedMemory = false;
         extraArgs = [
-          "--parallel"
-          "1"
-          "--batch-size"
-          "2048"
-          "--ubatch-size"
-          "2048"
+          "--temp" "1.0" 
+          "--top-p" "0.95" 
+          "--top-k" "64"
         ];
       };
+
 
       qwen3-coder-next-q4 = {
         enable = true;
@@ -131,15 +123,11 @@ in
         port = 8082;
         fit = "off";
         metrics = false;
-        enableUnifiedMemory = false;
         extraArgs = [
-          "--no-host"
-          "--parallel"
-          "1"
-          "--batch-size"
-          "2048"
-          "--ubatch-size"
-          "2048"
+          "--temp" "1.0" 
+          "--top-p" "0.95" 
+          "--min-p" "0.01" 
+          "--top-k" "40"
         ];
       };
     };
