@@ -3,48 +3,48 @@
   "disabled_providers": [],
   "model": "llama-qwen36/qwen3.6-35b-a3b-q8",
   "provider": {
-    "llama-qwen36": {
+    "llama-qwen3.6-35b-a3b": {
       "models": {
-        "qwen3.6-35b-a3b-q8": {
-          "id": "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0",
-          "name": "Qwen 3.6 35B A3B Q8 (local)",
+        "qwen3.6-35b-a3b-q5": {
+          "id": "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL",
+          "name": "Qwen 3.6 35B A3B Q5 (local)",
           "limit": {
-            "context": 131072,
-            "output": 32000
+            "context": 262144,
+            "output": 100000
           }
         }
       },
-      "name": "llama.cpp Qwen 3.6 (local)",
+      "name": "llama.cpp Qwen 3.6 35B A3B (local)",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
         "baseURL": "http://127.0.0.1:8080/v1"
       }
     },
-    "llama-gemma4": {
+    "llama-qwen3.6-27b": {
       "models": {
-        "gemma4-31b-q6": {
-          "id": "unsloth/gemma-4-31B-it-GGUF:Q6_K",
-          "name": "Gemma 4 31B Q6 (local)",
+        "qwen3.6-27b-q5": {
+          "id": "unsloth/Qwen3.6-27B-GGUF:UD-Q5_K_XL",
+          "name": "Qwen 3.6 27B Q5 (local)",
           "limit": {
-            "context": 131072,
-            "output": 32000
+            "context": 262144,
+            "output": 100000
           }
         }
       },
-      "name": "llama.cpp Gemma 4 (local)",
+      "name": "llama.cpp Qwen 3.6 27B (local)",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "http://127.0.0.1:8081/v1"
+        "baseURL": "http://127.0.0.1:8080/v1"
       }
     },
     "llama-qwen3-coder-next": {
       "models": {
-        "qwen3-coder-next-q4": {
-          "id": "unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_XL",
-          "name": "Qwen3 Coder Next Q4 (local)",
+        "qwen3-coder-next-q5": {
+          "id": "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL",
+          "name": "Qwen3 Coder Next Q5 (local)",
           "limit": {
-            "context": 131072,
-            "output": 32000
+            "context": 262144,
+            "output": 100000
           }
         }
       },
@@ -52,6 +52,23 @@
       "npm": "@ai-sdk/openai-compatible",
       "options": {
         "baseURL": "http://127.0.0.1:8082/v1"
+      }
+    },
+    "llama-gemma4": {
+      "models": {
+        "gemma4-31b-q5": {
+          "id": "unsloth/gemma-4-31B-it-GGUF:Q5_K",
+          "name": "Gemma 4 31B Q5 (local)",
+          "limit": {
+            "context": 262144,
+            "output": 100000
+          }
+        }
+      },
+      "name": "llama.cpp Gemma 4 (local)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:8081/v1"
       }
     }
   },

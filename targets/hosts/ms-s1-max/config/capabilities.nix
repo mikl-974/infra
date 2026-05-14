@@ -19,6 +19,7 @@ in
     ../../../../systems/containers/podman.nix
     ../../../../systems/bundles/dev-workstation.nix
     ../../../../systems/apps/podman-desktop.nix
+    ../../../../systems/apps/distrobox.nix
     ../../../../systems/apps/postgresql.nix
     ../../../../systems/apps/pgweb.nix
     ../../../../systems/bundles/ai-local.nix
@@ -69,12 +70,12 @@ in
       package = llamaRocmPkgs.llama-cpp-rocm;
       host = "127.0.0.1";
       fit = "off";
-      ctxSize = 32768;
+      ctxSize = 262144;
       metrics = true;
       enableUnifiedMemory = false;
       openFirewall = false;
       extraArgs = [
-       # "--no-mmap"
+        "--no-mmap"
         "-fa" "1"
         "--no-host"
         "--parallel" "1"
@@ -84,12 +85,12 @@ in
     };
 
     models = {
-      qwen36-35b-a3b-q8 = {
+      qwen36-35b-a3b-q5 = {
         enable = true;
         autoStart = false;
-        description = "Qwen3.6 35B A3B Q8_0 via llama.cpp";
+        description = "Qwen3.6 35B A3B UD-Q5_K_XL via llama.cpp";
         source = "hf";
-        model = "unsloth/Qwen3.6-35B-A3B-GGUF:Q8_0";
+        model = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL";
         port = 8080;
         fit = "off";
         metrics = false;
@@ -97,29 +98,25 @@ in
         ];
       };
 
-      gemma4-31b-q6 = {
+      qwen36-27b-q5 = {
         enable = true;
-        autoStart = true;
-        description = "Gemma 4 31B Q6_K via llama.cpp";
+        autoStart = false;
+        description = "Qwen3.6 27B UD-Q5_K_XL via llama.cpp";
         source = "hf";
-        model = "unsloth/gemma-4-31B-it-GGUF:Q6_K";
+        model = "unsloth/Qwen3.6-27B-GGUF:UD-Q5_K_XL";
         port = 8081;
         fit = "off";
         metrics = false;
         extraArgs = [
-          "--temp" "1.0" 
-          "--top-p" "0.95" 
-          "--top-k" "64"
         ];
       };
 
-
-      qwen3-coder-next-q4 = {
+      qwen3-coder-next-q5 = {
         enable = true;
-        autoStart = false;
-        description = "Qwen3 Coder Next Q4 via llama.cpp";
+        autoStart = true;
+        description = "Qwen3 Coder Next Q5 via llama.cpp";
         source = "hf";
-        model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_XL";
+        model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL";
         port = 8082;
         fit = "off";
         metrics = false;
@@ -128,6 +125,22 @@ in
           "--top-p" "0.95" 
           "--min-p" "0.01" 
           "--top-k" "40"
+        ];
+      };
+
+      gemma4-31b-q5 = {
+        enable = true;
+        autoStart = false;
+        description = "Gemma 4 31B Q5_K_XL via llama.cpp";
+        source = "hf";
+        model = "unsloth/gemma-4-31B-it-GGUF:UD-Q5_K_XL";
+        port = 8083;
+        fit = "off";
+        metrics = false;
+        extraArgs = [
+          "--temp" "1.0" 
+          "--top-p" "0.95" 
+          "--top-k" "64"
         ];
       };
     };
