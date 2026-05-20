@@ -1,4 +1,4 @@
-{ config, ... }:
+{ pkgs, ... }:
 {
   imports = [
     ../../../../systems/profiles/workstation-common.nix
@@ -23,11 +23,21 @@
   users.users.mfo.hashedPassword =
     "$y$j9T$84Kov0jVH3Bmj6ToiyqM8/$HNrOk4xunHbPOC4BKidk/7uyQym1ENr07p5uLYQV2M4";
 
+  boot.loader.systemd-boot.configurationLimit = 3;
+
   nix.gc = {
     automatic = true;
     dates = "weekly";
-    # Supprime tout sauf les 3 dernières versions
-    options = "--delete-older-than 3"; 
+  };
+
+  systemd.services.nixos-prune-generations = {
+    description = "Keep only the last 3 NixOS system generations";
+    serviceConfig.Type = "oneshot";
+    path = [ pkgs.nix ];
+    script = ''
+      nix-env --profile /nix/var/nix/profiles/system --delete-generations +3
+    '';
+    startAt = "weekly";
   };
 
 }

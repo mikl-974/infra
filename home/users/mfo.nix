@@ -32,9 +32,13 @@ in {
 
   home.username = "mfo";
   home.homeDirectory = "/home/mfo";
+  home.packages = [ pkgs.nssTools ];
   home.sessionPath = [
     "$HOME/.local/bin"
   ];
+  home.sessionVariables = {
+    SSL_CERT_DIR = "$HOME/.aspnet/dev-certs/trust:${pkgs.cacert}/etc/ssl/certs";
+  };
 
   programs.noctalia-shell.settings = lib.mkForce ../../dotfiles/noctalia/mfo/settings.json;
 
@@ -50,5 +54,24 @@ in {
     ".config/opencode/skills/vibe-notion/SKILL.md".source = ../../dotfiles/opencode/skills/vibe-notion/SKILL.md;
     ".local/share/opencode/opencode-launcher.sh".source = opencodeLauncher;
     ".local/share/applications/OpenCode.desktop".source = ../../dotfiles/opencode/OpenCode.desktop;
+  };
+
+  systemd.user.services.dotnet-dev-certs-trust = {
+    Unit = {
+      Description = "Trust the ASP.NET Core development certificate for this user";
+      After = [ "graphical-session-pre.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      Environment = [
+        "SSL_CERT_DIR=%h/.aspnet/dev-certs/trust:${pkgs.cacert}/etc/ssl/certs"
+        "PATH=${pkgs.nssTools}/bin:/run/current-system/sw/bin"
+      ];
+      ExecStart = "${pkgs.dotnetCorePackages.sdk_10_0}/bin/dotnet dev-certs https --trust --quiet";
+    };
+
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 }

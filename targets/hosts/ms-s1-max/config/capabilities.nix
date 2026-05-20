@@ -20,6 +20,7 @@ in
     ../../../../systems/bundles/dev-workstation.nix
     ../../../../systems/apps/podman-desktop.nix
     ../../../../systems/apps/distrobox.nix
+    ../../../../systems/apps/claude-code.nix
     ../../../../systems/apps/postgresql.nix
     ../../../../systems/apps/pgweb.nix
     ../../../../systems/bundles/ai-local.nix
@@ -113,7 +114,7 @@ in
 
       qwen3-coder-next-q5 = {
         enable = true;
-        autoStart = true;
+        autoStart = false;
         description = "Qwen3 Coder Next Q5 via llama.cpp";
         source = "hf";
         model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL";

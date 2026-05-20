@@ -74,10 +74,24 @@
       bind=SUPER,n,switch_layout
       
       # Tags
-      bind=Ctrl,1,view,1,0
-      bind=Ctrl,2,view,2,0
-      bind=SUPER,1,tag,1,0
-      bind=SUPER,2,tag,2,0
+      bind=SUPER,1,view,1,0
+      bind=SUPER,2,view,2,0
+      bind=SUPER,3,view,3,0
+      bind=SUPER,4,view,4,0
+      bind=SUPER,5,view,5,0
+      bind=SUPER,6,view,6,0
+      bind=SUPER,7,view,7,0
+      bind=SUPER,8,view,8,0
+      bind=SUPER,9,view,9,0
+      bind=SUPER+SHIFT,1,tag,1,0
+      bind=SUPER+SHIFT,2,tag,2,0
+      bind=SUPER+SHIFT,3,tag,3,0
+      bind=SUPER+SHIFT,4,tag,4,0
+      bind=SUPER+SHIFT,5,tag,5,0
+      bind=SUPER+SHIFT,6,tag,6,0
+      bind=SUPER+SHIFT,7,tag,7,0
+      bind=SUPER+SHIFT,8,tag,8,0
+      bind=SUPER+SHIFT,9,tag,9,0
 
       # Window management
       bind=SUPER,r,reload_config
@@ -99,17 +113,23 @@
       bind=SUPER,Right,focusdir,right
       bind=SUPER,Up,focusdir,up
       bind=SUPER,Down,focusdir,down
+      bind=SUPER+CTRL,Left,focusmon,left
+      bind=SUPER+CTRL,Right,focusmon,right
       bind=SUPER,f,togglefullscreen,
       bind=SUPER,backslash,togglefloating,
 
       # Shows/hides scratchpad
       bind=SUPER,z,toggle_scratchpad
 
+      # Move focused window to the adjacent tag with horizontal arrows
+      bind=SUPER+SHIFT,Left,tagtoleft,0
+      bind=SUPER+SHIFT,Right,tagtoright,0
+      bind=SUPER+CTRL+SHIFT,Left,tagmon,left,0
+      bind=SUPER+CTRL+SHIFT,Right,tagmon,right,0
+
       # Swap focused window with window in specified direction
       bind=SUPER+SHIFT,Up,exchange_client,up
       bind=SUPER+SHIFT,Down,exchange_client,down
-      bind=SUPER+SHIFT,Left,exchange_client,left
-      bind=SUPER+SHIFT,Right,exchange_client,right
 
       # Move focused window to master position
       bind=SUPER,m,zoom,
