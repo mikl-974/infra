@@ -71,7 +71,7 @@ in
       package = llamaRocmPkgs.llama-cpp-rocm;
       host = "127.0.0.1";
       fit = "off";
-      ctxSize = 262144;
+      ctxSize = 100000;
       metrics = true;
       enableUnifiedMemory = false;
       openFirewall = false;

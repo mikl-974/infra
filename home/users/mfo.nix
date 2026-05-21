@@ -35,6 +35,7 @@ in {
   home.packages = [ pkgs.nssTools ];
   home.sessionPath = [
     "$HOME/.local/bin"
+    "$HOME/.dotnet/tools"
   ];
   home.sessionVariables = {
     SSL_CERT_DIR = "$HOME/.aspnet/dev-certs/trust:${pkgs.cacert}/etc/ssl/certs";
