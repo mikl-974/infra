@@ -26,6 +26,7 @@ in
     ../../../../systems/bundles/ai-local.nix
     ../../../../systems/bundles/gaming.nix
     ../../../../systems/bundles/rocm-runtime.nix
+    ../../../../systems/apps/virt-manager.nix
   ];
 
   # AnythingLLM is part of the intended workstation setup, but remains

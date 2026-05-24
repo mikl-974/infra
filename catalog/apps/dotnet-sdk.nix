@@ -1,4 +1,4 @@
 { pkgs }:
 with pkgs; [
-  dotnet-sdk_10
+  dotnetCorePackages.sdk_10_0-bin
 ]

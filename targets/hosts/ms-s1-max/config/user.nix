@@ -2,5 +2,5 @@
 {
   imports = [ ../../../../systems/users/mfo.nix ];
 
-  users.users.mfo.extraGroups = [ "render" "lp" "scanner" ];
+  users.users.mfo.extraGroups = [ "render" "lp" "scanner" "libvirtd" "kvm" ];
 }

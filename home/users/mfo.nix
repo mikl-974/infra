@@ -70,7 +70,7 @@ in {
         "SSL_CERT_DIR=%h/.aspnet/dev-certs/trust:${pkgs.cacert}/etc/ssl/certs"
         "PATH=${pkgs.nssTools}/bin:/run/current-system/sw/bin"
       ];
-      ExecStart = "${pkgs.dotnetCorePackages.sdk_10_0}/bin/dotnet dev-certs https --trust --quiet";
+      ExecStart = "${pkgs.dotnetCorePackages.sdk_10_0-bin}/bin/dotnet dev-certs https --trust --quiet";
     };
 
     Install.WantedBy = [ "graphical-session.target" ];
