@@ -34,6 +34,7 @@ in
         host  all electric 127.0.0.1/32   scram-sha-256
         host  all electric 10.88.0.0/16   scram-sha-256
         host  all electric 172.16.0.0/12  scram-sha-256
+        host  all electric 192.168.0.0/16 scram-sha-256   # podman rootless via slirp4netns (LAN)
       '';
     };
 
