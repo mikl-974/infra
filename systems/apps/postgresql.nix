@@ -10,6 +10,11 @@ in
     services.postgresql = {
       enable = true;
 
+      settings = {
+        wal_level = "logical";
+        listen_addresses = lib.mkForce "*";
+      };
+
       ensureDatabases = [ hostVars.username ];
       ensureUsers = [
         {
@@ -26,6 +31,9 @@ in
         local all ${hostVars.username} peer
         host  all ${hostVars.username} 127.0.0.1/32 trust
         host  all ${hostVars.username} ::1/128      trust
+        host  all electric 127.0.0.1/32   scram-sha-256
+        host  all electric 10.88.0.0/16   scram-sha-256
+        host  all electric 172.16.0.0/12  scram-sha-256
       '';
     };
 
