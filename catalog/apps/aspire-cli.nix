@@ -8,14 +8,14 @@ let
     }:
     buildDotnetGlobalTool {
       pname = "aspire-cli";
-      version = "13.4.0";
+      version = "13.4.3";
       nugetName = "Aspire.Cli";
-      nugetHash = "sha256-VifjAp+pym6RenIlf4hpw/NhvOr+S9P5h+1Y//DfPB4=";
+      nugetHash = "sha256-ZSuirGmyTp9p4R4XgRXlkuvKiuds/dmMelSRBBHDL2E=";
       nugetDeps = builtins.toFile "aspire-cli-nuget-deps.json" (builtins.toJSON [
         {
           pname = "Aspire.Cli.linux-x64";
-          version = "13.4.0";
-          hash = "sha256-6pE00hjm4C44iVCoJ4/fWQEx4qYrcCPJ19diOFA4YG8=";
+          version = "13.4.3";
+          hash = "sha256-SnmEdHt3c/Zeheoe0eawyiuC4z9fxo90yLP88Vg2Z5g=";
           installable = true;
         }
       ]);

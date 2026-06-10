@@ -52,7 +52,6 @@ in {
       source = ../../dotfiles/opencode/agents;
       force = true;
     };
-    ".config/opencode/skills/vibe-notion/SKILL.md".source = ../../dotfiles/opencode/skills/vibe-notion/SKILL.md;
     ".local/share/opencode/opencode-launcher.sh".source = opencodeLauncher;
     ".local/share/applications/OpenCode.desktop".source = ../../dotfiles/opencode/OpenCode.desktop;
   };
