@@ -30,6 +30,8 @@
     dates = "weekly";
   };
 
+  # Pour mettre a jour la version de secours (a faire apres une mise a jour réussie)
+  # sudo nixos-rebuild boot --flake /home/mfo/infra#ms-s1-max --profile-name rescue
   systemd.services.nixos-prune-generations = {
     description = "Keep only the last 5 NixOS system generations";
     serviceConfig.Type = "oneshot";
