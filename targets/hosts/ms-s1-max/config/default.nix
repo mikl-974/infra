@@ -31,11 +31,11 @@
   };
 
   systemd.services.nixos-prune-generations = {
-    description = "Keep only the last 3 NixOS system generations";
+    description = "Keep only the last 5 NixOS system generations";
     serviceConfig.Type = "oneshot";
     path = [ pkgs.nix ];
     script = ''
-      nix-env --profile /nix/var/nix/profiles/system --delete-generations +3
+      nix-env --profile /nix/var/nix/profiles/system --delete-generations +5
     '';
     startAt = "weekly";
   };
