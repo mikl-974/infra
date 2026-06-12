@@ -85,7 +85,7 @@ in
         # --- Optimisation matérielle Strix Halo UMA (128 Go) ---
         "-ngl" "999"               # Force l'iGPU Radeon 8060S à charger 100% du modèle MoE
         "-fa" "1"                  # Flash Attention indispensable pour économiser la bande passante
-          
+
         # --- Gestion des flux (Désengorgement de la VRAM / Prompt Processing) ---
         "--parallel" "1"           # Dédié à votre seule instance Codex locale
         "--batch-size" "1024"      # Réduit l'allocation maximale par passe d'ingestion (Évite les crashs iGPU)
@@ -106,9 +106,9 @@ in
         metrics = false;
         extraArgs = [
           # --- Échantillonnage Qwen3
-          "--temp" "1.0" 
-          "--top-p" "0.95" 
-          "--min-p" "0.01" 
+          "--temp" "1.0"
+          "--top-p" "0.95"
+          "--min-p" "0.01"
           "--top-k" "40"
           "--repeat-penalty" "1.0"   # VITAL pour éviter les répétitions infinies sur Qwen3
         ];
@@ -150,18 +150,19 @@ in
         fit = "off";
         metrics = false;
         extraArgs = [
-          "--temp" "1.0" 
-          "--top-p" "0.95" 
+          "--temp" "1.0"
+          "--top-p" "0.95"
           "--top-k" "64"
         ];
       };
 
-      gemma4-12b-qat = {
+      gemma4-12b-q8 = {
          enable = true;
          autoStart = true;
-         description = "Gemma 4 12B QAT via llama.cpp";
+         description = "Gemma 4 12B Q8 via llama.cpp";
          source = "hf";
-         model = "unsloth/gemma-4-12b-it-GGUF:UD-Q4_K_XL";
+         # URL corrigée (Retrait du doublon unsloth/)
+         model = "unsloth/gemma-4-12b-it-GGUF:gemma-4-12b-it-Q8_0.gguf";
          port = 8085;
          fit = "off";
          metrics = false;
@@ -172,12 +173,12 @@ in
            "--top-k" "64"
            "--repeat-penalty" "1.0"
 
-           # --- Activation Multi-Token Prediction (MTP) ---
-           # Gemma 4 intègre des drafters natifs. Ce flag double la vitesse sur votre Strix Halo
+           # --- Optimisation Multi-Token Prediction (MTP) Ajustée ---
            "--spec-type" "draft-mtp"
-           "--spec-draft-n-max" "3"
+           "--spec-draft-n-max" "2"  # RECOMMANDÉ: 2 est le meilleur compromis de vitesse sur Strix Halo
          ];
        };
+
      };
    };
 
