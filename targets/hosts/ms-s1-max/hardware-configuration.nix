@@ -16,9 +16,9 @@
   # Strix Halo needs large unified-memory limits for stable ROCm llama.cpp
   # workloads while still leaving a small reserve to the OS.
   boot.kernelParams = [
-     "iommu=pt"
-     "amdgpu.gttsize=92000"
-     "ttm.pages_limit=32505856"
+    "amd_iommu=off"               # Améliore grandement la stabilité et gagne ~10% de vitesse
+    "amdgpu.gttsize=126976"        # Fixe la mémoire unifiée max à 124 Go
+    "ttm.pages_limit=32505856"     # Obligatoire pour mapper >64 Go de RAM sur le GPU
   ];
 
    hardware.enableRedistributableFirmware = true;

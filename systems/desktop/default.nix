@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   sessionData = config.services.displayManager.sessionData;
 in
@@ -31,9 +36,16 @@ in
     # explicitly: tuigreet's upstream defaults look under /usr/share, which is
     # empty/non-existent on NixOS and can leave greetd restarting without a
     # visible greeter after nixpkgs updates.
-    command = ''
-      ${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --sessions ${sessionData.desktops}/share/wayland-sessions --xsessions ${sessionData.desktops}/share/xsessions --session-wrapper ${sessionData.wrapper} --cmd "${pkgs.uwsm}/bin/uwsm start -e -D Hyprland hyprland.desktop"
-    '';
+    command = lib.concatStringsSep " " [
+      "${pkgs.tuigreet}/bin/tuigreet"
+      "--time"
+      "--remember"
+      "--remember-user-session"
+      "--sessions ${sessionData.desktops}/share/wayland-sessions"
+      "--xsessions ${sessionData.desktops}/share/xsessions"
+      "--session-wrapper ${sessionData.wrapper}"
+      "--cmd \"${pkgs.uwsm}/bin/uwsm start -e -D Mango mango.desktop\""
+    ];
     user = "greeter";
   };
 }
