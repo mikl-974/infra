@@ -127,46 +127,19 @@ in
         ];
       };
 
-      qwen36-27b-q5 = {
-        enable = true;
-        autoStart = false;
-        description = "Qwen3.6 27B UD-Q5_K_XL via llama.cpp";
-        source = "hf";
-        model = "unsloth/Qwen3.6-27B-GGUF:UD-Q5_K_XL";
-        port = 8081;
-        fit = "off";
-        metrics = false;
-        extraArgs = [
-        ];
-      };
-
-      gemma4-31b-q5 = {
-        enable = true;
-        autoStart = false;
-        description = "Gemma 4 31B Q5_K_XL via llama.cpp";
-        source = "hf";
-        model = "unsloth/gemma-4-31B-it-GGUF:UD-Q5_K_XL";
-        port = 8083;
-        fit = "off";
-        metrics = false;
-        extraArgs = [
-          "--temp" "1.0"
-          "--top-p" "0.95"
-          "--top-k" "64"
-        ];
-      };
-
       gemma4-12b-q8 = {
          enable = true;
          autoStart = true;
          description = "Gemma 4 12B Q8 via llama.cpp";
          source = "hf";
-         # URL corrigée (Retrait du doublon unsloth/)
-         model = "unsloth/gemma-4-12b-it-GGUF:gemma-4-12b-it-Q8_0.gguf";
+         model = "unsloth/gemma-4-12b-it-GGUF";
          port = 8085;
          fit = "off";
          metrics = false;
          extraArgs = [
+           "--hf-file" "gemma-4-12b-it-Q8_0.gguf"
+           "--no-mmproj"
+
            # --- Hyperparamètres Officiels Google Gemma 4 ---
            "--temp" "1.0"
            "--top-p" "0.95"
@@ -174,8 +147,8 @@ in
            "--repeat-penalty" "1.0"
 
            # --- Optimisation Multi-Token Prediction (MTP) Ajustée ---
-           "--spec-type" "draft-mtp"
-           "--spec-draft-n-max" "2"  # RECOMMANDÉ: 2 est le meilleur compromis de vitesse sur Strix Halo
+           # "--spec-type" "draft-mtp"
+           # "--spec-draft-n-max" "2"  # RECOMMANDÉ: 2 est le meilleur compromis de vitesse sur Strix Halo
          ];
        };
 
