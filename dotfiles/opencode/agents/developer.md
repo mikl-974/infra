@@ -1,7 +1,7 @@
 ---
 description: "Développeur senior .NET/Clean Architecture/CQRS/Blazor. À utiliser pour implémenter des changements cohérents avec l'architecture existante."
 mode: all
-model: llama-qwen3-coder-next/qwen3-coder-next-q4
+model: llama-qwen3-coder-next/qwen3-coder-next-q5
 temperature: 0.15
 color: success
 permission:

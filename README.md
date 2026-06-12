@@ -30,7 +30,7 @@ Le point cle du recentrage :
 
 Exemple :
 
-- `targets/hosts/ms-s1-max/config/capabilities.nix` dit explicitement que la machine porte `ollama`, `llama-cpp`, `hf`, `PostgreSQL`, `pgweb`, `Steam`, `Lutris`, `Heroic`, `Proton`, `Wine`, `gamescope`, `gamemode`, `Podman Desktop`, `btop`, `opencode-desktop`, `Rider`, `WebStorm`, `VS Code`, `GitKraken` et `Flatpak`
+- `targets/hosts/ms-s1-max/config/capabilities.nix` dit explicitement que la machine porte `llama-cpp`, `hf`, `Codex`, `PostgreSQL`, `pgweb`, `Steam`, `Lutris`, `Heroic`, `Proton`, `Wine`, `gamescope`, `gamemode`, `Podman Desktop`, `btop`, `opencode-desktop`, `Hermes`, `Rider`, `WebStorm`, `VS Code`, `GitKraken` et `Flatpak`
 - `deployments/inventory.nix` ne modele pas cette IA locale comme une stack
 
 ## Structure
@@ -56,6 +56,7 @@ Exemple :
 - desktop Hyprland
 - user unique `mfo`
 - IA locale GPU AMD via ROCm, bundle gaming, et outils dev declares dans `targets/hosts/ms-s1-max/config/capabilities.nix`
+- agents desktop locaux `opencode-desktop` et `Hermes`
 - runtime ROCm installe sur le systeme pour les usages IA GPU
 - Home Manager dans `home/targets/ms-s1-max.nix`
 - secret host dans `secrets/hosts/ms-s1-max.yaml`

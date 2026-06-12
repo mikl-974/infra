@@ -7,33 +7,42 @@
 # - Hyprland desktop
 # - Noctalia shell
 # - explicit browser/session overrides kept local to this target
+{ inputs, ... }:
 {
-  mfo = { lib, pkgs, ... }: {
-    imports = [
-      ../users/mfo.nix
-      ../roles/desktop-hyprland.nix
-      ../roles/desktop-mango.nix
-      ../roles/noctalia.nix
-    ];
+  mfo = { lib, pkgs, ... }:
+    let
+      hermesPkg = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    in
+    {
+      imports = [
+        ../users/mfo.nix
+        ../roles/desktop-hyprland.nix
+        ../roles/desktop-mango.nix
+        ../roles/noctalia.nix
+      ];
 
-    services.swayosd.enable = true;
-    wayland.windowManager.hyprland.enable = true;
+      services.swayosd.enable = true;
+      wayland.windowManager.hyprland.enable = true;
 
-    home.packages = with pkgs; [
-      foot
-    ];
+      home.packages = with pkgs; [
+        foot
+        (pkgs.writeShellScriptBin "hermes-desktop" ''
+          exec ${hermesPkg}/bin/hermes desktop "$@"
+        '')
+      ];
 
-    home.file.".config/hypr/profile.conf".source =
-      lib.mkForce ../../dotfiles/hyprland/profiles/mfo.conf;
+      home.file.".config/hypr/profile.conf".source =
+        lib.mkForce ../../dotfiles/hyprland/profiles/mfo.conf;
+      home.file.".local/share/applications/Hermes.desktop".source =
+        ../../dotfiles/hermes/Hermes.desktop;
 
-    home.sessionVariables = {
-      BROWSER = "chromium-browser";
-      GTK_USE_PORTAL = "1";
-      # Empty on purpose: a non-empty value forces xdg-open down the
-      # Flatpak/OpenURI path, which currently yields the "No Apps available"
-      # chooser instead of using the working MIME associations.
-      NIXOS_XDG_OPEN_USE_PORTAL = "";
+      home.sessionVariables = {
+        BROWSER = "chromium-browser";
+        GTK_USE_PORTAL = "1";
+        # Empty on purpose: a non-empty value forces xdg-open down the
+        # Flatpak/OpenURI path, which currently yields the "No Apps available"
+        # chooser instead of using the working MIME associations.
+        NIXOS_XDG_OPEN_USE_PORTAL = "";
+      };
     };
-
-  };
 }

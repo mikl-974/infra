@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "slug": "qwen3-coder-next",
+      "display_name": "Qwen3 Coder Next (llama.cpp)",
+      "description": "Local llama.cpp model served by the NixOS AI host.",
+      "default_reasoning_level": "none",
+      "supported_reasoning_levels": [],
+      "shell_type": "shell_command",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 50,
+      "base_instructions": "You are Codex, a coding agent. Be concise, direct, and careful with tools.",
+      "model_messages": {},
+      "supports_reasoning_summaries": false,
+      "support_verbosity": false,
+      "web_search_tool_type": "text",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": false,
+      "context_window": 65536,
+      "max_context_window": 65536,
+      "effective_context_window_percent": 95,
+      "experimental_supported_tools": [],
+      "input_modalities": [
+        "text"
+      ],
+      "supports_search_tool": false,
+      "use_responses_lite": false
+    }
+  ]
+}

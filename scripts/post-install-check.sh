@@ -295,17 +295,16 @@ else
   warn "Profil desktop non détecté — checks audio/desktop ignorés"
 fi
 
-if [[ "$HOST_CONTEXT_AVAILABLE" == true ]] && grep -Rqs 'services\.ollama' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
+if [[ "$HOST_CONTEXT_AVAILABLE" == true ]] && grep -Rqs 'infra\.ai\.inference\.llamaCpp' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
   echo ""
   echo -e "${BLD}── IA locale${RST}"
   echo ""
-  check_service "ollama" "Ollama"
-  check_binary "ollama" "CLI Ollama"
+  check_binary "codex" "CLI Codex"
   check_binary "llama-cli" "CLI llama.cpp"
   check_binary "hf" "CLI Hugging Face"
 
-  if grep -Rqs 'llama-cpp-server' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
-    check_service "llama-cpp-server" "Serveur llama.cpp"
+  if grep -Rqs 'qwen3-coder-next-q5' "$REPO_ROOT/targets/hosts/$HOST_NAME"; then
+    check_service "llama-cpp-qwen3-coder-next-q5" "llama.cpp Qwen3 Coder Next"
   fi
 
   if [[ -d /var/lib/llama-cpp/models ]]; then

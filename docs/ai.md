@@ -17,9 +17,13 @@ Le point d'entree unique est :
 - repertoires persistants `/var/lib/llama-cpp/models` et `/var/lib/llama-cpp/cache/*`
 - paquets systeme `rocm-runtime`, `rocminfo`, `rocm-smi`, `amdsmi`
 - paquet `opencode-desktop`
+- paquet `hermes-agent`
+- paquet `codex`
+- lanceur desktop `hermes-desktop` qui ouvre `hermes desktop`
 - `services.flatpak.enable = true`
 - user `mfo` ajoute au groupe `render`
 - user systeme `llama-cpp` pour les services et caches persistants
+- profil Codex local `~/.codex/qwen3-coder.config.toml`
 - override ROCm Strix Halo `HSA_OVERRIDE_GFX_VERSION = "11.5.1"`
 - workaround MIOpen `MIOPEN_DEBUG_DISABLE_FIND_DB = "1"`
 
@@ -85,6 +89,7 @@ Le meme fichier declare aussi les outils de dev relies au poste principal :
 - `jetbrains.rider`
 - `jetbrains.webstorm`
 - `gitkraken`
+- `hermes`
 
 ## Ajouter un modele llama.cpp manuellement
 
@@ -133,32 +138,63 @@ Le repo ne garde plus un service systemd `llama-cpp-server` code en dur.
 
 Sur `ms-s1-max`, `targets/hosts/ms-s1-max/config/capabilities.nix` declare :
 
-- `llama-cpp-qwen36-27b-bf16.service`
-- `llama-cpp-gemma4.service`
+- `llama-cpp-qwen3-coder-next-q5.service`
+- `llama-cpp-qwen36-35b-a3b-q5.service`
+- `llama-cpp-qwen36-27b-q5.service`
+- `llama-cpp-gemma4-31b-q5.service`
 
 Le host fixe des defaults `llama.cpp` adaptes a Strix Halo :
 
-- `package = pkgs.llama-cpp-rocm`
-- `host = "127.0.0.1"`
+- `package = llamaRocmPkgs.llama-cpp-rocm`
+- `host = "0.0.0.0"`
+- `ctxSize = 65536`
 - `-fit off`
-- `--metrics`
-- `--no-mmap`
+- `openFirewall = true`
 - `-fa 1`
+- `-ngl 999`
+- `--parallel 1`
+- `--batch-size 1024`
+- `--ubatch-size 512`
 - `GGML_CUDA_ENABLE_UNIFIED_MEMORY = "1"`
-- pas d'ouverture firewall par defaut
 
 Modeles servis :
 
-- `qwen36-27b-bf16`
-  - source Hugging Face : `unsloth/Qwen3.6-27B-GGUF:BF16`
-  - bind `127.0.0.1:8080`
+- `qwen3-coder-next-q5`
+  - source Hugging Face : `unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL`
+  - bind `0.0.0.0:8082`
   - autostart active
-  - aligne sur la commande validee :
-    `llama-server -hf unsloth/Qwen3.6-27B-GGUF:BF16 --ctx-size 4096 -fit off --host 127.0.0.1 --port 8080`
-- `gemma4`
-  - source Hugging Face : `ggml-org/gemma-4-E2B-it-GGUF`
-  - bind `127.0.0.1:8081`
+- `qwen36-35b-a3b-q5`
+  - source Hugging Face : `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL`
+  - bind `0.0.0.0:8080`
+  - autostart desactive
+- `qwen36-27b-q5`
+  - source Hugging Face : `unsloth/Qwen3.6-27B-GGUF:UD-Q5_K_XL`
+  - bind `0.0.0.0:8081`
+  - autostart desactive
+- `gemma4-31b-q5`
+  - source Hugging Face : `unsloth/gemma-4-31B-it-GGUF:UD-Q5_K_XL`
+  - bind `0.0.0.0:8083`
   - autostart desactive, donc non accessible apres reboot tant qu'il n'est pas lance manuellement
+
+Codex utilise un profil dedie :
+
+- `~/.codex/qwen3-coder.config.toml`
+- catalogue local `~/.codex/model-catalogs/qwen3-coder-next.json`
+- provider `llamacpp-local`
+- base URL `http://127.0.0.1:8082/v1`
+- `web_search = "disabled"`
+- features `apps`, `plugins`, `multi_agent`, `computer_use`, browser et image desactivees
+- MCP `node_repl` desactive
+
+Le profil optionnel suffit pour `codex --profile qwen3-coder`. Pour que Codex
+App affiche le modele dans son selecteur, la configuration globale doit aussi
+pointer vers ce catalogue via `model_catalog_json`; le profil seul ne suffit pas.
+Le catalogue n'active pas `apply_patch_tool_type`, car cela force un tool
+`custom` incompatible avec `llama.cpp`.
+
+Ces desactivations sont necessaires avec `llama.cpp` : Codex envoie sinon des
+tools natifs `namespace`, `web_search` ou `image_generation`, alors que
+`llama.cpp` accepte uniquement des tools OpenAI `function`.
 
 Le module cree aussi les repertoires persistants :
 
@@ -178,12 +214,14 @@ Commandes utiles :
 
 ```bash
 systemctl list-unit-files 'llama-cpp-*'
-systemctl status llama-cpp-qwen36-27b-bf16
-journalctl -u llama-cpp-qwen36-27b-bf16 -f
-curl http://127.0.0.1:8080/health
-sudo systemctl start llama-cpp-gemma4
-systemctl status llama-cpp-gemma4
-curl http://127.0.0.1:8081/health
+systemctl status llama-cpp-qwen3-coder-next-q5
+journalctl -u llama-cpp-qwen3-coder-next-q5 -f
+curl http://127.0.0.1:8082/health
+codex debug models | grep qwen3-coder-next
+codex --profile qwen3-coder exec --ephemeral "Reply with exactly: ok"
+sudo systemctl start llama-cpp-qwen36-35b-a3b-q5
+sudo systemctl start llama-cpp-qwen36-27b-q5
+sudo systemctl start llama-cpp-gemma4-31b-q5
 ```
 
 ## AnythingLLM

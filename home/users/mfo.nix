@@ -52,6 +52,8 @@ in {
       source = ../../dotfiles/opencode/agents;
       force = true;
     };
+    ".codex/qwen3-coder.config.toml".source = ../../dotfiles/codex/qwen3-coder.config.toml;
+    ".codex/model-catalogs/qwen3-coder-next.json".source = ../../dotfiles/codex/model-catalogs/qwen3-coder-next.json;
     ".local/share/opencode/opencode-launcher.sh".source = opencodeLauncher;
     ".local/share/applications/OpenCode.desktop".source = ../../dotfiles/opencode/OpenCode.desktop;
   };

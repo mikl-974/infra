@@ -156,25 +156,32 @@ in
         ];
       };
 
-      gemma4-12b-q5 = {
-        enable = true;
-        autoStart = true;
-        description = "Gemma 4 12B Q5_K_XL via llama.cpp";
-        source = "hf";
-        model = "unsloth/gemma-4-12B-it-GGUF:UD-Q5_K_XL";
-        port = 8084;
-        fit = "off";
-        metrics = false;
-        extraArgs = [
-          "--temp" "1.0" 
-          "--top-p" "0.95" 
-          "--top-k" "64"
-        ];
-      };
-    };
-  };
+      gemma4-12b-qat = {
+         enable = true;
+         autoStart = true;
+         description = "Gemma 4 12B QAT via llama.cpp";
+         source = "hf";
+         model = "unsloth/gemma-4-12b-it-GGUF:UD-Q4_K_XL";
+         port = 8085;
+         fit = "off";
+         metrics = false;
+         extraArgs = [
+           # --- Hyperparamètres Officiels Google Gemma 4 ---
+           "--temp" "1.0"
+           "--top-p" "0.95"
+           "--top-k" "64"
+           "--repeat-penalty" "1.0"
 
-  workstation.dev.postgresql.enable = true;
-  workstation.dev.pgweb.enable = true;
-  workstation.containers.podman.enable = true;
+           # --- Activation Multi-Token Prediction (MTP) ---
+           # Gemma 4 intègre des drafters natifs. Ce flag double la vitesse sur votre Strix Halo
+           "--spec-type" "draft-mtp"
+           "--spec-draft-n-max" "3"
+         ];
+       };
+     };
+   };
+
+   workstation.dev.postgresql.enable = true;
+   workstation.dev.pgweb.enable = true;
+   workstation.containers.podman.enable = true;
 }

@@ -45,6 +45,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -82,9 +87,13 @@
       mkHomeUsers = vars:
         let
           homeTargetPath = ./. + "/home/targets/${vars.hostname}.nix";
+          homeTarget = import homeTargetPath;
         in
         if builtins.pathExists homeTargetPath then
-          import homeTargetPath
+          if builtins.isFunction homeTarget then
+            homeTarget { inherit inputs; }
+          else
+            homeTarget
         else
           throw "missing Home Manager composition for ${vars.hostname}: expected home/targets/${vars.hostname}.nix";
 

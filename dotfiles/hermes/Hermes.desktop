@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Development;Utility;
+Comment=The open source AI agent
+Exec=hermes-desktop
+Icon=hermes
+Name=Hermes
+StartupWMClass=Hermes
+Terminal=false
+Type=Application
