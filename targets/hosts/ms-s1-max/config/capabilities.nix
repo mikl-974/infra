@@ -155,6 +155,22 @@ in
           "--top-k" "64"
         ];
       };
+
+      gemma4-12b-q5 = {
+        enable = true;
+        autoStart = true;
+        description = "Gemma 4 12B Q5_K_XL via llama.cpp";
+        source = "hf";
+        model = "unsloth/gemma-4-12B-it-GGUF:UD-Q5_K_XL";
+        port = 8084;
+        fit = "off";
+        metrics = false;
+        extraArgs = [
+          "--temp" "1.0" 
+          "--top-p" "0.95" 
+          "--top-k" "64"
+        ];
+      };
     };
   };
 

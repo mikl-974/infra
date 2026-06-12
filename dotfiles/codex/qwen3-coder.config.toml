@@ -1,0 +1,25 @@
+model_provider = "llamacpp-local"
+model = "qwen3-coder-next"
+model_context_window = 65536
+model_catalog_json = "/home/mfo/.codex/model-catalogs/qwen3-coder-next.json"
+web_search = "disabled"
+
+[model_providers.llamacpp-local]
+name = "llama.cpp Qwen3 Coder Next"
+base_url = "http://127.0.0.1:8082/v1"
+
+[features]
+apps = false
+browser_use = false
+browser_use_external = false
+computer_use = false
+image_generation = false
+in_app_browser = false
+multi_agent = false
+plugins = false
+tool_suggest = false
+
+[mcp_servers.node_repl]
+enabled = false
+command = "/run/current-system/sw/bin/false"
+args = []
