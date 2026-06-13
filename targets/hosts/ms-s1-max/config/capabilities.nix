@@ -69,10 +69,16 @@ in
     enable = true;
 
     defaults = {
-      package = llamaRocmPkgs.llama-cpp-rocm;
+      package = (llamaRocmPkgs.llama-cpp.override {
+        rocmSupport = true;
+        rocmGpuTargets = [ "gfx1151" ];
+      }).overrideAttrs (_old: {
+        version = "9999";
+        src = inputs.llama-cpp-src;
+        npmDepsHash = "sha256-TU4Gv+dd48WDpswhfVtm79IVIOwoCXz1fZ/DI/z40Wg=";
+      });
       host = "0.0.0.0";            # Permet les connexions distantes de votre Mac
       fit = "off";
-      ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
       metrics = true;
       enableUnifiedMemory = true;  # Force la gestion UMA (à passer à true pour l'APU AMD)
       openFirewall = true;        # Ouvre automatiquement les ports NixOS (ex: 8082)
@@ -87,7 +93,7 @@ in
         "-fa" "1"                  # Flash Attention indispensable pour économiser la bande passante
 
         # --- Gestion des flux (Désengorgement de la VRAM / Prompt Processing) ---
-        "--parallel" "1"           # Dédié à votre seule instance Codex locale
+        "--parallel" "4"           # Dédié à votre seule instance Codex locale
         "--batch-size" "1024"      # Réduit l'allocation maximale par passe d'ingestion (Évite les crashs iGPU)
         "--ubatch-size" "512"      # Micro-batching fluide pour la mémoire unifiée
       ];
@@ -102,8 +108,7 @@ in
         source = "hf";
         model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL";
         port = 8082;
-        fit = "off";
-        metrics = false;
+        ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
         extraArgs = [
           # --- Échantillonnage Qwen3
           "--temp" "1.0"
@@ -116,13 +121,12 @@ in
 
       qwen36-35b-a3b-q5 = {
         enable = true;
-        autoStart = false;
+        autoStart = true;
         description = "Qwen3.6 35B A3B UD-Q5_K_XL via llama.cpp";
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL";
         port = 8080;
-        fit = "off";
-        metrics = false;
+        ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
         extraArgs = [
         ];
       };
@@ -130,15 +134,18 @@ in
       gemma4-12b-q8 = {
          enable = true;
          autoStart = true;
-         description = "Gemma 4 12B Q8 via llama.cpp";
+         description = "Gemma 4 12B UD-Q8_K_XL MTP via llama.cpp";
          source = "hf";
-         model = "unsloth/gemma-4-12b-it-GGUF";
+         model = "unsloth/gemma-4-12b-it-GGUF:UD-Q8_K_XL";
          port = 8085;
-         fit = "off";
-         metrics = false;
+         ctxSize = 65536; 
          extraArgs = [
-           "--hf-file" "gemma-4-12b-it-Q8_0.gguf"
+           "--parallel" "1"
            "--no-mmproj"
+           "--spec-type" "draft-mtp"
+           "--spec-draft-n-max" "2"
+           "--reasoning" "on"
+           "--alias" "unsloth/gemma-4-12b-it-GGUF"
 
            # --- Hyperparamètres Officiels Google Gemma 4 ---
            "--temp" "1.0"
@@ -146,9 +153,6 @@ in
            "--top-k" "64"
            "--repeat-penalty" "1.0"
 
-           # --- Optimisation Multi-Token Prediction (MTP) Ajustée ---
-           # "--spec-type" "draft-mtp"
-           # "--spec-draft-n-max" "2"  # RECOMMANDÉ: 2 est le meilleur compromis de vitesse sur Strix Halo
          ];
        };
 

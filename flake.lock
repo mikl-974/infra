@@ -176,6 +176,23 @@
         "type": "github"
       }
     },
+    "llama-cpp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781327392,
+        "narHash": "sha256-3kK2wYEP0uP4/FpM2ByGtSp9DhL6ouSxLr97nL4N0rs=",
+        "owner": "ggml-org",
+        "repo": "llama.cpp",
+        "rev": "d8a24ccee207a1ff24c513fe1c7d3222b3ccd837",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ggml-org",
+        "ref": "master",
+        "repo": "llama.cpp",
+        "type": "github"
+      }
+    },
     "mango": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -290,17 +307,17 @@
     },
     "nixpkgs-llama": {
       "locked": {
-        "lastModified": 1777268161,
-        "narHash": "sha256-bxrdOn8SCOv8tN4JbTF/TXq7kjo9ag4M+C8yzzIRYbE=",
+        "lastModified": 1781074563,
+        "narHash": "sha256-md8WlXOlfnIeHeOScMTTHFyf2d6iaTwPl2apR5EQ3P4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1c3fe55ad329cbcb28471bb30f05c9827f724c76",
+        "rev": "9ae611a455b90cf061d8f332b977e387bda8e1ca",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
-        "rev": "1c3fe55ad329cbcb28471bb30f05c9827f724c76",
         "type": "github"
       }
     },
@@ -463,6 +480,7 @@
         "disko": "disko",
         "hermes-agent": "hermes-agent",
         "home-manager": "home-manager",
+        "llama-cpp-src": "llama-cpp-src",
         "mango": "mango",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
