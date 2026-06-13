@@ -115,7 +115,27 @@ in
           "--top-p" "0.95"
           "--min-p" "0.01"
           "--top-k" "40"
+          "--alias" "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL"
           "--repeat-penalty" "1.0"   # VITAL pour éviter les répétitions infinies sur Qwen3
+        ];
+      };
+
+      qwen35-4b-compression = {
+        enable = true;
+        autoStart = true;
+        description = "Qwen3.5 4B UD-Q4_K_XL compression via llama.cpp";
+        source = "hf";
+        model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
+        port = 8081;
+        ctxSize = 65536;
+        extraArgs = [
+          "--parallel" "1"
+          "--temp" "0.7"
+          "--top-p" "0.8"
+          "--top-k" "20"
+          "--min-p" "0.00"
+          "--chat-template-kwargs" ''{"enable_thinking":false}''
+          "--alias" "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL"
         ];
       };
 
@@ -128,6 +148,7 @@ in
         port = 8080;
         ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
         extraArgs = [
+          "--parallel" "1"
           "--mmproj-url" "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/mmproj-F16.gguf"
           "--spec-type" "draft-mtp"
           "--spec-draft-n-max" "2"
