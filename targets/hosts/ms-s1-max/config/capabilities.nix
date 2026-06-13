@@ -101,7 +101,7 @@ in
 
     models = {
 
-      qwen3-coder-next-q5 = {
+      qwen3-coder-next = {
         enable = true;
         autoStart = true;
         description = "Qwen3 Coder Next Q5 via llama.cpp";
@@ -119,19 +119,27 @@ in
         ];
       };
 
-      qwen36-35b-a3b-q5 = {
+      qwen36-35b-a3b = {
         enable = true;
         autoStart = true;
-        description = "Qwen3.6 35B A3B UD-Q5_K_XL via llama.cpp";
+        description = "Qwen3.6 35B A3B UD-Q5_K_XL MTP via llama.cpp";
         source = "hf";
-        model = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL";
+        model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q5_K_XL";
         port = 8080;
         ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
         extraArgs = [
+          "--mmproj-url" "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/mmproj-F16.gguf"
+          "--spec-type" "draft-mtp"
+          "--spec-draft-n-max" "2"
+          "--temp" "1.0"
+          "--top-p" "0.95"
+          "--top-k" "20"
+          "--min-p" "0.00"
+          "--alias" "unsloth/Qwen3.6-35B-A3B-MTP-GGUF"
         ];
       };
 
-      gemma4-12b-q8 = {
+      gemma4-12b = {
          enable = true;
          autoStart = true;
          description = "Gemma 4 12B UD-Q8_K_XL MTP via llama.cpp";

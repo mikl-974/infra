@@ -159,19 +159,15 @@ Le host fixe des defaults `llama.cpp` adaptes a Strix Halo :
 
 Modeles servis :
 
-- `qwen3-coder-next-q5`
+- `qwen3-coder-next`
   - source Hugging Face : `unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL`
   - bind `0.0.0.0:8082`
   - autostart active
-- `qwen36-35b-a3b-q5`
+- `qwen36-35b-a3b`
   - source Hugging Face : `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q5_K_XL`
   - bind `0.0.0.0:8080`
   - autostart desactive
-- `qwen36-27b-q5`
-  - source Hugging Face : `unsloth/Qwen3.6-27B-GGUF:UD-Q5_K_XL`
-  - bind `0.0.0.0:8081`
-  - autostart desactive
-- `gemma4-31b-q5`
+- `gemma4-12b`
   - source Hugging Face : `unsloth/gemma-4-31B-it-GGUF:UD-Q5_K_XL`
   - bind `0.0.0.0:8083`
   - autostart desactive, donc non accessible apres reboot tant qu'il n'est pas lance manuellement
