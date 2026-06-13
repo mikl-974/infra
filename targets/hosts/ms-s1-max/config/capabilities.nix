@@ -93,7 +93,7 @@ in
         "-fa" "1"                  # Flash Attention indispensable pour économiser la bande passante
 
         # --- Gestion des flux (Désengorgement de la VRAM / Prompt Processing) ---
-        "--parallel" "4"           # Dédié à votre seule instance Codex locale
+        "--parallel" "1"           # Dédié à votre seule instance Codex locale
         "--batch-size" "1024"      # Réduit l'allocation maximale par passe d'ingestion (Évite les crashs iGPU)
         "--ubatch-size" "512"      # Micro-batching fluide pour la mémoire unifiée
       ];
@@ -167,7 +167,7 @@ in
          source = "hf";
          model = "unsloth/gemma-4-12b-it-GGUF:UD-Q8_K_XL";
          port = 8085;
-         ctxSize = 65536; 
+         ctxSize = 65536;
          extraArgs = [
            "--parallel" "1"
            "--no-mmproj"

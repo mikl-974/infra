@@ -5,6 +5,7 @@
     ../../../../systems/users/root.nix
     ./user.nix
     ./capabilities.nix
+    ./hermes-agent.nix
   ];
 
   infra.security.sops = {

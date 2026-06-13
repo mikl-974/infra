@@ -7,12 +7,9 @@
 # - Hyprland desktop
 # - Noctalia shell
 # - explicit browser/session overrides kept local to this target
-{ inputs, ... }:
+{ ... }:
 {
   mfo = { lib, pkgs, ... }:
-    let
-      hermesPkg = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    in
     {
       imports = [
         ../users/mfo.nix
@@ -26,15 +23,10 @@
 
       home.packages = with pkgs; [
         foot
-        (pkgs.writeShellScriptBin "hermes-desktop" ''
-          exec ${hermesPkg}/bin/hermes desktop "$@"
-        '')
       ];
 
       home.file.".config/hypr/profile.conf".source =
         lib.mkForce ../../dotfiles/hyprland/profiles/mfo.conf;
-      home.file.".local/share/applications/Hermes.desktop".source =
-        ../../dotfiles/hermes/Hermes.desktop;
 
       home.sessionVariables = {
         BROWSER = "chromium-browser";
