@@ -7,13 +7,14 @@ let
   defaultBinary = "/home/${defaultUser}/.local/bin/hermes";
   homeDirectory = dirOf cfg.home;
   binaryDirectory = dirOf cfg.binary;
+  binaryRoot = dirOf binaryDirectory;
   workspacesRoot =
     if cfg.workspaces.root == null
     then "${cfg.home}/kanban/workspaces"
     else cfg.workspaces.root;
   basePath = [
-    binaryDirectory
     "/run/current-system/sw/bin"
+    binaryDirectory
     "/nix/var/nix/profiles/default/bin"
     "/usr/local/bin"
     "/usr/bin"
@@ -28,7 +29,55 @@ let
   } // lib.optionalAttrs cfg.workspaces.enable {
     HERMES_KANBAN_WORKSPACES_ROOT = workspacesRoot;
   };
+  hermesDashboardSitecustomize = pkgs.writeTextDir "sitecustomize.py" ''
+    import os
+    import sys
+
+    orig_argv = getattr(sys, "orig_argv", [])
+    gateway_unit = os.environ.get("HERMES_NIX_GATEWAY_UNIT")
+
+    if (
+        gateway_unit
+        and len(orig_argv) >= 5
+        and orig_argv[1:4] == ["-m", "hermes_cli.main", "gateway"]
+        and orig_argv[4] in {"start", "stop", "restart", "status"}
+    ):
+        action = orig_argv[4]
+        extra_args = orig_argv[5:]
+        os.execv(
+            "${pkgs.systemd}/bin/systemctl",
+            ["systemctl", action, gateway_unit, *extra_args],
+        )
+  '';
   hermesCli = pkgs.writeShellScriptBin "hermes" ''
+    if [ "$#" -ge 2 ] && [ "$1" = "gateway" ]; then
+      case "$2" in
+        start)
+          shift 2
+          exec ${pkgs.systemd}/bin/systemctl start hermes-gateway.service "$@"
+          ;;
+        stop)
+          shift 2
+          exec ${pkgs.systemd}/bin/systemctl stop hermes-gateway.service "$@"
+          ;;
+        restart)
+          shift 2
+          exec ${pkgs.systemd}/bin/systemctl restart hermes-gateway.service "$@"
+          ;;
+        status)
+          shift 2
+          exec ${pkgs.systemd}/bin/systemctl status hermes-gateway.service "$@"
+          ;;
+      esac
+    fi
+    if [ "$#" -ge 1 ] && { [ "$1" = "dashboard" ] || [ "$1" = "desktop" ]; }; then
+      export HERMES_NIX_GATEWAY_UNIT=hermes-gateway.service
+      if [ -n "${"$"}PYTHONPATH" ]; then
+        export PYTHONPATH=${lib.escapeShellArg hermesDashboardSitecustomize}:"${"$"}PYTHONPATH"
+      else
+        export PYTHONPATH=${lib.escapeShellArg hermesDashboardSitecustomize}
+      fi
+    fi
     exec ${lib.escapeShellArg cfg.binary} "$@"
   '';
   hermesDesktopScript = pkgs.writeShellScriptBin cfg.desktop.commandName ''
@@ -38,7 +87,10 @@ let
     ${lib.optionalString cfg.workspaces.enable ''
       export HERMES_KANBAN_WORKSPACES_ROOT=${lib.escapeShellArg workspacesRoot}
     ''}
-    exec ${lib.escapeShellArg cfg.binary} desktop "$@"
+    if [ -d ${lib.escapeShellArg "${binaryRoot}/share/hermes-agent/web_dist"} ] && [ ! -d ${lib.escapeShellArg "${binaryRoot}/apps/desktop"} ]; then
+      exec ${hermesCli}/bin/hermes dashboard "$@"
+    fi
+    exec ${hermesCli}/bin/hermes desktop "$@"
   '';
   hermesDesktopItem = pkgs.makeDesktopItem {
     name = "hermes";
@@ -234,6 +286,7 @@ in
       preStart = ''
         ${pkgs.coreutils}/bin/install -d -m 0700 "$HERMES_HOME"
         ${lib.optionalString cfg.workspaces.enable ''
+          ${pkgs.coreutils}/bin/install -d -m 0700 "$HERMES_HOME/kanban"
           ${pkgs.coreutils}/bin/install -d -m 0700 "$HERMES_KANBAN_WORKSPACES_ROOT"
         ''}
         if [ ! -x "${cfg.binary}" ]; then
@@ -246,7 +299,7 @@ in
         Type = "simple";
         User = cfg.user;
         WorkingDirectory = homeDirectory;
-        ExecStart = "${cfg.binary} gateway start";
+        ExecStart = "${cfg.binary} gateway run --replace";
         Restart = "on-failure";
         RestartSec = 5;
         StandardOutput = "journal";
@@ -262,6 +315,10 @@ in
     system.activationScripts.hermes-agent-config = lib.mkIf (managedConfigScript != "") {
       text = ''
         ${pkgs.coreutils}/bin/install -d -m 0700 -o ${lib.escapeShellArg cfg.user} -g users ${lib.escapeShellArg cfg.home}
+        ${lib.optionalString cfg.workspaces.enable ''
+          ${pkgs.coreutils}/bin/install -d -m 0700 -o ${lib.escapeShellArg cfg.user} -g users ${lib.escapeShellArg "${cfg.home}/kanban"}
+          ${pkgs.coreutils}/bin/install -d -m 0700 -o ${lib.escapeShellArg cfg.user} -g users ${lib.escapeShellArg workspacesRoot}
+        ''}
         ${managedConfigScript}
       '';
     };

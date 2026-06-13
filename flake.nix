@@ -75,6 +75,7 @@
       # Shared building blocks used by all infra NixOS targets.
       sharedModules = [
         ./systems/networking/tailscale.nix
+        ./systems/networking/nordvpn.nix
         home-manager.nixosModules.home-manager
         sops-nix.nixosModules.sops
         mango.nixosModules.mango

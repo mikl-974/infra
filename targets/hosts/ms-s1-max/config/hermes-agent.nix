@@ -1,28 +1,44 @@
 { inputs, pkgs, ... }:
 let
-  hermesPackage = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # La variante `.default` n'embarque pas le groupe de dépendances `matrix`
+  # (mautrix[encryption], asyncpg, aiosqlite, aiohttp-socks, Markdown). Sans lui
+  # l'adaptateur Matrix échoue silencieusement au démarrage du gateway et le
+  # dashboard reste bloqué sur « gateway has not reported a connection yet ».
+  hermesPackage = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+    extraDependencyGroups = [ "matrix" ];
+  };
   hermesHome = "/home/mfo/.hermes";
   terminalCwd = "/home/mfo/infra";
 
+  # Endpoints llama.cpp locaux : aucune authentification réelle. Hermes exige
+  # néanmoins qu'une clé soit présente pour considérer le provider « configuré »
+  # (sinon : « No API key configured for provider 'custom' » et resume échoue
+  # avec « No LLM provider configured »). « no-key-required » est le placeholder
+  # qu'Hermes utilise lui-même pour les endpoints locaux — ce n'est pas un secret.
+  localApiKey = "no-key-required";
   customProviders = [
     {
       name = "homelab/qwen3-coder";
       base_url = "http://127.0.0.1:8082/v1";
+      api_key = localApiKey;
       models.qwen3-coder.context_length = 262144;
     }
     {
       name = "homelab/qwen36";
       base_url = "http://127.0.0.1:8080/v1";
+      api_key = localApiKey;
       models."unsloth/Qwen3.6-35B-A3B-MTP-GGUF".context_length = 65536;
     }
     {
       name = "homelab/qwen35";
       base_url = "http://127.0.0.1:8081/v1";
+      api_key = localApiKey;
       models."unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL".context_length = 65536;
     }
     {
       name = "homelab/gemma4";
       base_url = "http://127.0.0.1:8085/v1";
+      api_key = localApiKey;
       models."unsloth/gemma-4-12b-it-GGUF".context_length = 262144;
     }
   ];

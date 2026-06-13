@@ -8,6 +8,10 @@
     useRoutingFeatures = "client";
   };
 
+  # NordVPN (wgnord / NordLynx). Manual connect:
+  #   sudo wgnord login -t <token>   &&   sudo wgnord c <pays>
+  infra.networking.nordvpn.enable = true;
+
   # DNS fallback — the DHCP-provided DNS (172.16.185.2) may not resolve
   # public hostnames. 1.1.1.1 and 8.8.8.8 are used as reliable fallbacks.
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
