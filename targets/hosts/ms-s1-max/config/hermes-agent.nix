@@ -1,5 +1,7 @@
 { inputs, pkgs, ... }:
 let
+  # Hermes server module for ms-s1-max only. Darwin clients must use the
+  # SSH-based client module instead of importing this backend configuration.
   # La variante `.default` n'embarque pas le groupe de dépendances `matrix`
   # (mautrix[encryption], asyncpg, aiosqlite, aiohttp-socks, Markdown). Sans lui
   # l'adaptateur Matrix échoue silencieusement au démarrage du gateway et le
@@ -9,6 +11,10 @@ let
   };
   hermesHome = "/home/mfo/.hermes";
   terminalCwd = "/home/mfo/infra";
+  macMiniOllamaBaseUrl = "http://mac-mini:11434/v1";
+  # Must match `ollama list` on mac-mini. Keep this easy to adjust because
+  # Ollama model tags are local state, not Nix-managed artifacts.
+  macMiniGemmaModel = "gemma4";
 
   # Endpoints llama.cpp locaux : aucune authentification réelle. Hermes exige
   # néanmoins qu'une clé soit présente pour considérer le provider « configuré »
@@ -40,6 +46,12 @@ let
       base_url = "http://127.0.0.1:8085/v1";
       api_key = localApiKey;
       models."unsloth/gemma-4-12b-it-GGUF".context_length = 262144;
+    }
+    {
+      name = "mac-mini/ollama-gemma4";
+      base_url = macMiniOllamaBaseUrl;
+      api_key = localApiKey;
+      models.${macMiniGemmaModel}.context_length = 32768;
     }
   ];
 
@@ -163,6 +175,12 @@ let
     reasoning = "high";
   };
 
+  macMiniGemmaProfile = mkProfileSettings {
+    model = macMiniGemmaModel;
+    provider = "custom:mac-mini/ollama-gemma4";
+    reasoning = "high";
+  };
+
   codexProfile = reasoning: mkProfileSettings {
     model = "gpt-5.5";
     provider = "openai-codex";
@@ -184,6 +202,11 @@ in
     workspaces.enable = true;
     desktop.enable = true;
     kanban.dispatchInGateway = true;
+    extraEnvironment = {
+      # If the optional OpenAI-compatible API server is enabled later through
+      # API_SERVER_KEY/API_SERVER_ENABLED, keep it bound to loopback.
+      API_SERVER_HOST = "127.0.0.1";
+    };
 
     settings = {
       model = {
@@ -515,6 +538,22 @@ in
           - Ajoute des garde-fous contre les ambiguïtés, hallucinations et sorties non vérifiables.
           - Fournis si utile des variantes : concise, stricte, créative, agentique.
           - Inclue des exemples seulement quand ils améliorent réellement le comportement attendu.
+        '';
+      };
+
+      gemma4-mac-mini = {
+        description = "Agent Hermes utilisant le Gemma4 Ollama du Mac mini via Tailscale/MagicDNS.";
+        settings = macMiniGemmaProfile;
+        soul = ''
+          # Gemma4 Mac mini Agent
+
+          Tu es un agent Hermes exécuté sur le backend `ms-s1-max`, mais tes
+          appels modèle passent par Ollama sur `mac-mini` via Tailscale.
+
+          Règles de travail :
+          - Réponds en français par défaut.
+          - Signale clairement si le modèle distant semble indisponible ou si le tag Ollama ne correspond pas.
+          - Garde les réponses concises et vérifiables.
         '';
       };
     };
