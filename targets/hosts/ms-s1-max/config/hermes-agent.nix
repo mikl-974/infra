@@ -27,19 +27,15 @@ let
       name = "homelab/qwen3-coder";
       base_url = "http://127.0.0.1:8082/v1";
       api_key = localApiKey;
-      models.qwen3-coder.context_length = 262144;
+      # V1 : tâches de code bornées, contexte aligné sur le service llama.cpp (32k).
+      models.qwen3-coder.context_length = 32768;
     }
     {
       name = "homelab/qwen36";
-      base_url = "http://127.0.0.1:8080/v1";
-      api_key = localApiKey;
-      models."unsloth/Qwen3.6-35B-A3B-MTP-GGUF".context_length = 65536;
-    }
-    {
-      name = "homelab/qwen35";
+      # V1 : Qwen3.6-35B déplacé sur 8081 ; sert planner/reviewer ET compression.
       base_url = "http://127.0.0.1:8081/v1";
       api_key = localApiKey;
-      models."unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL".context_length = 65536;
+      models."unsloth/Qwen3.6-35B-A3B-MTP-GGUF".context_length = 65536;
     }
     {
       name = "homelab/gemma4";
@@ -142,9 +138,10 @@ let
 
       auxiliary = {
         compression = {
-          provider = "custom:homelab/qwen35";
-          model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
-          timeout = 120;
+          # V1 : compression / long-contexte Hermes confiée au Qwen3.6-35B (8081).
+          provider = "custom:homelab/qwen36";
+          model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF";
+          timeout = 180;
           context_length = 65536;
           extra_body = { };
         };
@@ -250,9 +247,10 @@ in
       };
 
       auxiliary.compression = {
-        provider = "custom:homelab/qwen35";
-        model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
-        timeout = 120;
+        # V1 : compression / long-contexte Hermes confiée au Qwen3.6-35B (8081).
+        provider = "custom:homelab/qwen36";
+        model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF";
+        timeout = 180;
         context_length = 65536;
         extra_body = { };
       };
