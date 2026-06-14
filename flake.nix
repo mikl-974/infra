@@ -85,6 +85,7 @@
       # Shared building blocks used by Darwin targets.
       sharedDarwinModules = [
         nix-homebrew.darwinModules.nix-homebrew
+        home-manager.darwinModules.home-manager
       ];
 
       # Each NixOS host must now expose its explicit Home Manager composition
@@ -138,7 +139,18 @@
             flakeSelf = self;
             flakeInputs = inputs;
           };
-          modules = sharedDarwinModules ++ modules;
+          modules = sharedDarwinModules ++ [
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.extraSpecialArgs = {
+                hostVars = vars;
+                targetName = vars.hostname;
+                inherit inputs;
+              };
+              home-manager.users = mkHomeUsers vars;
+            }
+          ] ++ modules;
         };
 
       # Build a minimal disko configuration for the CLI without evaluating the
