@@ -127,6 +127,12 @@ permettre des tests de quantizations ou de variantes sans rebuild systeme.
 
 ## Services `llama.cpp`
 
+> ⚠️ Le layout V1 à jour (ports, contextes, mlock, router, wrappers Codex) fait
+> autorité dans **`docs/hermes-local-ai-v1.md`**. Les ports/noms ci-dessous
+> peuvent être historiques ; en cas de doute, vérifier
+> `targets/hosts/ms-s1-max/config/capabilities.nix`. Layout actuel : Qwen3.6-35B
+> sur 8081, Qwen3-Coder-Next (ctx 32k) sur 8082, Gemma4-12B sur 8085.
+
 Le repo ne garde plus un service systemd `llama-cpp-server` code en dur.
 `systems/apps/llama-cpp.nix` expose maintenant un module declaratif
 `infra.ai.inference.llamaCpp` qui :

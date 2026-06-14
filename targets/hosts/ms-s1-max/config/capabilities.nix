@@ -104,11 +104,12 @@ in
       qwen3-coder-next = {
         enable = true;
         autoStart = true;
-        description = "Qwen3 Coder Next Q5 via llama.cpp";
+        mlock = true;               # Garde les poids résidents en RAM (réduit cold start / reload GGUF)
+        description = "Qwen3 Coder Next Q5 via llama.cpp (developer local / codex-oss)";
         source = "hf";
         model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL";
         port = 8082;
-        ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
+        ctxSize = 32768;            # V1 : tâches bornées, une seule grosse session concurrente
         extraArgs = [
           # --- Échantillonnage Qwen3
           "--temp" "1.0"
@@ -120,33 +121,19 @@ in
         ];
       };
 
-      qwen35-4b-compression = {
-        enable = true;
-        autoStart = true;
-        description = "Qwen3.5 4B UD-Q4_K_XL compression via llama.cpp";
-        source = "hf";
-        model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
-        port = 8081;
-        ctxSize = 65536;
-        extraArgs = [
-          "--parallel" "1"
-          "--temp" "0.7"
-          "--top-p" "0.8"
-          "--top-k" "20"
-          "--min-p" "0.00"
-          "--chat-template-kwargs" ''{"enable_thinking":false}''
-          "--alias" "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL"
-        ];
-      };
+      # NOTE V1 : le petit Qwen3.5-4B de compression a été retiré. La
+      # compression / long-contexte Hermes est désormais confiée au Qwen3.6-35B
+      # ci-dessous (port 8081), conformément à la décision V1.
 
       qwen36-35b-a3b = {
         enable = true;
         autoStart = true;
-        description = "Qwen3.6 35B A3B UD-Q5_K_XL MTP via llama.cpp";
+        mlock = true;               # Modèle chaud : planner/reviewer/compression Hermes
+        description = "Qwen3.6 35B A3B UD-Q5_K_XL MTP via llama.cpp (planner/reviewer/compression Hermes)";
         source = "hf";
         model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q5_K_XL";
-        port = 8080;
-        ctxSize = 65536;            # Contexte unifié à 64k pour Qwen3
+        port = 8081;                # V1 : remplace l'ancien 8080, libéré par le retrait du 4B
+        ctxSize = 65536;            # Contexte long pour compression / résumé Hermes
         extraArgs = [
           "--parallel" "1"
           "--mmproj-url" "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF/resolve/main/mmproj-F16.gguf"
@@ -186,6 +173,43 @@ in
        };
 
      };
+
+    # Router multi-modèles expérimental (port 8090). DÉSACTIVÉ par défaut : il ne
+    # remplace pas les services séparés 8081/8082 et sert à comparer router vs
+    # instances séparées. AVANT d'activer : vérifier les flags réels du router
+    # avec `llama-server --help` sur l'hôte, puis renseigner `extraArgs` (ex. le
+    # flag qui charge /var/lib/llama-cpp/router/models.ini). Le preset est généré
+    # dès que `enable = true`.
+    router = {
+      enable = false;
+      autoStart = false;
+      port = 8090;
+      modelsMax = 1;
+      parallel = 1;
+      mlock = true;
+      models = [
+        {
+          alias = "qwen-3.6-35b";
+          model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q5_K_XL";
+          ctxSize = 65536;
+          extraLines = [ "n-gpu-layers = 999" "mlock = true" ];
+        }
+        {
+          alias = "qwen3-coder-next";
+          model = "unsloth/Qwen3-Coder-Next-GGUF:UD-Q5_K_XL";
+          ctxSize = 32768;
+          extraLines = [ "n-gpu-layers = 999" "mlock = true" ];
+        }
+      ];
+      # extraArgs = [ "--models" "/var/lib/llama-cpp/router/models.ini" ];  # VÉRIFIER le flag réel
+      extraArgs = [ ];
+    };
+   };
+
+   # Optimisation mémoire pour garder les modèles GGUF chauds sans swapper
+   # agressivement les poids résidents (cf. --mlock sur les services llama.cpp).
+   boot.kernel.sysctl = {
+     "vm.swappiness" = 10;
    };
 
    workstation.dev.postgresql.enable = true;
