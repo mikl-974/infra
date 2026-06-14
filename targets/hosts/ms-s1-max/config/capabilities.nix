@@ -27,6 +27,8 @@ in
     ../../../../systems/bundles/gaming.nix
     ../../../../systems/bundles/rocm-runtime.nix
     ../../../../systems/apps/virt-manager.nix
+    ../../../../systems/apps/element-desktop.nix
+    ../../../../systems/apps/zed.nix
   ];
 
   # AnythingLLM is part of the intended workstation setup, but remains

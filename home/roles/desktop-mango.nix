@@ -183,17 +183,17 @@
   };
 
   home.packages = with pkgs; [
-    
+
     # Core tools
     # rofi-wayland       # Application launcher
     foot               # Terminal
     # waybar             # Status bar
-    
+
     # Desktop portals
     xdg-desktop-portal
     xdg-desktop-portal-wlr
     xdg-desktop-portal-gtk
-    
+
     # Utilities
     wl-clipboard       # Clipboard
     cliphist          # Clipboard history
@@ -202,12 +202,12 @@
     swaylock          # Screen locker
     swayidle          # Idle manager
     wlsunset          # Night light
-    
+
     # Media
     swaybg            # Wallpaper
     imv               # Image viewer
     mpv               # Video player
-    
+
     # Notifications
     mako              # Or swaync
     libnotify         # notify-send
