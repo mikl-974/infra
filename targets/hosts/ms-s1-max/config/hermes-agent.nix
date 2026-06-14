@@ -1,5 +1,7 @@
 { inputs, pkgs, ... }:
 let
+  # Hermes server module for ms-s1-max only. Darwin clients must use the
+  # SSH-based client module instead of importing this backend configuration.
   # La variante `.default` n'embarque pas le groupe de dépendances `matrix`
   # (mautrix[encryption], asyncpg, aiosqlite, aiohttp-socks, Markdown). Sans lui
   # l'adaptateur Matrix échoue silencieusement au démarrage du gateway et le
@@ -9,6 +11,10 @@ let
   };
   hermesHome = "/home/mfo/.hermes";
   terminalCwd = "/home/mfo/infra";
+  macMiniOllamaBaseUrl = "http://mac-mini:11434/v1";
+  # Must match `ollama list` on mac-mini. Keep this easy to adjust because
+  # Ollama model tags are local state, not Nix-managed artifacts.
+  macMiniGemmaModel = "gemma4";
 
   # Endpoints llama.cpp locaux : aucune authentification réelle. Hermes exige
   # néanmoins qu'une clé soit présente pour considérer le provider « configuré »
@@ -21,25 +27,27 @@ let
       name = "homelab/qwen3-coder";
       base_url = "http://127.0.0.1:8082/v1";
       api_key = localApiKey;
-      models.qwen3-coder.context_length = 262144;
+      # V1 : tâches de code bornées, contexte aligné sur le service llama.cpp (32k).
+      models.qwen3-coder.context_length = 32768;
     }
     {
       name = "homelab/qwen36";
-      base_url = "http://127.0.0.1:8080/v1";
-      api_key = localApiKey;
-      models."unsloth/Qwen3.6-35B-A3B-MTP-GGUF".context_length = 65536;
-    }
-    {
-      name = "homelab/qwen35";
+      # V1 : Qwen3.6-35B déplacé sur 8081 ; sert planner/reviewer ET compression.
       base_url = "http://127.0.0.1:8081/v1";
       api_key = localApiKey;
-      models."unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL".context_length = 65536;
+      models."unsloth/Qwen3.6-35B-A3B-MTP-GGUF".context_length = 65536;
     }
     {
       name = "homelab/gemma4";
       base_url = "http://127.0.0.1:8085/v1";
       api_key = localApiKey;
       models."unsloth/gemma-4-12b-it-GGUF".context_length = 262144;
+    }
+    {
+      name = "mac-mini/ollama-gemma4";
+      base_url = macMiniOllamaBaseUrl;
+      api_key = localApiKey;
+      models.${macMiniGemmaModel}.context_length = 32768;
     }
   ];
 
@@ -130,9 +138,10 @@ let
 
       auxiliary = {
         compression = {
-          provider = "custom:homelab/qwen35";
-          model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
-          timeout = 120;
+          # V1 : compression / long-contexte Hermes confiée au Qwen3.6-35B (8081).
+          provider = "custom:homelab/qwen36";
+          model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF";
+          timeout = 180;
           context_length = 65536;
           extra_body = { };
         };
@@ -163,6 +172,12 @@ let
     reasoning = "high";
   };
 
+  macMiniGemmaProfile = mkProfileSettings {
+    model = macMiniGemmaModel;
+    provider = "custom:mac-mini/ollama-gemma4";
+    reasoning = "high";
+  };
+
   codexProfile = reasoning: mkProfileSettings {
     model = "gpt-5.5";
     provider = "openai-codex";
@@ -184,6 +199,11 @@ in
     workspaces.enable = true;
     desktop.enable = true;
     kanban.dispatchInGateway = true;
+    extraEnvironment = {
+      # If the optional OpenAI-compatible API server is enabled later through
+      # API_SERVER_KEY/API_SERVER_ENABLED, keep it bound to loopback.
+      API_SERVER_HOST = "127.0.0.1";
+    };
 
     settings = {
       model = {
@@ -227,9 +247,10 @@ in
       };
 
       auxiliary.compression = {
-        provider = "custom:homelab/qwen35";
-        model = "unsloth/Qwen3.5-4B-GGUF:UD-Q4_K_XL";
-        timeout = 120;
+        # V1 : compression / long-contexte Hermes confiée au Qwen3.6-35B (8081).
+        provider = "custom:homelab/qwen36";
+        model = "unsloth/Qwen3.6-35B-A3B-MTP-GGUF";
+        timeout = 180;
         context_length = 65536;
         extra_body = { };
       };
@@ -515,6 +536,22 @@ in
           - Ajoute des garde-fous contre les ambiguïtés, hallucinations et sorties non vérifiables.
           - Fournis si utile des variantes : concise, stricte, créative, agentique.
           - Inclue des exemples seulement quand ils améliorent réellement le comportement attendu.
+        '';
+      };
+
+      gemma4-mac-mini = {
+        description = "Agent Hermes utilisant le Gemma4 Ollama du Mac mini via Tailscale/MagicDNS.";
+        settings = macMiniGemmaProfile;
+        soul = ''
+          # Gemma4 Mac mini Agent
+
+          Tu es un agent Hermes exécuté sur le backend `ms-s1-max`, mais tes
+          appels modèle passent par Ollama sur `mac-mini` via Tailscale.
+
+          Règles de travail :
+          - Réponds en français par défaut.
+          - Signale clairement si le modèle distant semble indisponible ou si le tag Ollama ne correspond pas.
+          - Garde les réponses concises et vérifiables.
         '';
       };
     };
